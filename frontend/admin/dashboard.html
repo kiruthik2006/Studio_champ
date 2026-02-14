@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FaceRec Events</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-body {
+            background: var(--dark);
+        }
+        
+        .admin-nav {
+            background: var(--primary-dark);
+        }
+        
+        .admin-sidebar {
+            width: 260px;
+            background: rgba(26, 26, 26, 0.95);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .admin-sidebar .sidebar-item.active {
+            background: var(--primary);
+        }
+        
+        .admin-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+        }
+        
+        .stat-card {
+            background: var(--gradient-primary);
+            color: var(--light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-lg);
+            text-align: center;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table th,
+        .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .admin-table th {
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .admin-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.active {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+        }
+        
+        .status-badge.inactive {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--error);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all var(--transition-fast);
+        }
+        
+        .action-btn:hover {
+            background: var(--primary);
+        }
+        
+        .action-btn.delete:hover {
+            background: var(--error);
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <!-- Admin Navigation -->
+    <nav class="navbar admin-nav">
+        <div class="nav-brand">
+            <a href="../index.html" class="logo-3d small">
+                <i class="fas fa-camera-retro"></i>
+                <span>FaceRec Admin</span>
+            </a>
+        </div>
+        <div class="nav-user">
+            <span class="user-name" id="adminUserName">Admin</span>
+            <button class="btn btn-outline btn-sm" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Admin Layout -->
+    <div class="dashboard-layout">
+        <!-- Admin Sidebar -->
+        <aside class="dashboard-sidebar admin-sidebar">
+            <div class="sidebar-menu">
+                <button class="sidebar-item active" data-tab="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="sidebar-item" data-tab="events">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events</span>
+                </button>
+                <button class="sidebar-item" data-tab="users">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </button>
+                <button class="sidebar-item" data-tab="photos">
+                    <i class="fas fa-images"></i>
+                    <span>Photos</span>
+                </button>
+                <button class="sidebar-item" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboard">
+                <div class="tab-header">
+                    <h1>Admin Dashboard</h1>
+                    <p>Overview of system statistics</p>
+                </div>
+
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="activeUsers">0</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalEvents">0</div>
+                        <div class="stat-label">Total Events</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalPhotos">0</div>
+                        <div class="stat-label">Total Photos</div>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h3>Recent Events</h3>
+                    <div id="recentEvents">
+                        <p class="text-muted">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Tab -->
+            <div class="tab-content" id="events">
+                <div class="tab-header">
+                    <h1>Event Management</h1>
+                    <p>Create and manage events</p>
+                </div>
+
+                <div class="admin-card" style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Create New Event</h3>
+                    </div>
+                    <form id="createEventForm" class="settings-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Event Name</label>
+                                <input type="text" name="name" required placeholder="Enter event name">
+                            </div>
+                            <div class="form-group">
+                                <label>Event Type</label>
+                                <select name="event_type_id" required>
+                                    <option value="">Select type...</option>
+                                    <option value="1">Wedding</option>
+                                    <option value="2">Conference</option>
+                                    <option value="3">Party</option>
+                                    <option value="4">Concert</option>
+                                    <option value="5">Sports</option>
+                                    <option value="9">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" name="location" placeholder="Event location">
+                            </div>
+                            <div class="form-group">
+                                <label>Event Date</label>
+                                <input type="datetime-local" name="event_date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" rows="3" placeholder="Event description"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Create Event
+                        </button>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <h3>All Events</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table" id="eventsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Location</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Photos</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-content" id="users">
+                <div class="tab-header">
+                    <h1>User Management</h1>
+                    <p>Manage registered users</p>
+                </div>
+
+                <div class="admin-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>All Users</h3>
+                        <input type="text" placeholder="Search users..." style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--border-radius-sm); color: var(--light);">
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photos Tab -->
+            <div class="tab-content" id="photos">
+                <div class="tab-header">
+                    <h1>Photo Management</h1>
+                    <p>Upload and manage event photos</p>
+                </div>
+
+                <div class="admin-card" style="margin-bottom: 2rem;">
+                    <h3>Upload Photos to Event</h3>
+                    <form id="uploadPhotosForm" class="settings-form">
+                        <div class="form-group">
+                            <label>Select Event</label>
+                            <select name="event_id" id="uploadEventSelect" required>
+                                <option value="">Choose an event...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Photos</label>
+                            <div class="upload-dropzone" id="adminPhotoDropzone" style="padding: 2rem;">
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem;"></i>
+                                <p>Drag & drop photos here or click to browse</p>
+                                <input type="file" id="adminPhotoInput" multiple accept="image/*" hidden>
+                            </div>
+                        </div>
+                        <div id="adminPhotoPreview" style="display: none;">
+                            <p><span id="adminPhotoCount">0</span> photos selected</p>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="adminUploadBtn">
+                            <i class="fas fa-upload"></i>
+                            Upload Photos
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settings">
+                <div class="tab-header">
+                    <h1>System Settings</h1>
+                    <p>Configure system preferences</p>
+                </div>
+
+                <div class="admin-card">
+                    <h3>General Settings</h3>
+                    <p style="color: var(--gray);">Settings configuration coming soon...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        // Check admin access
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!authManager.isAuthenticated()) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Verify admin role
+            const user = authManager.getUser();
+            if (!user || user.role !== 'admin') {
+                authManager.showToast('Admin access required', 'error');
+                window.location.href = '../dashboard.html';
+                return;
+            }
+
+            // Update admin UI
+            const adminUserName = document.getElementById('adminUserName');
+            if (adminUserName && user) {
+                adminUserName.textContent = user.full_name || user.email;
+            }
+
+            // Initialize tabs
+            initAdminTabs();
+
+            // Load stats
+            loadAdminStats();
+
+            // Load events for management
+            loadAdminEvents();
+
+            // Load users
+            loadAdminUsers();
+
+            // Setup forms
+            setupAdminForms();
+        });
+
+        function initAdminTabs() {
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const tabId = item.dataset.tab;
+
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === tabId) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+        }
+
+        async function loadAdminStats() {
+            try {
+                const data = await authManager.apiRequest('/admin/stats');
+
+                if (data.success) {
+                    const stats = data.data;
+                    document.getElementById('totalUsers').textContent = stats.total_users || 0;
+                    document.getElementById('activeUsers').textContent = stats.active_users || 0;
+                    document.getElementById('totalEvents').textContent = stats.total_events || 0;
+                    document.getElementById('totalPhotos').textContent = stats.total_photos || 0;
+
+                    // Render recent events
+                    const recentEventsDiv = document.getElementById('recentEvents');
+                    if (stats.recent_events && stats.recent_events.length > 0) {
+                        recentEventsDiv.innerHTML = stats.recent_events.map(event => `
+                            <div style="padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <strong>${event.name}</strong>
+                                <span style="float: right; color: var(--gray);">
+                                    ${new Date(event.created_at).toLocaleDateString()}
+                                </span>
+                                <p style="color: var(--gray); margin-top: 0.25rem; font-size: 0.9rem;">
+                                    ${event.photo_count} photos
+                                </p>
+                            </div>
+                        `).join('');
+                    } else {
+                        recentEventsDiv.innerHTML = '<p style="color: var(--gray);">No recent events</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadAdminEvents() {
+            try {
+                const data = await authManager.apiRequest('/admin/events');
+
+                if (data.success) {
+                    const events = data.data.events;
+                    const tbody = document.querySelector('#eventsTable tbody');
+
+                    if (tbody) {
+                        tbody.innerHTML = events.map(event => `
+                            <tr>
+                                <td>${event.name}</td>
+                                <td>${event.event_type || 'N/A'}</td>
+                                <td>${event.location || 'N/A'}</td>
+                                <td>${event.event_date ? new Date(event.event_date).toLocaleDateString() : 'N/A'}</td>
+                                <td>
+                                    <span class="status-badge ${event.is_active ? 'active' : 'inactive'}">
+                                        ${event.is_active ? 'Active' : 'Inactive'}
+                                    </span>
+                                </td>
+                                <td>${event.photo_count || 0}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="toggleEvent(${event.id}, ${!event.is_active})" title="${event.is_active ? 'Deactivate' : 'Activate'}">
+                                            <i class="fas ${event.is_active ? 'fa-pause' : 'fa-play'}"></i>
+                                        </button>
+                                        <button class="action-btn delete" onclick="deleteEvent(${event.id})" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    // Populate upload event select
+                    const uploadSelect = document.getElementById('uploadEventSelect');
+                    if (uploadSelect) {
+                        uploadSelect.innerHTML = `
+                            <option value="">Choose an event...</option>
+                            ${events.filter(e => e.is_active).map(event => `
+                                <option value="${event.id}">${event.name}</option>
+                            `).join('')}
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        async function loadAdminUsers() {
+            try {
+                const data = await authManager.apiRequest('/admin/users');
+
+                if (data.success) {
+                    const users = data.data.users;
+                    const tbody = document.querySelector('#usersTable tbody');
+
+                    if (tbody) {
+                        tbody.innerHTML = users.map(user => `
+                            <tr>
+                                <td>${user.full_name || user.email}</td>
+                                <td>${user.email}</td>
+                                <td>${user.role}</td>
+                                <td>
+                                    <span class="status-badge ${user.is_active ? 'active' : 'inactive'}">
+                                        ${user.is_active ? 'Active' : 'Inactive'}
+                                    </span>
+                                </td>
+                                <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="toggleUser(${user.id}, ${!user.is_active})" title="${user.is_active ? 'Deactivate' : 'Activate'}">
+                                            <i class="fas ${user.is_active ? 'fa-user-slash' : 'fa-user-check'}"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function setupAdminForms() {
+            // Create event form
+            const createEventForm = document.getElementById('createEventForm');
+            if (createEventForm) {
+                createEventForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const formData = {
+                        name: createEventForm.name.value,
+                        event_type_id: parseInt(createEventForm.event_type_id.value),
+                        location: createEventForm.location.value,
+                        event_date: createEventForm.event_date.value,
+                        description: createEventForm.description.value
+                    };
+
+                    try {
+                        const data = await authManager.apiRequest('/admin/events', {
+                            method: 'POST',
+                            body: JSON.stringify(formData)
+                        });
+
+                        if (data.success) {
+                            authManager.showToast('Event created successfully!', 'success');
+                            createEventForm.reset();
+                            loadAdminEvents();
+                            loadAdminStats();
+                        } else {
+                            authManager.showToast(data.message || 'Failed to create event', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Create event error:', error);
+                        authManager.showToast('Error creating event', 'error');
+                    }
+                });
+            }
+
+            // Photo upload setup
+            const dropzone = document.getElementById('adminPhotoDropzone');
+            const fileInput = document.getElementById('adminPhotoInput');
+            const preview = document.getElementById('adminPhotoPreview');
+            const countSpan = document.getElementById('adminPhotoCount');
+            const uploadForm = document.getElementById('uploadPhotosForm');
+
+            let selectedFiles = [];
+
+            if (dropzone && fileInput) {
+                dropzone.addEventListener('click', () => fileInput.click());
+
+                fileInput.addEventListener('change', (e) => {
+                    selectedFiles = Array.from(e.target.files);
+                    if (selectedFiles.length > 0) {
+                        preview.style.display = 'block';
+                        countSpan.textContent = selectedFiles.length;
+                    }
+                });
+
+                dropzone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('dragover');
+                });
+
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.classList.remove('dragover');
+                });
+
+                dropzone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('dragover');
+                    selectedFiles = Array.from(e.dataTransfer.files);
+                    if (selectedFiles.length > 0) {
+                        preview.style.display = 'block';
+                        countSpan.textContent = selectedFiles.length;
+                    }
+                });
+            }
+
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const eventId = document.getElementById('uploadEventSelect').value;
+                    if (!eventId) {
+                        authManager.showToast('Please select an event', 'warning');
+                        return;
+                    }
+
+                    if (selectedFiles.length === 0) {
+                        authManager.showToast('Please select photos to upload', 'warning');
+                        return;
+                    }
+
+                    const btn = document.getElementById('adminUploadBtn');
+                    btn.classList.add('loading');
+
+                    const formData = new FormData();
+                    selectedFiles.forEach(file => formData.append('photos', file));
+
+                    try {
+                        const data = await authManager.uploadFormData(`/admin/upload-event-photos/${eventId}`, formData);
+
+                        if (data.success) {
+                            authManager.showToast(`Uploaded ${data.data.uploaded.length} photos!`, 'success');
+                            selectedFiles = [];
+                            preview.style.display = 'none';
+                            uploadForm.reset();
+                            loadAdminEvents();
+                            loadAdminStats();
+                        } else {
+                            authManager.showToast(data.message || 'Upload failed', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Upload error:', error);
+                        authManager.showToast('Error uploading photos', 'error');
+                    } finally {
+                        btn.classList.remove('loading');
+                    }
+                });
+            }
+        }
+
+        async function toggleEvent(eventId, isActive) {
+            try {
+                const data = await authManager.apiRequest(`/admin/events/${eventId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ is_active: isActive })
+                });
+
+                if (data.success) {
+                    authManager.showToast(`Event ${isActive ? 'activated' : 'deactivated'}`, 'success');
+                    loadAdminEvents();
+                } else {
+                    authManager.showToast(data.message || 'Action failed', 'error');
+                }
+            } catch (error) {
+                console.error('Toggle event error:', error);
+                authManager.showToast('Error updating event', 'error');
+            }
+        }
+
+        async function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event? All photos will be deleted.')) {
+                return;
+            }
+
+            try {
+                const data = await authManager.apiRequest(`/admin/events/${eventId}`, {
+                    method: 'DELETE'
+                });
+
+                if (data.success) {
+                    authManager.showToast('Event deleted successfully', 'success');
+                    loadAdminEvents();
+                    loadAdminStats();
+                } else {
+                    authManager.showToast(data.message || 'Delete failed', 'error');
+                }
+            } catch (error) {
+                console.error('Delete event error:', error);
+                authManager.showToast('Error deleting event', 'error');
+            }
+        }
+
+        async function toggleUser(userId, isActive) {
+            try {
+                const data = await authManager.apiRequest(`/admin/users/${userId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ is_active: isActive })
+                });
+
+                if (data.success) {
+                    authManager.showToast(`User ${isActive ? 'activated' : 'deactivated'}`, 'success');
+                    loadAdminUsers();
+                    loadAdminStats();
+                } else {
+                    authManager.showToast(data.message || 'Action failed', 'error');
+                }
+            } catch (error) {
+                console.error('Toggle user error:', error);
+                authManager.showToast('Error updating user', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

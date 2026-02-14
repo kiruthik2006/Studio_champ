@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - FaceRec Events</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-brand">
+            <a href="index.html" class="logo-3d small">
+                <i class="fas fa-camera-retro"></i>
+                <span>FaceRec</span>
+            </a>
+        </div>
+        <div class="nav-user">
+            <div class="user-info">
+                <span class="user-name" id="userName">Loading...</span>
+                <span class="user-role" id="userRole">User</span>
+            </div>
+            <button class="btn btn-outline btn-sm" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <div class="dashboard-layout">
+        <main class="dashboard-main" style="margin-left: 0;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="tab-header">
+                    <h1>My Profile</h1>
+                    <p>Manage your account information</p>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="settings-card" style="margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem;">
+                        <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h2 id="profileName">Loading...</h2>
+                            <p id="profileEmail" style="color: var(--gray);">Loading...</p>
+                            <span id="profileRole" class="status-badge" style="margin-top: 0.5rem;">User</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Profile -->
+                <div class="settings-card" style="margin-bottom: 2rem;">
+                    <h3><i class="fas fa-edit"></i> Edit Profile</h3>
+                    <form id="profileForm" class="settings-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profileFirstName">First Name</label>
+                                <input type="text" id="profileFirstName" name="first_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileLastName">Last Name</label>
+                                <input type="text" id="profileLastName" name="last_name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmailInput">Email</label>
+                            <input type="email" id="profileEmailInput" disabled>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Change Password -->
+                <div class="settings-card">
+                    <h3><i class="fas fa-lock"></i> Change Password</h3>
+                    <form id="passwordForm" class="settings-form">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <div class="input-group">
+                                <input type="password" id="currentPassword" name="current_password" required>
+                                <button type="button" class="toggle-password" data-target="currentPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <div class="input-group">
+                                <input type="password" id="newPassword" name="new_password" required minlength="6">
+                                <button type="button" class="toggle-password" data-target="newPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <div class="input-group">
+                                <input type="password" id="confirmPassword" required minlength="6">
+                                <button type="button" class="toggle-password" data-target="confirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-key"></i>
+                            Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
+            if (!authManager.isAuthenticated()) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Load user data
+            loadProfileData();
+
+            // Setup forms
+            setupProfileForms();
+
+            // Setup password toggle
+            document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetId = btn.dataset.target;
+                    const input = document.getElementById(targetId);
+                    const icon = btn.querySelector('i');
+
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            });
+
+            // Logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    authManager.logout();
+                });
+            }
+        });
+
+        async function loadProfileData() {
+            try {
+                const data = await authManager.apiRequest('/auth/profile');
+
+                if (data.success) {
+                    const user = data.data;
+
+                    // Update UI
+                    document.getElementById('userName').textContent = user.full_name || user.email;
+                    document.getElementById('userRole').textContent = user.role === 'admin' ? 'Administrator' : 'User';
+                    
+                    document.getElementById('profileName').textContent = user.full_name;
+                    document.getElementById('profileEmail').textContent = user.email;
+                    document.getElementById('profileRole').textContent = user.role === 'admin' ? 'Administrator' : 'User';
+                    
+                    document.getElementById('profileFirstName').value = user.first_name || '';
+                    document.getElementById('profileLastName').value = user.last_name || '';
+                    document.getElementById('profileEmailInput').value = user.email;
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                authManager.showToast('Error loading profile', 'error');
+            }
+        }
+
+        function setupProfileForms() {
+            // Profile update form
+            const profileForm = document.getElementById('profileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const formData = {
+                        first_name: document.getElementById('profileFirstName').value,
+                        last_name: document.getElementById('profileLastName').value
+                    };
+
+                    try {
+                        const data = await authManager.apiRequest('/auth/profile', {
+                            method: 'PUT',
+                            body: JSON.stringify(formData)
+                        });
+
+                        if (data.success) {
+                            authManager.showToast('Profile updated successfully!', 'success');
+                            authManager.user = data.data;
+                            loadProfileData();
+                        } else {
+                            authManager.showToast(data.message || 'Update failed', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Profile update error:', error);
+                        authManager.showToast('Error updating profile', 'error');
+                    }
+                });
+            }
+
+            // Password change form
+            const passwordForm = document.getElementById('passwordForm');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const currentPassword = document.getElementById('currentPassword').value;
+                    const newPassword = document.getElementById('newPassword').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+
+                    if (newPassword !== confirmPassword) {
+                        authManager.showToast('New passwords do not match', 'error');
+                        return;
+                    }
+
+                    try {
+                        const data = await authManager.apiRequest('/auth/change-password', {
+                            method: 'PUT',
+                            body: JSON.stringify({
+                                current_password: currentPassword,
+                                new_password: newPassword
+                            })
+                        });
+
+                        if (data.success) {
+                            authManager.showToast('Password changed successfully!', 'success');
+                            passwordForm.reset();
+                        } else {
+                            authManager.showToast(data.message || 'Password change failed', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Password change error:', error);
+                        authManager.showToast('Error changing password', 'error');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
