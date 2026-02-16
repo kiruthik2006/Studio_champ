@@ -446,6 +446,17 @@ class AuthManager {
         const url = `${this.baseURL}${endpoint}`;
         
         try {
+            // Ensure token exists
+            if (!this.token) {
+                this.token = localStorage.getItem('access_token');
+            }
+            
+            console.log('Upload request:', {
+                url,
+                token: this.token ? `${this.token.substring(0, 20)}...` : 'NO TOKEN',
+                hasFormData: !!formData
+            });
+            
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -455,20 +466,40 @@ class AuthManager {
             });
             
             const data = await response.json();
+            console.log('Upload response status:', response.status, data);
             
             if (response.status === 401) {
+                console.log('Got 401, attempting token refresh...');
+                // Try to refresh token
                 await this.refreshAccessToken();
                 
                 if (this.token) {
+                    // Convert FormData to entries and recreate it since FormData can't be reused
+                    const formDataEntries = formData.entries ? Array.from(formData.entries()) : [];
+                    const newFormData = new FormData();
+                    
+                    formDataEntries.forEach(([key, value]) => {
+                        newFormData.append(key, value);
+                    });
+                    
+                    console.log('Retrying with refreshed token...');
                     const retryResponse = await fetch(url, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${this.token}`
                         },
-                        body: formData
+                        body: newFormData
                     });
                     return await retryResponse.json();
+                } else {
+                    console.log('Token refresh failed, logging out...');
+                    this.logout();
                 }
+            }
+            
+            if (!data.success && response.status === 401) {
+                this.logout();
+                return data;
             }
             
             return data;

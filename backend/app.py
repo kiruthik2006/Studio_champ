@@ -2,12 +2,17 @@ import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from flask_migrate import Migrate
 from config import config
 from models import db
 
+try:
+    from flask_migrate import Migrate
+    migrate = Migrate()
+except ImportError:
+    Migrate = None
+    migrate = None
+
 jwt = JWTManager()
-migrate = Migrate()
 
 
 def create_app(config_name="default"):
