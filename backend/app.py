@@ -6,6 +6,12 @@ from config import config
 from models import db
 
 try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+try:
     from flask_migrate import Migrate
     migrate = Migrate()
 except ImportError:
@@ -58,6 +64,15 @@ def create_app(config_name="default"):
     @jwt.unauthorized_loader
     def missing_token_callback(error):
         return {"success": False, "message": "Authorization token is required"}, 401
+
+    # Disable caching for static files
+    @app.after_request
+    def add_no_cache_headers(response):
+        if response.content_type and ('css' in response.content_type or 'javascript' in response.content_type):
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, public, max-age=0'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+        return response
 
     # Register blueprints
     from routes.auth import auth_bp

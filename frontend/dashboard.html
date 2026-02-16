@@ -67,7 +67,7 @@
             <div class="tab-content active" id="face-registration">
                 <div class="tab-header">
                     <h1>Face Registration</h1>
-                    <p>Upload photos of yourself to enable face recognition</p>
+                    <p>Capture photos using your live camera to enable face recognition</p>
                 </div>
 
                 <div class="upload-section">
@@ -76,27 +76,39 @@
                             <i class="fas fa-info-circle"></i>
                             <h3>Tips for Best Results</h3>
                             <ul>
-                                <li><i class="fas fa-check"></i> Upload 3-5 photos from different angles</li>
-                                <li><i class="fas fa-check"></i> Use clear, well-lit photos</li>
+                                <li><i class="fas fa-check"></i> Capture 3-5 photos from different angles</li>
+                                <li><i class="fas fa-check"></i> Ensure good lighting</li>
                                 <li><i class="fas fa-check"></i> Face should be clearly visible</li>
-                                <li><i class="fas fa-check"></i> Avoid sunglasses or heavy makeup</li>
-                                <li><i class="fas fa-check"></i> Different expressions help accuracy</li>
+                                <li><i class="fas fa-check"></i> Avoid sunglasses or heavy shadows</li>
+                                <li><i class="fas fa-check"></i> Try different expressions</li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="upload-area" id="faceUploadArea">
-                        <div class="upload-dropzone" id="faceDropzone">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <h3>Drag & Drop Your Photos</h3>
-                            <p>or click to browse files</p>
-                            <span class="upload-hint">Supports: JPG, PNG, GIF (Max 10MB each)</span>
-                            <input type="file" id="faceFileInput" multiple accept="image/*" hidden>
+                        <div class="camera-section" id="cameraSection">
+                            <video id="faceVideo" autoplay playsinline muted></video>
+                            <div class="camera-controls">
+                                <button class="btn btn-primary" id="startCameraBtn">
+                                    <i class="fas fa-video"></i>
+                                    Start Camera
+                                </button>
+                                <button class="btn btn-outline" id="stopCameraBtn" style="display: none;">
+                                    <i class="fas fa-stop"></i>
+                                    Stop Camera
+                                </button>
+                            </div>
+                            <div class="capture-controls" id="captureControls" style="display: none;">
+                                <button class="btn btn-success" id="captureFaceBtn">
+                                    <i class="fas fa-camera"></i>
+                                    Capture Face
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="upload-preview" id="facePreview" style="display: none;">
-                        <h3>Selected Photos (<span id="faceCount">0</span>)</h3>
+                        <h3>Captured Photos (<span id="faceCount">0</span>)</h3>
                         <div class="preview-grid" id="facePreviewGrid"></div>
                         <div class="upload-actions">
                             <button class="btn btn-outline" id="clearFacesBtn">Clear All</button>

@@ -1,12 +1,18 @@
 /**
  * Dashboard JavaScript - Handles all dashboard functionality
  */
+console.log('✓ dashboard.js script loaded!');
+
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('✓ DOMContentLoaded event fired');
+    
     // Check authentication
     if (!authManager.isAuthenticated()) {
         window.location.href = 'index.html';
         return;
     }
+    
+    console.log('✓ User authenticated');
     
     // Initialize dashboard
     initDashboard();
@@ -21,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     
     // Setup face upload
+    console.log('Calling setupFaceUpload...');
     setupFaceUpload();
     
     // Setup profile forms
@@ -135,77 +142,199 @@ async function deleteFace(faceId) {
 }
 
 /**
- * Setup Face Upload
+ * Setup Face Upload - Live Camera Capture
  */
 function setupFaceUpload() {
-    const dropzone = document.getElementById('faceDropzone');
-    const fileInput = document.getElementById('faceFileInput');
+    console.log('=== setupFaceUpload STARTING ===');
+    
+    // Get all elements
+    const video = document.getElementById('faceVideo');
+    const startCameraBtn = document.getElementById('startCameraBtn');
+    const stopCameraBtn = document.getElementById('stopCameraBtn');
+    const captureBtn = document.getElementById('captureFaceBtn');
+    const captureControls = document.getElementById('captureControls');
     const preview = document.getElementById('facePreview');
     const previewGrid = document.getElementById('facePreviewGrid');
     const faceCount = document.getElementById('faceCount');
     const uploadBtn = document.getElementById('uploadFacesBtn');
     const clearBtn = document.getElementById('clearFacesBtn');
     
-    if (!dropzone || !fileInput) return;
+    console.log('Elements found:');
+    console.log('- video:', !!video);
+    console.log('- startCameraBtn:', !!startCameraBtn);
+    console.log('- stopCameraBtn:', !!stopCameraBtn);
+    console.log('- captureBtn:', !!captureBtn);
     
-    let selectedFiles = [];
+    if (!video || !startCameraBtn) {
+        console.error('❌ SETUP FAILED: Missing required elements');
+        return;
+    }
     
-    // Click to select files
-    dropzone.addEventListener('click', () => fileInput.click());
+    console.log('✓ All elements found, setting up...');
     
-    // File selection
-    fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
+    let stream = null;
+    let capturedImages = [];
     
-    // Drag and drop
-    dropzone.addEventListener('dragover', (e) => {
+    // Configure video element
+    video.setAttribute('autoplay', 'true');
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('muted', 'true');
+    
+    // Add click listener to start button
+    console.log('Adding click listener to Start Camera button...');
+    
+    startCameraBtn.addEventListener('click', async function(e) {
+        console.log('🎬 START CAMERA BUTTON CLICKED');
         e.preventDefault();
-        dropzone.classList.add('dragover');
-    });
-    
-    dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('dragover');
-    });
-    
-    dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-        handleFiles(e.dataTransfer.files);
-    });
-    
-    function handleFiles(files) {
-        const validFiles = Array.from(files).filter(file => {
-            return file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024;
-        });
+        e.stopPropagation();
         
-        if (validFiles.length === 0) {
-            authManager.showToast('Please select valid image files (max 10MB each)', 'warning');
+        try {
+            console.log('Checking browser support...');
+            
+            if (!navigator.mediaDevices) {
+                throw new Error('navigator.mediaDevices not supported');
+            }
+            
+            if (!navigator.mediaDevices.getUserMedia) {
+                throw new Error('getUserMedia not supported');
+            }
+            
+            console.log('✓ Browser supports getUserMedia');
+            console.log('Requesting camera permission...');
+            
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: 'user',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            });
+            
+            console.log('✓ Camera access granted');
+            console.log('Stream tracks:', stream.getTracks().length);
+            
+            // Set stream to video
+            video.srcObject = stream;
+            console.log('✓ Stream assigned to video element');
+            
+            // Show video
+            video.style.display = 'block';
+            console.log('✓ Video display set to block');
+            
+            // Play video
+            setTimeout(() => {
+                video.play()
+                    .then(() => console.log('✓ Video is playing'))
+                    .catch(err => console.error('Play error:', err));
+            }, 100);
+            
+            // Update UI
+            startCameraBtn.style.display = 'none';
+            stopCameraBtn.style.display = 'block';
+            captureControls.style.display = 'block';
+            
+            console.log('✓ UI updated - camera should be visible');
+            authManager.showToast('📹 Camera started!', 'success');
+            
+        } catch (error) {
+            console.error('❌ CAMERA ERROR');
+            console.error('Name:', error.name);
+            console.error('Message:', error.message);
+            
+            let msg = 'Camera Error: ';
+            if (error.name === 'NotAllowedError') {
+                msg += 'Permission denied. Allow camera in browser settings.';
+            } else if (error.name === 'NotFoundError') {
+                msg += 'No camera found. Check if your camera is connected.';
+            } else if (error.name === 'NotReadableError') {
+                msg += 'Camera is in use by another app.';
+            } else {
+                msg += error.message;
+            }
+            
+            console.error('Final message:', msg);
+            authManager.showToast(msg, 'error');
+        }
+    });
+    
+    console.log('✓ Click listener attached to Start Camera button');
+    
+    // Stop camera
+    stopCameraBtn.addEventListener('click', function(e) {
+        console.log('Stop camera clicked');
+        e.preventDefault();
+        
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+        
+        video.srcObject = null;
+        video.style.display = 'none';
+        startCameraBtn.style.display = 'block';
+        stopCameraBtn.style.display = 'none';
+        captureControls.style.display = 'none';
+        
+        authManager.showToast('Camera stopped', 'success');
+    });
+    
+    // Capture frame
+    captureBtn.addEventListener('click', function(e) {
+        console.log('Capture clicked');
+        e.preventDefault();
+        
+        if (!video.srcObject) {
+            authManager.showToast('Camera not running', 'warning');
             return;
         }
         
-        selectedFiles = [...selectedFiles, ...validFiles];
-        
-        if (selectedFiles.length > 10) {
-            selectedFiles = selectedFiles.slice(0, 10);
-            authManager.showToast('Maximum 10 photos allowed', 'warning');
+        if (capturedImages.length >= 10) {
+            authManager.showToast('Max 10 photos', 'warning');
+            return;
         }
         
-        updatePreview();
-    }
+        try {
+            if (video.videoWidth === 0 || video.videoHeight === 0) {
+                authManager.showToast('Camera not ready yet', 'warning');
+                return;
+            }
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const fileName = `face_${Date.now()}_${capturedImages.length + 1}.jpg`;
+                    const file = new File([blob], fileName, { type: 'image/jpeg' });
+                    capturedImages.push(file);
+                    updatePreview();
+                    authManager.showToast(`Captured (${capturedImages.length}/10)`, 'success');
+                }
+            }, 'image/jpeg', 0.95);
+        } catch (error) {
+            console.error('Capture error:', error);
+            authManager.showToast('Capture failed', 'error');
+        }
+    });
     
+    // Update preview
     function updatePreview() {
-        if (selectedFiles.length === 0) {
+        if (capturedImages.length === 0) {
             preview.style.display = 'none';
             return;
         }
         
         preview.style.display = 'block';
-        faceCount.textContent = selectedFiles.length;
+        faceCount.textContent = capturedImages.length;
         
-        previewGrid.innerHTML = selectedFiles.map((file, index) => `
+        previewGrid.innerHTML = capturedImages.map((file, index) => `
             <div class="preview-item">
-                <img src="${URL.createObjectURL(file)}" alt="Preview ${index + 1}">
+                <img src="${URL.createObjectURL(file)}" alt="Capture ${index + 1}">
                 <button class="preview-remove" data-index="${index}">
                     <i class="fas fa-times"></i>
                 </button>
@@ -217,7 +346,7 @@ function setupFaceUpload() {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const index = parseInt(btn.dataset.index);
-                selectedFiles.splice(index, 1);
+                capturedImages.splice(index, 1);
                 updatePreview();
             });
         });
@@ -226,23 +355,24 @@ function setupFaceUpload() {
     // Clear all
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
-            selectedFiles = [];
+            capturedImages = [];
             updatePreview();
+            authManager.showToast('Cleared all captured faces', 'info');
         });
     }
     
     // Upload faces
     if (uploadBtn) {
         uploadBtn.addEventListener('click', async () => {
-            if (selectedFiles.length === 0) {
-                authManager.showToast('Please select at least one photo', 'warning');
+            if (capturedImages.length === 0) {
+                authManager.showToast('Please capture at least one face image', 'warning');
                 return;
             }
             
             uploadBtn.classList.add('loading');
             
             const formData = new FormData();
-            selectedFiles.forEach(file => {
+            capturedImages.forEach(file => {
                 formData.append('faces', file);
             });
             
@@ -251,7 +381,7 @@ function setupFaceUpload() {
                 
                 if (data.success) {
                     authManager.showToast(`Successfully uploaded ${data.data.uploaded_faces.length} face(s)`, 'success');
-                    selectedFiles = [];
+                    capturedImages = [];
                     updatePreview();
                     loadUserFaces();
                 } else {

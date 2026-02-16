@@ -3,12 +3,13 @@ from datetime import timedelta
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "your-secret-key-change-in-production"
+    # Use fixed secret keys to ensure consistency
+    SECRET_KEY = "facerec-secret-key-2026-fixed"
 
     # Database configuration
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get("DATABASE_URL")
-        or "mysql+pymysql://root:password@localhost/facerec_db"
+        or "sqlite:///facerec.db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
@@ -17,11 +18,9 @@ class Config:
         "pool_pre_ping": True,
     }
 
-    # JWT configuration
-    JWT_SECRET_KEY = (
-        os.environ.get("JWT_SECRET_KEY") or "jwt-secret-key-change-in-production"
-    )
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    # JWT configuration - Use fixed secret key for consistency
+    JWT_SECRET_KEY = "facerec-jwt-secret-2026-fixed"
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)  # Increased from 1 hour to 24 hours
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     JWT_TOKEN_LOCATION = ["headers"]
     JWT_HEADER_NAME = "Authorization"
