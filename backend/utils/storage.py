@@ -39,25 +39,29 @@ class StorageService:
     def save_face_image(self, file_obj, user_id):
         """
         Save a face registration image
-        Returns: relative path to saved file
+        Returns: relative path to saved file (relative to the upload folder)
         """
         if not file_obj or not self.allowed_file(file_obj.filename):
             raise ValueError("Invalid file or file type not allowed")
 
-        # Generate unique filename
-        filename = self.generate_unique_filename(file_obj.filename, f"user_{user_id}")
+        # Ensure the faces directory exists
+        os.makedirs(self.faces_folder, exist_ok=True)
+
+        # Generate unique filename and ensure it's secure
+        original_name = secure_filename(file_obj.filename)
+        filename = self.generate_unique_filename(original_name, f"user_{user_id}")
         filepath = os.path.join(self.faces_folder, filename)
 
         # Save file
         file_obj.save(filepath)
 
-        # Return relative path
-        return os.path.join("faces", filename)
+        # Return a path that is relative to the upload folder so that get_full_path works
+        return os.path.relpath(filepath, self.upload_folder)
 
     def save_event_photo(self, file_obj, event_id):
         """
         Save an event photo
-        Returns: relative path to saved file
+        Returns: relative path to saved file (relative to the upload folder)
         """
         if not file_obj or not self.allowed_file(file_obj.filename):
             raise ValueError("Invalid file or file type not allowed")
@@ -66,23 +70,28 @@ class StorageService:
         event_folder = os.path.join(self.events_folder, f"event_{event_id}")
         os.makedirs(event_folder, exist_ok=True)
 
-        # Generate unique filename
-        filename = self.generate_unique_filename(file_obj.filename, f"event_{event_id}")
+        # Generate unique filename and ensure it's secure
+        original_name = secure_filename(file_obj.filename)
+        filename = self.generate_unique_filename(original_name, f"event_{event_id}")
         filepath = os.path.join(event_folder, filename)
 
         # Save file
         file_obj.save(filepath)
 
-        # Return relative path
-        return os.path.join("events", f"event_{event_id}", filename)
+        # Return a path relative to the upload folder so get_full_path works
+        return os.path.relpath(filepath, self.upload_folder)
 
     def save_annotated_photo(self, source_path, filename):
         """
         Save an annotated photo (with face boxes)
-        Returns: full path to saved file
+        Returns: relative path to saved file (relative to the upload folder)
         """
-        filepath = os.path.join(self.annotated_folder, filename)
-        return filepath
+        # Ensure annotated folder exists
+        os.makedirs(self.annotated_folder, exist_ok=True)
+
+        safe_name = secure_filename(filename)
+        filepath = os.path.join(self.annotated_folder, safe_name)
+        return os.path.relpath(filepath, self.upload_folder)
 
     def get_full_path(self, relative_path):
         """Convert relative path to full path"""

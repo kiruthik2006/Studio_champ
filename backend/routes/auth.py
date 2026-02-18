@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -64,8 +64,8 @@ def register():
         db.session.commit()
 
         # Generate tokens
-        access_token = create_access_token(identity=new_user.id)
-        refresh_token = create_refresh_token(identity=new_user.id)
+        access_token = create_access_token(identity=str(new_user.id))
+        refresh_token = create_refresh_token(identity=str(new_user.id))
 
         return jsonify(
             {
@@ -123,8 +123,8 @@ def login():
         db.session.commit()
 
         # Generate tokens
-        access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
+        refresh_token = create_refresh_token(identity=str(user.id))
 
         return jsonify(
             {
@@ -147,7 +147,7 @@ def login():
 def refresh():
     """Refresh access token"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
 
         # Check if user still exists and is active
         user = User.query.get(current_user_id)
@@ -157,7 +157,7 @@ def refresh():
             ), 401
 
         # Create new access token
-        new_access_token = create_access_token(identity=current_user_id)
+        new_access_token = create_access_token(identity=str(current_user_id))
 
         return jsonify(
             {
@@ -178,7 +178,7 @@ def refresh():
 def get_profile():
     """Get current user profile"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
 
         if not user:
@@ -203,7 +203,7 @@ def get_profile():
 def update_profile():
     """Update user profile"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
 
         if not user:
@@ -239,7 +239,7 @@ def update_profile():
 def change_password():
     """Change user password"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
 
         if not user:
@@ -297,16 +297,38 @@ def change_password():
 def logout():
     """Logout user (revoke token)"""
     try:
-        jti = get_jwt()["jti"]
-        blacklist.add(jti)
+        jti = get_jwt().get("jti")
+        if jti:
+            blacklist.add(jti)
+            current_app.logger.info(f"User logout - token revoked: jti={jti}")
+        else:
+            current_app.logger.warning(
+                "User logout - could not determine jti to revoke"
+            )
 
         return jsonify({"success": True, "message": "Logged out successfully"}), 200
 
     except Exception as e:
+        current_app.logger.exception("Logout failed")
         return jsonify({"success": False, "message": f"Logout failed: {str(e)}"}), 500
 
 
 # Token blacklist check
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload):
-    return jwt_payload["jti"] in blacklist
+    """
+    Called automatically to check whether a token is in the blocklist (revoked).
+    Logs the check for debugging and returns True if the token has been revoked.
+    """
+    jti = jwt_payload.get("jti")
+    is_revoked = jti in blacklist
+    current_app.logger.debug(f"Token revocation check: jti={jti} revoked={is_revoked}")
+    return is_revoked
+
+
+# Provide a clear handler for revoked tokens so clients receive a consistent response.
+@jwt.revoked_token_loader
+def revoked_token_callback(jwt_header, jwt_payload):
+    jti = jwt_payload.get("jti")
+    current_app.logger.info(f"Rejected revoked token: jti={jti}")
+    return jsonify({"success": False, "message": "Token has been revoked"}), 401

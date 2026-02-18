@@ -1,5 +1,10 @@
 from flask import Blueprint, request, jsonify, current_app, send_file
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity,
+    verify_jwt_in_request,
+    get_jwt,
+)
 from models import db, User, FaceEmbedding, Event, Photo, UserEvent
 from services.face_recognition import get_face_service
 from utils.storage import get_storage_service
@@ -16,11 +21,36 @@ photos_bp = Blueprint("photos", __name__)
 
 
 @photos_bp.route("/upload-faces", methods=["POST"])
-@jwt_required()
 def upload_faces():
     """Upload face images for user registration"""
     try:
-        current_user_id = get_jwt_identity()
+        # Try to verify JWT from standard locations (headers). If missing/invalid,
+        # allow token passed in form or query param as 'access_token' or 'token'.
+        try:
+            verify_jwt_in_request()
+        except Exception:
+            # Look for token in form data or query string
+            token = (
+                request.form.get("access_token")
+                or request.form.get("token")
+                or request.args.get("access_token")
+                or request.args.get("token")
+            )
+            if token:
+                # Inject Authorization header into the WSGI environ so JWT lib can find it
+                request.environ["HTTP_AUTHORIZATION"] = f"Bearer {token}"
+                try:
+                    verify_jwt_in_request()
+                except Exception as e:
+                    return jsonify(
+                        {"success": False, "message": f"Invalid token: {str(e)}"}
+                    ), 401
+            else:
+                return jsonify(
+                    {"success": False, "message": "Authorization token is required"}
+                ), 401
+
+        current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
 
         if not user:
@@ -133,7 +163,7 @@ def upload_faces():
 def get_my_faces():
     """Get all face embeddings for current user"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
 
         if not user:
@@ -156,7 +186,7 @@ def get_my_faces():
 def delete_face(face_id):
     """Delete a face embedding"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
 
         face = FaceEmbedding.query.filter_by(
             id=face_id, user_id=current_user_id
@@ -219,7 +249,7 @@ def get_events():
 def match_faces():
     """Find photos containing the user's face in a specific event"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
 
         if not user:

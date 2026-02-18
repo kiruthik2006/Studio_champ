@@ -4,15 +4,18 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from config import config
 from models import db
+from utils.storage import init_storage_service
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
 
 try:
     from flask_migrate import Migrate
+
     migrate = Migrate()
 except ImportError:
     Migrate = None
@@ -40,7 +43,18 @@ def create_app(config_name="default"):
     # Initialize extensions
     db.init_app(app)
     jwt.init_app(app)
-    migrate.init_app(app, db)
+
+    # Initialize storage service singleton so get_storage_service() can be used safely.
+    # If initialization fails, log the error but continue so the app can start for debugging.
+    try:
+        init_storage_service(app.config)
+    except Exception as e:
+        app.logger.error(f"Failed to initialize storage service: {e}")
+
+    # Initialize migration if flask_migrate is available
+    if migrate is not None:
+        migrate.init_app(app, db)
+
     CORS(
         app,
         resources={
@@ -59,7 +73,8 @@ def create_app(config_name="default"):
 
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        return {"success": False, "message": "Invalid token"}, 401
+        app.logger.error(f"JWT Invalid token error: {error}")
+        return {"success": False, "message": f"Invalid token: {error}"}, 401
 
     @jwt.unauthorized_loader
     def missing_token_callback(error):
@@ -68,10 +83,14 @@ def create_app(config_name="default"):
     # Disable caching for static files
     @app.after_request
     def add_no_cache_headers(response):
-        if response.content_type and ('css' in response.content_type or 'javascript' in response.content_type):
-            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, public, max-age=0'
-            response.headers['Pragma'] = 'no-cache'
-            response.headers['Expires'] = '0'
+        if response.content_type and (
+            "css" in response.content_type or "javascript" in response.content_type
+        ):
+            response.headers["Cache-Control"] = (
+                "no-cache, no-store, must-revalidate, public, max-age=0"
+            )
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
         return response
 
     # Register blueprints

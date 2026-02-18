@@ -21,7 +21,7 @@ def admin_required(fn):
     @wraps(fn)
     @jwt_required()
     def wrapper(*args, **kwargs):
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
 
         if not user or user.role != "admin":
@@ -96,7 +96,7 @@ def create_event_type():
         event_type = EventType(
             name=data["name"],
             description=data.get("description"),
-            created_by=get_jwt_identity(),
+            created_by=int(get_jwt_identity()),
         )
 
         db.session.add(event_type)
@@ -170,7 +170,7 @@ def create_event():
             event_date=event_date,
             event_type_id=data.get("event_type_id"),
             is_active=data.get("is_active", True),
-            created_by=get_jwt_identity(),
+            created_by=int(get_jwt_identity()),
         )
 
         db.session.add(event)
