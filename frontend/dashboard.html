@@ -120,7 +120,16 @@
                     </div>
 
                     <div class="registered-faces" id="registeredFaces">
-                        <h3>Your Registered Faces</h3>
+                        <div class="registered-faces-header">
+                            <h3>Your Registered Faces</h3>
+                            <span class="face-count-info" id="faceCountInfo" style="display: none;">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                        </div>
+                        <p class="registered-faces-desc">
+                            Your face data is securely stored and used to find your photos in events.
+                            <br><small>Add more face angles for better matching accuracy.</small>
+                        </p>
                         <div class="faces-grid" id="facesGrid">
                             <div class="loading-faces">
                                 <i class="fas fa-spinner fa-spin"></i>

@@ -5,6 +5,7 @@ from flask_cors import CORS
 from config import config
 from models import db
 from utils.storage import init_storage_service
+from services.face_recognition import init_face_service
 
 try:
     from dotenv import load_dotenv
@@ -48,8 +49,16 @@ def create_app(config_name="default"):
     # If initialization fails, log the error but continue so the app can start for debugging.
     try:
         init_storage_service(app.config)
+        print("[INIT] Storage service initialized")
     except Exception as e:
         app.logger.error(f"Failed to initialize storage service: {e}")
+
+    # Initialize face recognition service
+    try:
+        init_face_service(app.config)
+        print("[INIT] Face recognition service initialized")
+    except Exception as e:
+        app.logger.error(f"Failed to initialize face recognition service: {e}")
 
     # Initialize migration if flask_migrate is available
     if migrate is not None:
@@ -62,8 +71,16 @@ def create_app(config_name="default"):
                 "origins": app.config["CORS_ORIGINS"],
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
-            }
+                "supports_credentials": True,
+            },
+            r"/uploads/*": {
+                "origins": "*",
+                "methods": ["GET", "OPTIONS"],
+                "allow_headers": ["Content-Type"],
+                "supports_credentials": False,
+            },
         },
+        supports_credentials=True,
     )
 
     # JWT error handlers
@@ -116,6 +133,13 @@ def create_app(config_name="default"):
     @app.route("/api/health")
     def health_check():
         return {"success": True, "message": "Server is running"}, 200
+
+    # Serve uploaded files
+    @app.route("/uploads/<path:filename>")
+    def serve_upload(filename):
+        from flask import send_from_directory
+
+        return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
     return app
 

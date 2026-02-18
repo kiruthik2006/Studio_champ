@@ -310,7 +310,7 @@ The system uses **DeepFace** with **Facenet512** model to:
 - Reinstall requirements: `pip install -r requirements.txt`
 
 **CORS errors:**
-- Ensure backend is running on port 5000
+- Ensure backend is running on port 5001
 - Check CORS_ORIGINS in config
 
 ## Development

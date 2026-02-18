@@ -1,5 +1,6 @@
 /**
  * AuthManager - Handles authentication and API communication
+ * v2.0 - Updated for port 5001
  */
 class AuthManager {
   constructor() {

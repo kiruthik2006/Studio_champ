@@ -81,15 +81,23 @@ async function loadUserFaces() {
         const data = await authManager.apiRequest('/photos/my-faces');
         
         if (data.success && data.data.length > 0) {
+            const timestamp = Date.now();
             facesGrid.innerHTML = data.data.map(face => `
                 <div class="face-card ${face.is_primary ? 'primary' : ''}" data-face-id="${face.id}">
-                    <img src="http://localhost:5000/uploads/${face.image_path}" alt="Face">
+                    <img src="http://localhost:5001/uploads/${face.image_path}?t=${timestamp}" alt="Face">
                     ${face.is_primary ? '<span class="face-badge">Primary</span>' : ''}
-                    <button class="face-delete" data-face-id="${face.id}">
+                    <button class="face-delete" data-face-id="${face.id}" title="Delete face">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
             `).join('');
+            
+            // Add face count info
+            const faceInfo = document.getElementById('faceCountInfo');
+            if (faceInfo) {
+                faceInfo.textContent = `${data.data.length} face(s) registered`;
+                faceInfo.style.display = 'block';
+            }
             
             // Setup delete handlers
             facesGrid.querySelectorAll('.face-delete').forEach(btn => {
@@ -100,10 +108,19 @@ async function loadUserFaces() {
                 });
             });
         } else {
+            // Hide face count if no faces
+            const faceInfo = document.getElementById('faceCountInfo');
+            if (faceInfo) {
+                faceInfo.style.display = 'none';
+            }
+            
             facesGrid.innerHTML = `
                 <div class="empty-state" style="grid-column: 1/-1;">
                     <i class="fas fa-user-circle"></i>
                     <p>No faces registered yet</p>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                        Click "Start Camera" to capture your face for photo matching
+                    </p>
                 </div>
             `;
         }
@@ -616,11 +633,12 @@ function setupPhotoSearch() {
             return;
         }
         
+        const timestamp = Date.now();
         photosResults.innerHTML = `
             <div class="photos-grid">
                 ${photos.map(photo => `
                     <div class="photo-card" data-photo-id="${photo.id}">
-                        <img src="http://localhost:5000/uploads/${photo.file_path}" alt="Photo">
+                        <img src="http://localhost:5001/uploads/${photo.file_path}?t=${timestamp}" alt="Photo">
                         <span class="photo-confidence">${Math.round(photo.match_confidence || 0)}%</span>
                         <div class="photo-overlay">
                             <div class="photo-info">
@@ -655,7 +673,7 @@ function setupPhotoSearch() {
             // Download photos one by one
             for (const photo of currentMatches) {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/photos/download/${photo.id}`, {
+                    const response = await fetch(`http://localhost:5001/api/photos/download/${photo.id}`, {
                         headers: {
                             'Authorization': `Bearer ${authManager.getToken()}`
                         }
@@ -689,10 +707,11 @@ function openPhotoModal(photo) {
     const modal = document.getElementById('photoModal');
     const previewImage = document.getElementById('previewImage');
     const previewInfo = document.getElementById('previewInfo');
+    const timestamp = Date.now();
     
     if (!modal || !previewImage) return;
     
-    previewImage.src = `http://localhost:5000/uploads/${photo.file_path}`;
+    previewImage.src = `http://localhost:5001/uploads/${photo.file_path}?t=${timestamp}`;
     
     if (previewInfo) {
         previewInfo.innerHTML = `
@@ -701,7 +720,7 @@ function openPhotoModal(photo) {
             <p><i class="fas fa-calendar"></i> ${photo.capture_date ? new Date(photo.capture_date).toLocaleString() : 'Date unknown'}</p>
             <p><i class="fas fa-star"></i> Quality Score: ${Math.round(photo.quality_score || 0)}/100</p>
             <p><i class="fas fa-percentage"></i> Match Confidence: ${Math.round(photo.match_confidence || 0)}%</p>
-            <a href="http://localhost:5000/api/photos/download/${photo.id}" 
+            <a href="http://localhost:5001/api/photos/download/${photo.id}" 
                class="btn btn-primary" 
                target="_blank"
                style="margin-top: 1rem;">

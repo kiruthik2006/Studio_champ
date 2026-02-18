@@ -23,6 +23,8 @@ photos_bp = Blueprint("photos", __name__)
 @photos_bp.route("/upload-faces", methods=["POST"])
 def upload_faces():
     """Upload face images for user registration"""
+    import traceback
+
     try:
         # Try to verify JWT from standard locations (headers). If missing/invalid,
         # allow token passed in form or query param as 'access_token' or 'token'.
@@ -56,6 +58,8 @@ def upload_faces():
         if not user:
             return jsonify({"success": False, "message": "User not found"}), 404
 
+        print(f"[UPLOAD-FACES] User {current_user_id} uploading faces")
+
         # Check if files were uploaded
         if "faces" not in request.files:
             return jsonify({"success": False, "message": "No files provided"}), 400
@@ -76,6 +80,8 @@ def upload_faces():
         face_service = get_face_service()
         storage_service = get_storage_service()
 
+        print(f"[UPLOAD-FACES] Processing {len(files)} files")
+
         uploaded_faces = []
         errors = []
 
@@ -83,6 +89,8 @@ def upload_faces():
             try:
                 if not file.filename:
                     continue
+
+                print(f"[UPLOAD-FACES] Processing file: {file.filename}")
 
                 # Check file type
                 if not storage_service.allowed_file(file.filename):
@@ -93,6 +101,8 @@ def upload_faces():
                 temp_path = storage_service.save_face_image(file, user.id)
                 full_path = storage_service.get_full_path(temp_path)
 
+                print(f"[UPLOAD-FACES] Saved to: {full_path}")
+
                 # Extract face embedding
                 embeddings = face_service.extract_face_embedding(full_path)
 
@@ -100,6 +110,8 @@ def upload_faces():
                     errors.append(f"File {file.filename}: No face detected")
                     storage_service.delete_file(temp_path)
                     continue
+
+                print(f"[UPLOAD-FACES] Extracted {len(embeddings)} embeddings")
 
                 # Use the first detected face embedding
                 embedding_data = embeddings[0]
@@ -152,9 +164,18 @@ def upload_faces():
         ), 200 if uploaded_faces else 400
 
     except Exception as e:
+        import traceback
+
         db.session.rollback()
+        error_details = traceback.format_exc()
+        print(f"[UPLOAD-FACES] ERROR: {str(e)}")
+        print(f"[UPLOAD-FACES] Traceback: {error_details}")
         return jsonify(
-            {"success": False, "message": f"Face upload failed: {str(e)}"}
+            {
+                "success": False,
+                "message": f"Face upload failed: {str(e)}",
+                "details": str(e),
+            }
         ), 500
 
 
