@@ -2,7 +2,7 @@
  * Main JavaScript for Landing Page
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize starfield animation
+    // Initialize elegant starfield animation
     initStarfield();
     
     // Initialize scroll animations
@@ -10,10 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize smooth scroll for navigation links
     initSmoothScroll();
+    
+    // Initialize navbar scroll effect
+    initNavbarScroll();
 });
 
 /**
- * Starfield Canvas Animation
+ * Elegant Starfield Canvas Animation
  */
 function initStarfield() {
     const canvas = document.getElementById('starfield');
@@ -21,8 +24,14 @@ function initStarfield() {
     
     const ctx = canvas.getContext('2d');
     let width, height;
-    let stars = [];
-    const numStars = 700;
+    let particles = [];
+    
+    const config = {
+        particleCount: 120,
+        connectionDistance: 150,
+        mouseDistance: 200,
+        color: '201, 162, 39'
+    };
     
     function resize() {
         width = window.innerWidth;
@@ -31,58 +40,80 @@ function initStarfield() {
         canvas.height = height;
     }
     
-    function createStars() {
-        stars = [];
-        for (let i = 0; i < numStars; i++) {
-            stars.push({
+    function createParticles() {
+        particles = [];
+        for (let i = 0; i < config.particleCount; i++) {
+            particles.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                size: Math.random() * 2,
-                speedY: Math.random() * 0.5 + 0.1,
-                opacity: Math.random() * 0.5 + 0.3,
-                twinkle: Math.random() * 0.02
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+                size: Math.random() * 1.5 + 0.5,
+                opacity: Math.random() * 0.4 + 0.1,
+                phase: Math.random() * Math.PI * 2
             });
+        }
+    }
+    
+    function drawParticle(particle) {
+        const pulse = Math.sin(Date.now() * 0.001 + particle.phase) * 0.3 + 0.7;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${config.color}, ${particle.opacity * pulse})`;
+        ctx.fill();
+    }
+    
+    function connectParticles() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < config.connectionDistance) {
+                    const opacity = (1 - distance / config.connectionDistance) * 0.15;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(${config.color}, ${opacity})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
         }
     }
     
     function animate() {
         ctx.clearRect(0, 0, width, height);
         
-        stars.forEach(star => {
+        particles.forEach(particle => {
             // Update position
-            star.y += star.speedY;
-            star.opacity += star.twinkle;
+            particle.x += particle.vx;
+            particle.y += particle.vy;
             
-            // Reset if off screen
-            if (star.y > height) {
-                star.y = 0;
-                star.x = Math.random() * width;
-            }
+            // Wrap around screen
+            if (particle.x < 0) particle.x = width;
+            if (particle.x > width) particle.x = 0;
+            if (particle.y < 0) particle.y = height;
+            if (particle.y > height) particle.y = 0;
             
-            // Keep opacity in bounds
-            if (star.opacity > 1 || star.opacity < 0.3) {
-                star.twinkle = -star.twinkle;
-            }
-            
-            // Draw star
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
-            ctx.fill();
+            drawParticle(particle);
         });
+        
+        connectParticles();
         
         requestAnimationFrame(animate);
     }
     
     // Initialize
     resize();
-    createStars();
+    createParticles();
     animate();
     
     // Handle resize
     window.addEventListener('resize', () => {
         resize();
-        createStars();
+        createParticles();
     });
 }
 
@@ -147,20 +178,24 @@ function initSmoothScroll() {
 }
 
 /**
- * Navbar scroll effect
+ * Navbar scroll effect with smooth transitions
  */
-let lastScroll = 0;
-window.addEventListener('scroll', () => {
+function initNavbarScroll() {
     const navbar = document.querySelector('.navbar');
-    const currentScroll = window.pageYOffset;
+    if (!navbar) return;
     
-    if (currentScroll > 100) {
-        navbar.style.background = 'rgba(10, 10, 10, 0.95)';
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
-    } else {
-        navbar.style.background = 'rgba(10, 10, 10, 0.8)';
-        navbar.style.boxShadow = 'none';
-    }
+    let lastScroll = 0;
+    const scrollThreshold = 50;
     
-    lastScroll = currentScroll;
-});
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > scrollThreshold) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    }, { passive: true });
+}
