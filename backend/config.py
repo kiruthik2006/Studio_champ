@@ -7,10 +7,7 @@ class Config:
     SECRET_KEY = "facerec-secret-key-2026-fixed"
 
     # Database configuration
-    SQLALCHEMY_DATABASE_URI = (
-        os.environ.get("DATABASE_URL")
-        or "sqlite:///facerec.db"
-    )
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///facerec.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_size": 10,
@@ -39,10 +36,10 @@ class Config:
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "bmp", "webp"}
 
     # Face recognition configuration
-    FACE_DETECTION_MODEL = "mtcnn"  # Options: mtcnn, opencv, dlib, retinaface
-    FACE_RECOGNITION_MODEL = "Facenet512"  # Options: VGG-Face, Facenet, Facenet512, OpenFace, DeepFace, DeepID, ArcFace, Dlib
-    FACE_DETECTION_CONFIDENCE = 0.85
-    FACE_MATCH_THRESHOLD = 0.65  # Cosine similarity threshold
+    FACE_DETECTION_MODEL = "retinaface"  # Options: mtcnn, opencv, dlib, retinaface, ssd
+    FACE_RECOGNITION_MODEL = "ArcFace"  # Options: VGG-Face, Facenet, Facenet512, OpenFace, DeepFace, DeepID, ArcFace, Dlib
+    FACE_DETECTION_CONFIDENCE = 0.70  # Lowered for better detection
+    FACE_MATCH_THRESHOLD = 0.50  # Lowered for better recall - will return more results
     EMBEDDING_DIMENSION = 512
 
     # Photo processing

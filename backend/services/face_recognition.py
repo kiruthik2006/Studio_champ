@@ -7,27 +7,46 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-# Try to import deepface, but provide fallback if not available
+# Try to import deepface - FORCE DeepFace mode
+DEEPFACE_AVAILABLE = False
+DEEPFACE_IMPORT_ERROR = None
+
 try:
     from deepface import DeepFace
     from scipy.spatial.distance import cosine
 
     DEEPFACE_AVAILABLE = True
-except ImportError:
-    DEEPFACE_AVAILABLE = False
-    print("Warning: DeepFace not available. Face recognition will use simplified mode.")
+    print("[DEEPFACE] Successfully loaded DeepFace module")
+except ImportError as e:
+    DEEPFACE_IMPORT_ERROR = str(e)
+    print(f"[DEEPFACE] ERROR: Failed to import DeepFace: {e}")
+    print("[DEEPFACE] Face recognition will NOT work without DeepFace!")
+    raise ImportError(f"DeepFace is required but not available: {e}")
 
 
 class FaceRecognitionService:
     def __init__(self, app_config):
         self.config = app_config
-        self.detection_model = app_config.get("FACE_DETECTION_MODEL", "opencv")
-        self.recognition_model = app_config.get("FACE_RECOGNITION_MODEL", "opencv")
+        self.detection_model = app_config.get("FACE_DETECTION_MODEL", "retinaface")
+        self.recognition_model = app_config.get("FACE_RECOGNITION_MODEL", "ArcFace")
         self.confidence_threshold = app_config.get("FACE_DETECTION_CONFIDENCE", 0.85)
         self.match_threshold = app_config.get("FACE_MATCH_THRESHOLD", 0.65)
         self.max_dimension = app_config.get("MAX_IMAGE_DIMENSION", 2048)
 
-        # Load OpenCV face detector
+        # Validate DeepFace is available
+        if not DEEPFACE_AVAILABLE:
+            raise RuntimeError(
+                "DeepFace is not available. Cannot initialize FaceRecognitionService."
+            )
+
+        # Log initialization
+        print(f"[FACE SERVICE] Initialized with:")
+        print(f"  - Detection Model: {self.detection_model}")
+        print(f"  - Recognition Model: {self.recognition_model}")
+        print(f"  - Match Threshold: {self.match_threshold}")
+        print(f"  - Detection Confidence: {self.confidence_threshold}")
+
+        # Load OpenCV face detector (as backup)
         self.face_cascade = cv2.CascadeClassifier(
             cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
         )
@@ -59,17 +78,55 @@ class FaceRecognitionService:
 
     def detect_faces(self, image_path):
         """
-        Detect faces in an image using OpenCV
+        Detect faces in an image using DeepFace backend
         Returns: List of dicts with keys: box, confidence
         """
+        try:
+            # Use DeepFace for detection
+            detections = DeepFace.extract_faces(
+                img_path=image_path,
+                detector_backend=self.detection_model,
+                enforce_detection=True,
+                align=True,
+            )
+
+            detected_faces = []
+            for det in detections:
+                facial_area = det.get("facial_area", {})
+                confidence = det.get("confidence", 0)
+
+                if confidence >= self.confidence_threshold:
+                    detected_faces.append(
+                        {
+                            "box": {
+                                "x": int(facial_area.get("x", 0)),
+                                "y": int(facial_area.get("y", 0)),
+                                "w": int(facial_area.get("w", 0)),
+                                "h": int(facial_area.get("h", 0)),
+                            },
+                            "confidence": float(confidence),
+                        }
+                    )
+
+            print(
+                f"[DETECT] Found {len(detected_faces)} faces in {os.path.basename(image_path)}"
+            )
+            return detected_faces
+
+        except Exception as e:
+            print(f"[DETECT] DeepFace detection failed: {str(e)}")
+            # Fallback to OpenCV if DeepFace fails
+            print("[DETECT] Falling back to OpenCV Haar Cascade")
+            return self._detect_faces_opencv(image_path)
+
+    def _detect_faces_opencv(self, image_path):
+        """OpenCV fallback detection"""
         try:
             img = cv2.imread(image_path)
             if img is None:
                 return []
 
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-            # Detect faces
             faces = self.face_cascade.detectMultiScale(
                 gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
             )
@@ -79,119 +136,103 @@ class FaceRecognitionService:
                 detected_faces.append(
                     {
                         "box": {"x": int(x), "y": int(y), "w": int(w), "h": int(h)},
-                        "confidence": 0.9,  # OpenCV doesn't provide confidence, use default
+                        "confidence": 0.9,
                     }
                 )
 
             return detected_faces
         except Exception as e:
-            print(f"Face detection error: {str(e)}")
+            print(f"OpenCV face detection error: {str(e)}")
             return []
 
     def extract_face_embedding(self, image_path, enforce_detection=True):
         """
-        Extract face embedding from an image
+        Extract face embedding from an image using DeepFace
         Returns: dict with embedding array and face info
         """
-        if DEEPFACE_AVAILABLE:
-            try:
-                embeddings = DeepFace.represent(
-                    img_path=image_path,
-                    model_name=self.recognition_model,
-                    detector_backend=self.detection_model,
-                    enforce_detection=enforce_detection,
-                    align=True,
+        if not DEEPFACE_AVAILABLE:
+            raise RuntimeError("DeepFace is not available. Cannot extract embeddings.")
+
+        try:
+            print(f"[EXTRACT] Processing: {os.path.basename(image_path)}")
+            print(
+                f"[EXTRACT] Using model: {self.recognition_model}, detector: {self.detection_model}"
+            )
+
+            embeddings = DeepFace.represent(
+                img_path=image_path,
+                model_name=self.recognition_model,
+                detector_backend=self.detection_model,
+                enforce_detection=enforce_detection,
+                align=True,
+            )
+
+            results = []
+            for emb in embeddings:
+                embedding = emb["embedding"]
+                embedding_len = len(embedding)
+                print(f"[EXTRACT] Got embedding of length {embedding_len}")
+
+                results.append(
+                    {
+                        "embedding": embedding,
+                        "facial_area": emb.get("facial_area", {}),
+                        "confidence": emb.get("confidence", 1.0),
+                        "embedding_length": embedding_len,
+                    }
                 )
 
-                results = []
-                for emb in embeddings:
-                    results.append(
-                        {
-                            "embedding": emb["embedding"],
-                            "facial_area": emb.get("facial_area", {}),
-                            "confidence": emb.get("confidence", 1.0),
-                        }
-                    )
+            print(f"[EXTRACT] Successfully extracted {len(results)} embeddings")
+            return results
 
-                return results
-            except Exception as e:
-                print(f"DeepFace embedding extraction error: {str(e)}")
-                return []
-        else:
-            # Simplified embedding using face histogram
-            try:
-                img = cv2.imread(image_path)
-                if img is None:
-                    return []
+        except Exception as e:
+            print(f"[EXTRACT] ERROR: DeepFace embedding extraction failed: {str(e)}")
+            import traceback
 
-                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                faces = self.face_cascade.detectMultiScale(gray, 1.1, 5)
-
-                results = []
-                for x, y, w, h in faces:
-                    face_roi = gray[y : y + h, x : x + w]
-                    # Resize to fixed size for consistent embedding
-                    face_roi = cv2.resize(face_roi, (100, 100))
-                    # Flatten as simple embedding
-                    embedding = face_roi.flatten().tolist()
-                    # Normalize
-                    embedding = [float(e) / 255.0 for e in embedding]
-
-                    results.append(
-                        {
-                            "embedding": embedding,
-                            "facial_area": {
-                                "x": int(x),
-                                "y": int(y),
-                                "w": int(w),
-                                "h": int(h),
-                            },
-                            "confidence": 0.9,
-                        }
-                    )
-
-                return results
-            except Exception as e:
-                print(f"Simplified embedding error: {str(e)}")
-                return []
+            traceback.print_exc()
+            return []
 
     def compare_faces(self, embedding1, embedding2):
         """
-        Compare two face embeddings
+        Compare two face embeddings using cosine similarity
         Returns: similarity score (0-1, higher = more similar)
         """
         try:
-            if DEEPFACE_AVAILABLE and len(embedding1) == 512:
-                # Use cosine similarity for DeepFace embeddings
-                if isinstance(embedding1, list):
-                    embedding1 = np.array(embedding1)
-                if isinstance(embedding2, list):
-                    embedding2 = np.array(embedding2)
+            # Handle different embedding dimensions - reject if clearly incompatible
+            dim1 = len(embedding1) if isinstance(embedding1, (list, np.ndarray)) else 0
+            dim2 = len(embedding2) if isinstance(embedding2, (list, np.ndarray)) else 0
 
-                distance = cosine(embedding1, embedding2)
-                return float(1 - distance)
-            else:
-                # Use correlation for simple embeddings
-                if isinstance(embedding1, list):
-                    embedding1 = np.array(embedding1)
-                if isinstance(embedding2, list):
-                    embedding2 = np.array(embedding2)
-
-                # Ensure same length
-                min_len = min(len(embedding1), len(embedding2))
-                embedding1 = embedding1[:min_len]
-                embedding2 = embedding2[:min_len]
-
-                # Calculate correlation
-                correlation = np.corrcoef(embedding1, embedding2)[0, 1]
-                if np.isnan(correlation):
+            # ArcFace/Facenet = 512 dim, OpenCV fallback = 10000 dim
+            # If dimensions differ significantly, they're incompatible
+            if dim1 != dim2:
+                print(f"[COMPARE] Embedding dimension mismatch: {dim1} vs {dim2}")
+                # Check if this is old (10000) vs new (512) embedding
+                if (dim1 == 10000 and dim2 == 512) or (dim1 == 512 and dim2 == 10000):
+                    print(
+                        "[COMPARE] ERROR: Old fallback embeddings vs new DeepFace embeddings - INCOMPATIBLE!"
+                    )
+                    print("[COMPARE] Old photos need to be re-processed with new model")
                     return 0.0
+                return 0.0
 
-                # Convert to 0-1 scale
-                similarity = (correlation + 1) / 2
-                return float(similarity)
+            # Convert to numpy arrays
+            if isinstance(embedding1, list):
+                embedding1 = np.array(embedding1)
+            if isinstance(embedding2, list):
+                embedding2 = np.array(embedding2)
+
+            # Calculate cosine similarity
+            distance = cosine(embedding1, embedding2)
+            similarity = float(1 - distance)
+
+            print(f"[COMPARE] Similarity score: {similarity:.4f}")
+            return similarity
+
         except Exception as e:
-            print(f"Face comparison error: {str(e)}")
+            print(f"[COMPARE] ERROR: Face comparison failed: {str(e)}")
+            import traceback
+
+            traceback.print_exc()
             return 0.0
 
     def find_matching_faces(
@@ -203,6 +244,10 @@ class FaceRecognitionService:
         """
         if threshold is None:
             threshold = self.match_threshold
+
+        print(f"[FIND_MATCH] Starting search with threshold: {threshold}")
+        print(f"[FIND_MATCH] User embedding length: {len(user_embedding)}")
+        print(f"[FIND_MATCH] Searching {len(photo_embeddings_list)} photos")
 
         matches = []
 
@@ -231,8 +276,12 @@ class FaceRecognitionService:
                         "matched_face_index": best_match,
                     }
                 )
+                print(
+                    f"[FIND_MATCH] MATCH found! Photo {photo_id}: {best_confidence:.4f}"
+                )
 
         matches.sort(key=lambda x: x["confidence"], reverse=True)
+        print(f"[FIND_MATCH] Total matches found: {len(matches)}")
         return matches
 
     def process_photo_for_faces(self, image_path):
@@ -241,37 +290,69 @@ class FaceRecognitionService:
         Returns: dict with face_count, embeddings, detected_faces
         """
         try:
-            detected_faces = self.detect_faces(image_path)
-
-            if not detected_faces:
-                return {"face_count": 0, "embeddings": [], "detected_faces": []}
+            # Use extract_faces to get both detection and embeddings
+            detections = DeepFace.extract_faces(
+                img_path=image_path,
+                detector_backend=self.detection_model,
+                enforce_detection=False,
+                align=True,
+            )
 
             embeddings = []
             face_data = []
 
-            # Extract embeddings for all faces
-            face_embeddings = self.extract_face_embedding(
-                image_path, enforce_detection=False
-            )
+            for idx, det in enumerate(detections):
+                confidence = det.get("confidence", 0)
+                if confidence < self.confidence_threshold:
+                    continue
 
-            for idx, face_info in enumerate(detected_faces):
-                if idx < len(face_embeddings):
-                    embeddings.append(face_embeddings[idx]["embedding"])
-                    face_data.append(
-                        {
-                            "index": idx,
-                            "box": face_info["box"],
-                            "confidence": face_info["confidence"],
-                        }
+                facial_area = det.get("facial_area", {})
+
+                # Extract embedding for this face
+                try:
+                    # Crop the face region and extract embedding
+                    x = facial_area.get("x", 0)
+                    y = facial_area.get("y", 0)
+                    w = facial_area.get("w", 0)
+                    h = facial_area.get("h", 0)
+
+                    # Use the full image with DeepFace's detected face
+                    emb_result = DeepFace.represent(
+                        img_path=image_path,
+                        model_name=self.recognition_model,
+                        detector_backend=self.detection_model,
+                        enforce_detection=False,
+                        align=True,
                     )
 
+                    if emb_result and idx < len(emb_result):
+                        embeddings.append(emb_result[idx]["embedding"])
+                        face_data.append(
+                            {
+                                "index": idx,
+                                "box": {
+                                    "x": int(x),
+                                    "y": int(y),
+                                    "w": int(w),
+                                    "h": int(h),
+                                },
+                                "confidence": float(confidence),
+                            }
+                        )
+                except Exception as e:
+                    print(f"[PROCESS] Error extracting embedding for face {idx}: {e}")
+                    continue
+
+            print(
+                f"[PROCESS] {os.path.basename(image_path)}: {len(embeddings)} faces processed"
+            )
             return {
                 "face_count": len(embeddings),
                 "embeddings": embeddings,
                 "detected_faces": face_data,
             }
         except Exception as e:
-            print(f"Photo processing error: {str(e)}")
+            print(f"[PROCESS] Photo processing error: {str(e)}")
             return {
                 "face_count": 0,
                 "embeddings": [],
@@ -324,42 +405,36 @@ class FaceRecognitionService:
         Returns: dict with verified (bool), similarity
         """
         try:
-            if DEEPFACE_AVAILABLE:
-                result = DeepFace.verify(
-                    img1_path=image1_path,
-                    img2_path=image2_path,
-                    model_name=self.recognition_model,
-                    detector_backend=self.detection_model,
-                    distance_metric="cosine",
-                )
+            print(
+                f"[VERIFY] Comparing {os.path.basename(image1_path)} vs {os.path.basename(image2_path)}"
+            )
 
-                return {
-                    "verified": result["verified"],
-                    "distance": float(result["distance"]),
-                    "threshold": float(result["threshold"]),
-                    "model": self.recognition_model,
-                    "similarity": 1 - float(result["distance"]),
-                }
-            else:
-                # Simplified verification
-                emb1 = self.extract_face_embedding(image1_path)
-                emb2 = self.extract_face_embedding(image2_path)
+            result = DeepFace.verify(
+                img1_path=image1_path,
+                img2_path=image2_path,
+                model_name=self.recognition_model,
+                detector_backend=self.detection_model,
+                distance_metric="cosine",
+            )
 
-                if not emb1 or not emb2:
-                    return {"verified": False, "error": "Could not extract embeddings"}
+            similarity = 1 - float(result["distance"])
+            print(
+                f"[VERIFY] Similarity: {similarity:.4f}, Threshold: {result['threshold']:.4f}, Verified: {result['verified']}"
+            )
 
-                similarity = self.compare_faces(
-                    emb1[0]["embedding"], emb2[0]["embedding"]
-                )
+            return {
+                "verified": result["verified"],
+                "distance": float(result["distance"]),
+                "threshold": float(result["threshold"]),
+                "model": self.recognition_model,
+                "similarity": similarity,
+            }
 
-                return {
-                    "verified": similarity >= self.match_threshold,
-                    "similarity": similarity,
-                    "threshold": self.match_threshold,
-                    "model": "opencv_simplified",
-                }
         except Exception as e:
-            print(f"Face verification error: {str(e)}")
+            print(f"[VERIFY] ERROR: Face verification failed: {str(e)}")
+            import traceback
+
+            traceback.print_exc()
             return {"verified": False, "error": str(e)}
 
 

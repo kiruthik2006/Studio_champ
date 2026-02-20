@@ -486,3 +486,111 @@ def reprocess_photo(photo_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
+
+
+# Get event photos for admin
+@admin_bp.route("/event-photos/<int:event_id>", methods=["GET"])
+@admin_required
+def get_event_photos(event_id):
+    """Get all photos for an event"""
+    try:
+        event = Event.query.get(event_id)
+        if not event:
+            return jsonify({"success": False, "message": "Event not found"}), 404
+
+        photos = Photo.query.filter_by(event_id=event_id).all()
+
+        storage_service = get_storage_service()
+
+        photos_data = []
+        for photo in photos:
+            photos_data.append(
+                {
+                    "id": photo.id,
+                    "file_name": photo.file_name,
+                    "file_path": storage_service.get_file_url(photo.file_path),
+                    "face_count": photo.face_count,
+                    "processed": photo.processed,
+                    "created_at": photo.created_at.isoformat()
+                    if photo.created_at
+                    else None,
+                }
+            )
+
+        return jsonify(
+            {
+                "success": True,
+                "data": {
+                    "event_id": event_id,
+                    "event_name": event.name,
+                    "photos": photos_data,
+                    "total": len(photos_data),
+                },
+            }
+        ), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# Re-process all photos in an event
+@admin_bp.route("/reprocess-event/<int:event_id>", methods=["POST"])
+@admin_required
+def reprocess_event(event_id):
+    """Re-process all photos in an event to extract faces with new DeepFace model"""
+    try:
+        event = Event.query.get(event_id)
+        if not event:
+            return jsonify({"success": False, "message": "Event not found"}), 404
+
+        photos = Photo.query.filter_by(event_id=event_id).all()
+        if not photos:
+            return jsonify(
+                {"success": False, "message": "No photos in this event"}
+            ), 404
+
+        storage_service = get_storage_service()
+        face_service = get_face_service()
+
+        processed = 0
+        errors = []
+
+        for photo in photos:
+            try:
+                full_path = storage_service.get_full_path(photo.file_path)
+                if not os.path.exists(full_path):
+                    errors.append(f"Photo file not found: {photo.file_name}")
+                    continue
+
+                # Re-process faces with new model
+                face_data = face_service.process_photo_for_faces(full_path)
+
+                # Update photo
+                photo.face_count = face_data["face_count"]
+                photo.face_embeddings = face_data.get("embeddings")
+                photo.detected_faces = face_data.get("detected_faces")
+                photo.processed = True
+                photo.processed_at = func.now()
+
+                processed += 1
+
+            except Exception as e:
+                errors.append(f"{photo.file_name}: {str(e)}")
+
+        db.session.commit()
+
+        return jsonify(
+            {
+                "success": True,
+                "message": f"Re-processed {processed} photos",
+                "data": {
+                    "processed": processed,
+                    "total": len(photos),
+                    "errors": errors,
+                },
+            }
+        ), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
