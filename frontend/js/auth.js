@@ -13,11 +13,9 @@ class AuthManager {
   }
 
   init() {
-    // Load tokens from localStorage
     this.token = localStorage.getItem("access_token");
     this.refreshToken = localStorage.getItem("refresh_token");
 
-    // Load user from localStorage
     const userData = localStorage.getItem("user");
     if (userData) {
       try {
@@ -333,7 +331,9 @@ class AuthManager {
         // Token expired, try to refresh
         const refreshed = await this.refreshAccessToken();
         if (!refreshed) {
-          console.log("Token refresh failed in checkAuthState, redirecting to login");
+          console.log(
+            "Token refresh failed in checkAuthState, redirecting to login",
+          );
           if (window.location.pathname.includes("dashboard")) {
             window.location.href = "index.html";
           }
@@ -350,7 +350,10 @@ class AuthManager {
       return false;
     }
 
-    console.log("Attempting token refresh with:", this.refreshToken ? "token present" : "NO TOKEN");
+    console.log(
+      "Attempting token refresh with:",
+      this.refreshToken ? "token present" : "NO TOKEN",
+    );
 
     try {
       const response = await fetch(`${this.baseURL}/auth/refresh`, {

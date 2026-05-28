@@ -1091,7 +1091,7 @@
                     
                     const photoGrid = photos.map((photo, idx) => `
                         <div class="photo-grid-item" onclick="openImageViewerFromCache(${eventId}, ${idx})">
-                            <img src="${photo.file_path}" alt="${photo.file_name}" 
+                            <img src="http://localhost:5001${photo.file_path}?t=${Date.now()}" alt="${photo.file_name}" 
                                  onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2212%22>No Preview</text></svg>'">
                             ${photo.face_count > 0 ? `<span class="face-count-badge"><i class="fas fa-user"></i> ${photo.face_count}</span>` : ''}
                         </div>
@@ -1215,7 +1215,7 @@
             
             if (currentImages[currentImageIndex]) {
                 const photo = currentImages[currentImageIndex];
-                img.src = photo.url || photo.file_path;
+                img.src = photo.url ? `http://localhost:5001${photo.url}?t=${Date.now()}` : (`http://localhost:5001${photo.file_path}?t=${Date.now()}`);
                 filename.textContent = photo.file_name || 'Photo';
                 info.textContent = `Photo ${currentImageIndex + 1} of ${currentImages.length}`;
                 
