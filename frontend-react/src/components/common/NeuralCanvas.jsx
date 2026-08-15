@@ -9,16 +9,18 @@ export const NeuralCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     let width, height;
     let particles = [];
     let animationFrameId;
+    let isScrollingTimeout;
+    let isScrolling = false;
 
-    const config = {
-      particleCount: Math.min(window.innerWidth < 768 ? 50 : 100, 120),
-      connectionDistance: 140,
-      color: isLight ? '176, 136, 26' : '201, 162, 39',
-    };
+    // Optimized particle count: 35-45 is elegant & lightweight
+    const count = window.innerWidth < 768 ? 24 : 42;
+    const maxDist = 120;
+    const maxDistSq = maxDist * maxDist;
+    const color = isLight ? '158, 117, 21' : '201, 162, 39';
 
     function resize() {
       width = window.innerWidth;
@@ -29,15 +31,14 @@ export const NeuralCanvas = () => {
 
     function createParticles() {
       particles = [];
-      for (let i = 0; i < config.particleCount; i++) {
+      for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          size: Math.random() * 1.5 + 0.6,
-          opacity: isLight ? (Math.random() * 0.25 + 0.08) : (Math.random() * 0.4 + 0.1),
-          phase: Math.random() * Math.PI * 2,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: Math.random() * 1.4 + 0.6,
+          opacity: isLight ? (Math.random() * 0.18 + 0.05) : (Math.random() * 0.3 + 0.08),
         });
       }
     }
@@ -50,55 +51,81 @@ export const NeuralCanvas = () => {
       createParticles();
     };
 
-    window.addEventListener('resize', handleResize);
+    // Pause heavy canvas re-renders during active touch/wheel scroll
+    const handleScroll = () => {
+      isScrolling = true;
+      clearTimeout(isScrollingTimeout);
+      isScrollingTimeout = setTimeout(() => {
+        isScrolling = false;
+      }, 80);
+    };
 
-    function draw() {
+    window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    let lastTime = 0;
+    const fpsInterval = 1000 / 45; // Smooth 45fps cap for background canvas saves CPU/battery
+
+    function draw(currentTime) {
+      animationFrameId = requestAnimationFrame(draw);
+
+      // Skip background frame calculation during fast scroll gestures for max smoothness
+      if (isScrolling) return;
+
+      const elapsed = currentTime - lastTime;
+      if (elapsed < fpsInterval) return;
+      lastTime = currentTime - (elapsed % fpsInterval);
+
       ctx.clearRect(0, 0, width, height);
 
-      // Connect particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+      const pLen = particles.length;
 
-          if (dist < config.connectionDistance) {
-            const opacity = (1 - dist / config.connectionDistance) * (isLight ? 0.1 : 0.15);
+      // Fast connection lines without Math.sqrt()
+      for (let i = 0; i < pLen; i++) {
+        const p1 = particles[i];
+        for (let j = i + 1; j < pLen; j++) {
+          const p2 = particles[j];
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < maxDistSq) {
+            const alpha = (1 - distSq / maxDistSq) * (isLight ? 0.08 : 0.12);
             ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(${config.color}, ${opacity})`;
-            ctx.lineWidth = 0.6;
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(${color}, ${alpha})`;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
       }
 
-      // Draw and update particles
-      particles.forEach((p) => {
+      // Draw particles
+      for (let i = 0; i < pLen; i++) {
+        const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
 
         if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
+        else if (p.x > width) p.x = 0;
         if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
+        else if (p.y > height) p.y = 0;
 
-        const pulse = Math.sin(Date.now() * 0.001 + p.phase) * 0.3 + 0.7;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${config.color}, ${p.opacity * pulse})`;
+        ctx.fillStyle = `rgba(${color}, ${p.opacity})`;
         ctx.fill();
-      });
-
-      animationFrameId = requestAnimationFrame(draw);
+      }
     }
 
-    draw();
+    animationFrameId = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      clearTimeout(isScrollingTimeout);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, [isLight]);
 
@@ -114,6 +141,8 @@ export const NeuralCanvas = () => {
           height: '100%',
           zIndex: -2,
           pointerEvents: 'none',
+          transform: 'translateZ(0)',
+          willChange: 'transform',
         }}
       />
       <div className="ambient-bg">
