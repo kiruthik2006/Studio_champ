@@ -149,64 +149,66 @@ export const AdminDashboardPage = () => {
 
         {/* Main Content */}
         <main className="dashboard-main">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <h1 style={{ fontSize: '2rem', color: '#fff', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Shield size={26} color="#dfb94a" /> Control Center
-              </h1>
-              <p style={{ color: 'var(--gray-light)', fontSize: '0.95rem' }}>
-                Manage events, batch ingestion, DeepFace AI embeddings, and users.
-              </p>
+          <div className="dashboard-content">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h1 style={{ fontSize: '2rem', color: '#fff', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Shield size={26} color="#dfb94a" /> Control Center
+                </h1>
+                <p style={{ color: 'var(--gray-light)', fontSize: '0.95rem' }}>
+                  Manage events, batch ingestion, DeepFace AI embeddings, and users.
+                </p>
+              </div>
+
+              <button
+                onClick={fetchAdminData}
+                className="btn btn-outline btn-sm"
+                title="Refresh all metrics"
+              >
+                <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh Metrics
+              </button>
             </div>
 
-            <button
-              onClick={fetchAdminData}
-              className="btn btn-outline btn-sm"
-              title="Refresh all metrics"
-            >
-              <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh Metrics
-            </button>
+            {/* Metric Cards */}
+            <StatsOverview stats={stats} />
+
+            {/* Tab Content */}
+            {activeTab === 'events' && (
+              <EventManager
+                events={events}
+                eventTypes={eventTypes}
+                onRefresh={fetchAdminData}
+                onSelectEventForUpload={handleSelectEventForUpload}
+              />
+            )}
+
+            {activeTab === 'uploader' && (
+              <BatchPhotoUploader
+                events={events}
+                selectedEvent={uploadSelectedEvent}
+                onUploadComplete={fetchAdminData}
+                onCancel={() => setActiveTab('events')}
+              />
+            )}
+
+            {activeTab === 'categories' && (
+              <EventTypeManager
+                eventTypes={eventTypes}
+                onRefresh={fetchAdminData}
+              />
+            )}
+
+            {activeTab === 'users' && (
+              <UserManager
+                users={users}
+                onRefresh={fetchAdminData}
+              />
+            )}
           </div>
 
-          {/* Metric Cards */}
-          <StatsOverview stats={stats} />
-
-          {/* Tab Content */}
-          {activeTab === 'events' && (
-            <EventManager
-              events={events}
-              eventTypes={eventTypes}
-              onRefresh={fetchAdminData}
-              onSelectEventForUpload={handleSelectEventForUpload}
-            />
-          )}
-
-          {activeTab === 'uploader' && (
-            <BatchPhotoUploader
-              events={events}
-              selectedEvent={uploadSelectedEvent}
-              onUploadComplete={fetchAdminData}
-              onCancel={() => setActiveTab('events')}
-            />
-          )}
-
-          {activeTab === 'categories' && (
-            <EventTypeManager
-              eventTypes={eventTypes}
-              onRefresh={fetchAdminData}
-            />
-          )}
-
-          {activeTab === 'users' && (
-            <UserManager
-              users={users}
-              onRefresh={fetchAdminData}
-            />
-          )}
+          <Footer />
         </main>
       </div>
-
-      <Footer />
     </div>
   );
 };

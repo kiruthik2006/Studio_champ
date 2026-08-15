@@ -425,23 +425,24 @@ h1, h2, h3, h4, .font-display {
 /* Dashboard Shell Layout */
 .dashboard-layout {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - 70px);
   padding-top: 70px;
 }
 
 .dashboard-sidebar {
   width: 260px;
-  background: rgba(18, 17, 16, 0.95);
+  min-width: 260px;
+  background: rgba(18, 17, 16, 0.98);
   border-right: 1px solid rgba(255, 255, 255, 0.07);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 1.5rem 1rem;
-  position: fixed;
+  position: sticky;
   top: 70px;
-  bottom: 0;
-  left: 0;
+  height: calc(100vh - 70px);
   z-index: 100;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-menu {
@@ -478,16 +479,24 @@ h1, h2, h3, h4, .font-display {
 
 .dashboard-main {
   flex: 1;
-  margin-left: 260px;
   padding: 2.5rem;
-  max-width: 1300px;
+  max-width: 1400px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-content {
+  flex: 1;
 }
 
 @media (max-width: 900px) {
   .dashboard-sidebar {
     width: 100%;
+    min-width: 100%;
     position: relative;
     top: 0;
+    height: auto;
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   }
@@ -495,7 +504,6 @@ h1, h2, h3, h4, .font-display {
     flex-direction: column;
   }
   .dashboard-main {
-    margin-left: 0;
     padding: 1.5rem;
   }
 }
