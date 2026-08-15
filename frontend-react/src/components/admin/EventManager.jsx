@@ -114,10 +114,10 @@ export const EventManager = ({
         gap: '1rem',
       }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Calendar size={20} color="#dfb94a" /> Event Management ({safeEvents.length})
+          <h2 style={{ fontSize: '1.4rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Calendar size={20} color="var(--primary)" /> Event Management ({safeEvents.length})
           </h2>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.85rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
             Create events and manage photo galleries for facial recognition scanning.
           </p>
         </div>
@@ -131,13 +131,13 @@ export const EventManager = ({
         <div style={{
           textAlign: 'center',
           padding: '3rem 1rem',
-          background: 'rgba(0,0,0,0.2)',
+          background: 'rgba(0,0,0,0.04)',
           borderRadius: 'var(--border-radius-md)',
-          border: '1px dashed rgba(255,255,255,0.1)',
+          border: '1px dashed var(--border-gold)',
         }}>
-          <Calendar size={40} color="var(--gray)" style={{ margin: '0 auto 0.75rem' }} />
-          <h4 style={{ color: '#fff', marginBottom: '0.3rem' }}>No Events Created</h4>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          <Calendar size={40} color="var(--text-muted)" style={{ margin: '0 auto 0.75rem' }} />
+          <h4 style={{ color: 'var(--text-main)', marginBottom: '0.3rem' }}>No Events Created</h4>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
             Get started by creating your first event.
           </p>
           <button onClick={handleOpenCreate} className="btn btn-primary btn-sm">
@@ -161,11 +161,11 @@ export const EventManager = ({
               {safeEvents.map((ev) => (
                 <tr key={ev.id}>
                   <td>
-                    <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem' }}>
+                    <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '0.95rem' }}>
                       {ev.name}
                     </div>
                     {ev.description && (
-                      <div style={{ fontSize: '0.78rem', color: 'var(--gray-light)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {ev.description}
                       </div>
                     )}
@@ -176,17 +176,17 @@ export const EventManager = ({
                     </span>
                   </td>
                   <td>
-                    <div style={{ fontSize: '0.85rem', color: '#fff' }}>
-                      {ev.event_date ? new Date(ev.event_date).toLocaleDateString() : 'N/A'}
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-main)' }}>
+                      {ev.event_date ? ev.event_date.split('T')[0] : 'N/A'}
                     </div>
                     {ev.location && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--gray-light)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                         <MapPin size={11} /> {ev.location}
                       </div>
                     )}
                   </td>
                   <td>
-                    <span style={{ fontWeight: 700, color: '#dfb94a', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <span style={{ fontWeight: 700, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                       <ImageIcon size={14} /> {ev.photo_count || 0}
                     </span>
                   </td>

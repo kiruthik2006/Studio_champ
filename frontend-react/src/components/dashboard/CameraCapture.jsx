@@ -161,10 +161,10 @@ export const CameraCapture = ({ onFacesUploaded }) => {
     <div className="glass-card" style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.5rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Sparkles size={22} color="#dfb94a" /> Face Registration
+          <h2 style={{ fontSize: '1.5rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Sparkles size={22} color="var(--primary)" /> Face Registration
           </h2>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
             Capture 3–5 photos from slightly different angles (front, slight left/right, smile) for maximum recognition accuracy.
           </p>
         </div>
@@ -279,14 +279,14 @@ export const CameraCapture = ({ onFacesUploaded }) => {
         <div style={{
           marginTop: '1.5rem',
           padding: '1.25rem',
-          background: 'rgba(0, 0, 0, 0.35)',
+          background: 'var(--input-bg)',
           borderRadius: 'var(--border-radius-md)',
-          border: '1px solid rgba(255, 255, 255, 0.06)'
+          border: '1px solid var(--border-gold)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <CheckCircle2 size={18} color="#dfb94a" />
-              <span style={{ fontWeight: 600, color: '#fff' }}>
+              <CheckCircle2 size={18} color="var(--primary)" />
+              <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>
                 Photos Ready for AI Analysis ({capturedImages.length})
               </span>
               {capturedImages.length >= 3 && (
@@ -295,7 +295,7 @@ export const CameraCapture = ({ onFacesUploaded }) => {
                 </span>
               )}
             </div>
-            <button onClick={clearAll} className="btn btn-outline btn-sm" style={{ color: '#ff8585' }}>
+            <button onClick={clearAll} className="btn btn-outline btn-sm" style={{ color: 'var(--error)' }}>
               <Trash2 size={14} /> Clear All
             </button>
           </div>

@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
-import { Camera, Home, ArrowLeft } from 'lucide-react';
+import { Camera, Home } from 'lucide-react';
 
 export const NotFoundPage = () => {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--dark)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-body)' }}>
       <Navbar />
 
       <div style={{
@@ -22,24 +22,24 @@ export const NotFoundPage = () => {
           width: 70,
           height: 70,
           borderRadius: 20,
-          background: 'rgba(201, 162, 39, 0.15)',
-          border: '1px solid rgba(201, 162, 39, 0.3)',
+          background: 'var(--badge-gold-bg)',
+          border: '1px solid var(--border-gold)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#dfb94a',
+          color: 'var(--primary)',
           marginBottom: '1.5rem'
         }}>
           <Camera size={36} />
         </div>
 
-        <h1 style={{ fontSize: '4rem', color: '#fff', lineHeight: 1, marginBottom: '0.5rem', fontFamily: 'var(--font-display)' }}>
+        <h1 style={{ fontSize: '4rem', color: 'var(--text-main)', lineHeight: 1, marginBottom: '0.5rem', fontFamily: 'var(--font-display)' }}>
           404
         </h1>
-        <h2 style={{ fontSize: '1.5rem', color: 'var(--secondary)', marginBottom: '1rem' }}>
+        <h2 style={{ fontSize: '1.5rem', color: 'var(--primary)', marginBottom: '1rem' }}>
           Page Not Found
         </h2>
-        <p style={{ color: 'var(--gray-light)', maxWidth: '400px', margin: '0 auto 2rem', fontSize: '0.95rem' }}>
+        <p style={{ color: 'var(--text-muted)', maxWidth: '400px', margin: '0 auto 2rem', fontSize: '0.95rem' }}>
           The page you are looking for doesn't exist or has been moved.
         </p>
 

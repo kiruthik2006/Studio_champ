@@ -60,10 +60,10 @@ export const RegisteredFaces = ({ refreshTrigger }) => {
     <div className="glass-card" style={{ padding: '2rem', marginTop: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h3 style={{ fontSize: '1.3rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <UserCheck size={20} color="#dfb94a" /> Registered Face Embeddings ({faces.length})
+          <h3 style={{ fontSize: '1.3rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <UserCheck size={20} color="var(--primary)" /> Registered Face Embeddings ({faces.length})
           </h3>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
             Your stored biometric face vectors used across event search queries.
           </p>
         </div>
@@ -74,21 +74,21 @@ export const RegisteredFaces = ({ refreshTrigger }) => {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--gray-light)' }}>
-          <div className="spinner" style={{ margin: '0 auto 1rem', width: 28, height: 28, border: '2px solid rgba(201,162,39,0.3)', borderTopColor: '#c9a227', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-muted)' }}>
+          <div className="spinner" style={{ margin: '0 auto 1rem', width: 28, height: 28, border: '2px solid rgba(201,162,39,0.3)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
           Loading your registered faces...
         </div>
       ) : faces.length === 0 ? (
         <div style={{
           textAlign: 'center',
           padding: '2.5rem 1rem',
-          background: 'rgba(0, 0, 0, 0.2)',
+          background: 'var(--input-bg)',
           borderRadius: 'var(--border-radius-md)',
-          border: '1px dashed rgba(255, 255, 255, 0.1)'
+          border: '1px dashed var(--border-gold)'
         }}>
-          <ShieldCheck size={40} color="var(--gray)" style={{ margin: '0 auto 1rem' }} />
-          <h4 style={{ color: '#fff', marginBottom: '0.4rem' }}>No Faces Registered Yet</h4>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.875rem', maxWidth: '400px', margin: '0 auto' }}>
+          <ShieldCheck size={40} color="var(--text-muted)" style={{ margin: '0 auto 1rem' }} />
+          <h4 style={{ color: 'var(--text-main)', marginBottom: '0.4rem' }}>No Faces Registered Yet</h4>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', maxWidth: '400px', margin: '0 auto' }}>
             Use the camera or file uploader above to register at least 3 face photos.
           </p>
         </div>
@@ -102,8 +102,8 @@ export const RegisteredFaces = ({ refreshTrigger }) => {
             <div
               key={face.id}
               style={{
-                background: 'rgba(20, 19, 18, 0.8)',
-                border: '1px solid rgba(201, 162, 39, 0.2)',
+                background: 'var(--card-bg)',
+                border: '1px solid var(--border-gold)',
                 borderRadius: 'var(--border-radius-md)',
                 overflow: 'hidden',
                 position: 'relative',

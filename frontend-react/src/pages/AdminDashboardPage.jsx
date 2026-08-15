@@ -152,10 +152,10 @@ export const AdminDashboardPage = () => {
           <div className="dashboard-content">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <h1 style={{ fontSize: '2rem', color: '#fff', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <Shield size={26} color="#dfb94a" /> Control Center
+                <h1 style={{ fontSize: '2rem', color: 'var(--text-main)', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Shield size={26} color="var(--primary)" /> Control Center
                 </h1>
-                <p style={{ color: 'var(--gray-light)', fontSize: '0.95rem' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
                   Manage events, batch ingestion, DeepFace AI embeddings, and users.
                 </p>
               </div>

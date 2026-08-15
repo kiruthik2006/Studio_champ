@@ -100,10 +100,10 @@ export const BatchPhotoUploader = ({ events = [], selectedEvent, onUploadComplet
     <div className="glass-card" style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Upload size={20} color="#dfb94a" /> Bulk Event Photo Ingestion
+          <h2 style={{ fontSize: '1.4rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Upload size={20} color="var(--primary)" /> Bulk Event Photo Ingestion
           </h2>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.85rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
             Upload album photos for automated face detection and 512-D embedding indexing.
           </p>
         </div>
@@ -141,19 +141,19 @@ export const BatchPhotoUploader = ({ events = [], selectedEvent, onUploadComplet
         onClick={() => fileInputRef.current?.click()}
         style={{
           padding: '3rem 2rem',
-          border: `2px dashed ${isDragOver ? '#dfb94a' : 'rgba(201, 162, 39, 0.35)'}`,
-          background: isDragOver ? 'rgba(201, 162, 39, 0.08)' : 'rgba(0, 0, 0, 0.25)',
+          border: `2px dashed ${isDragOver ? 'var(--primary)' : 'var(--border-gold)'}`,
+          background: isDragOver ? 'rgba(201, 162, 39, 0.08)' : 'var(--input-bg)',
           borderRadius: 'var(--border-radius-lg)',
           textAlign: 'center',
           cursor: 'pointer',
           transition: 'all var(--transition-normal)'
         }}
       >
-        <Upload size={44} color={isDragOver ? '#dfb94a' : 'var(--primary)'} style={{ margin: '0 auto 1rem' }} />
-        <h3 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.4rem' }}>
+        <Upload size={44} color={isDragOver ? 'var(--primary-light)' : 'var(--primary)'} style={{ margin: '0 auto 1rem' }} />
+        <h3 style={{ color: 'var(--text-main)', fontSize: '1.2rem', marginBottom: '0.4rem' }}>
           Drag & Drop Event Photos Here
         </h3>
-        <p style={{ color: 'var(--gray-light)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
           Supports bulk multi-file uploads (JPG, PNG, WebP)
         </p>
         <button
@@ -175,12 +175,12 @@ export const BatchPhotoUploader = ({ events = [], selectedEvent, onUploadComplet
 
       {/* Upload Queue Details */}
       {selectedFiles.length > 0 && (
-        <div style={{ marginTop: '1.5rem', background: 'rgba(0,0,0,0.3)', padding: '1.25rem', borderRadius: 'var(--border-radius-md)' }}>
+        <div style={{ marginTop: '1.5rem', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)', padding: '1.25rem', borderRadius: 'var(--border-radius-md)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <span style={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem' }}>
+            <span style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '0.95rem' }}>
               Queue: {selectedFiles.length} photos ready
             </span>
-            <button onClick={clearQueue} disabled={uploading} className="btn btn-outline btn-sm" style={{ color: '#ff8585' }}>
+            <button onClick={clearQueue} disabled={uploading} className="btn btn-outline btn-sm" style={{ color: 'var(--error)' }}>
               <Trash2 size={13} /> Clear
             </button>
           </div>
@@ -192,8 +192,8 @@ export const BatchPhotoUploader = ({ events = [], selectedEvent, onUploadComplet
                 <span>{statusMessage}</span>
                 <span>{progress}%</span>
               </div>
-              <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: `${progress}%`, height: '100%', background: 'var(--gradient-gold)', transition: 'width 0.3s ease' }} />
+              <div style={{ height: '8px', background: 'var(--border-subtle)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${progress}%`, height: '100%', background: 'var(--btn-primary-bg)', transition: 'width 0.3s ease' }} />
               </div>
             </div>
           )}

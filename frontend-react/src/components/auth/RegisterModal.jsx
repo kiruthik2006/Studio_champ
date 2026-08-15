@@ -44,7 +44,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create an Account">
-      <p style={{ color: 'var(--gray-light)', fontSize: '0.9rem', marginBottom: '1.5rem', marginTop: '-0.8rem' }}>
+      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', marginTop: '-0.8rem' }}>
         Register now to register your face and find event photos
       </p>
 
@@ -55,7 +55,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div style={{ position: 'relative' }}>
               <User
                 size={18}
-                style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray)' }}
+                style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
               />
               <input
                 type="text"
@@ -142,14 +142,14 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           )}
         </button>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--gray-light)' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
           Already have an account?{' '}
           <button
             type="button"
             onClick={onSwitchToLogin}
             style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'underline' }}
           >
-            Sign In
+            Sign in here
           </button>
         </div>
       </form>

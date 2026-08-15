@@ -32,10 +32,10 @@ export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessa
         marginBottom: '1.5rem'
       }}>
         <div>
-          <h2 style={{ fontSize: '1.5rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Sparkles size={22} color="#dfb94a" /> {title} ({filteredPhotos.length})
+          <h2 style={{ fontSize: '1.5rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Sparkles size={22} color="var(--primary)" /> {title} ({filteredPhotos.length})
           </h2>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
             AI-matched photos containing your face from event galleries.
           </p>
         </div>
@@ -45,13 +45,13 @@ export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessa
             display: 'flex',
             alignItems: 'center',
             gap: '0.8rem',
-            background: 'rgba(0,0,0,0.3)',
+            background: 'var(--input-bg)',
             padding: '0.4rem 0.8rem',
             borderRadius: 'var(--border-radius-md)',
-            border: '1px solid rgba(255,255,255,0.06)'
+            border: '1px solid var(--border-gold)'
           }}>
             <Sliders size={14} color="var(--primary)" />
-            <span style={{ fontSize: '0.8rem', color: 'var(--secondary)' }}>Min Match: {minConfidence}%</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-main)' }}>Min Match: {minConfidence}%</span>
             <input
               type="range"
               min="30"
@@ -68,18 +68,18 @@ export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessa
         <div style={{
           textAlign: 'center',
           padding: '3.5rem 1rem',
-          background: 'rgba(0,0,0,0.2)',
+          background: 'var(--input-bg)',
           borderRadius: 'var(--border-radius-md)',
-          border: '1px dashed rgba(255,255,255,0.1)'
+          border: '1px dashed var(--border-gold)'
         }}>
-          <ImageIcon size={48} color="var(--gray)" style={{ margin: '0 auto 1rem' }} />
-          <h3 style={{ color: '#fff', marginBottom: '0.5rem' }}>No Matched Photos Yet</h3>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.875rem', maxWidth: '440px', margin: '0 auto' }}>
+          <ImageIcon size={48} color="var(--text-muted)" style={{ margin: '0 auto 1rem' }} />
+          <h3 style={{ color: 'var(--text-main)', marginBottom: '0.5rem' }}>No Matched Photos Yet</h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', maxWidth: '440px', margin: '0 auto' }}>
             {emptyMessage || 'Select an event from the Events tab and click "Find My Photos" to scan through albums.'}
           </p>
         </div>
       ) : filteredPhotos.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--gray-light)' }}>
+        <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
           No photos meet the {minConfidence}% match threshold. Try lowering the threshold slider.
         </div>
       ) : (

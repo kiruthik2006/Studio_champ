@@ -41,7 +41,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Welcome Back">
-      <p style={{ color: 'var(--gray-light)', fontSize: '0.9rem', marginBottom: '1.5rem', marginTop: '-0.8rem' }}>
+      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', marginTop: '-0.8rem' }}>
         Access your photos and event galleries
       </p>
 
@@ -51,7 +51,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
           <div style={{ position: 'relative' }}>
             <Mail
               size={18}
-              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray)' }}
+              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
             />
             <input
               type="email"
@@ -71,7 +71,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
           <div style={{ position: 'relative' }}>
             <Lock
               size={18}
-              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray)' }}
+              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
             />
             <input
               type={showPassword ? 'text' : 'password'}
@@ -85,7 +85,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray)' }}
+              style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
               tabIndex={-1}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -106,7 +106,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
           )}
         </button>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--gray-light)' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
           Don't have an account?{' '}
           <button
             type="button"

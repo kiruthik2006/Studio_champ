@@ -37,7 +37,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = '480px' }) 
           <X size={20} />
         </button>
         {title && (
-          <h2 style={{ fontSize: '1.6rem', marginBottom: '1.5rem', color: '#fff' }}>
+          <h2 style={{ fontSize: '1.6rem', marginBottom: '1.5rem', color: 'var(--text-main)' }}>
             {title}
           </h2>
         )}

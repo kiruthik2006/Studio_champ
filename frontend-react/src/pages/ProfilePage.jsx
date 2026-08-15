@@ -4,21 +4,23 @@ import { useToast } from '../context/ToastContext';
 import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
 import { authApi } from '../api/auth';
-import { User, Lock, Mail, Shield, CheckCircle2, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { User, Lock, Mail, Shield, Eye, EyeOff, Save } from 'lucide-react';
 
 export const ProfilePage = () => {
-  const { user, updateProfile, refreshUserProfile } = useAuth();
+  const { user, updateProfile } = useAuth();
   const { showToast } = useToast();
 
   const [profileData, setProfileData] = useState({
     firstName: user?.first_name || '',
     lastName: user?.last_name || '',
   });
+
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
+
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -38,8 +40,7 @@ export const ProfilePage = () => {
     setSavingProfile(true);
     try {
       await updateProfile(profileData);
-      showToast('Profile information updated', 'success');
-      await refreshUserProfile();
+      showToast('Profile updated successfully', 'success');
     } catch (err) {
       showToast(err.message || 'Failed to update profile', 'error');
     } finally {
@@ -67,22 +68,22 @@ export const ProfilePage = () => {
       showToast('Password changed successfully', 'success');
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      showToast(err.message || 'Failed to change password. Check your current password.', 'error');
+      showToast(err.message || 'Failed to change password', 'error');
     } finally {
       setChangingPassword(false);
     }
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--dark)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-body)' }}>
       <Navbar />
 
       <main style={{ flex: 1, padding: '7rem 1.5rem 4rem', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '2rem', color: '#fff', marginBottom: '0.4rem' }}>
+          <h1 style={{ fontSize: '2rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
             Account Profile
           </h1>
-          <p style={{ color: 'var(--gray-light)', fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
             Manage your account credentials and personal settings.
           </p>
         </div>
@@ -93,23 +94,24 @@ export const ProfilePage = () => {
             width: 72,
             height: 72,
             borderRadius: '50%',
-            background: 'var(--gradient-gold)',
-            color: '#0d0d0d',
+            background: 'var(--avatar-bg)',
+            color: 'var(--avatar-text)',
+            border: '1px solid var(--avatar-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: '1.8rem',
             fontWeight: 800,
-            boxShadow: '0 4px 15px rgba(201, 162, 39, 0.3)'
+            boxShadow: 'var(--shadow-md)'
           }}>
             {user?.first_name ? user.first_name[0].toUpperCase() : 'U'}
           </div>
 
           <div>
-            <h2 style={{ fontSize: '1.4rem', color: '#fff', marginBottom: '0.2rem' }}>
+            <h2 style={{ fontSize: '1.4rem', color: 'var(--text-main)', marginBottom: '0.2rem' }}>
               {user?.full_name || `${user?.first_name} ${user?.last_name}`}
             </h2>
-            <div style={{ color: 'var(--gray-light)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Mail size={14} /> {user?.email}
             </div>
             <div style={{ marginTop: '0.6rem' }}>
@@ -123,8 +125,8 @@ export const ProfilePage = () => {
 
         {/* Edit Info */}
         <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.2rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
-            <User size={18} color="#dfb94a" /> Edit Personal Information
+          <h3 style={{ fontSize: '1.2rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
+            <User size={18} color="var(--primary)" /> Edit Personal Information
           </h3>
 
           <form onSubmit={handleUpdateProfile}>
@@ -139,7 +141,6 @@ export const ProfilePage = () => {
                   required
                 />
               </div>
-
               <div className="form-group">
                 <label>Last Name</label>
                 <input
@@ -175,8 +176,8 @@ export const ProfilePage = () => {
 
         {/* Password */}
         <div className="glass-card" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.2rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
-            <Lock size={18} color="#dfb94a" /> Security & Password
+          <h3 style={{ fontSize: '1.2rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
+            <Lock size={18} color="var(--primary)" /> Security & Password
           </h3>
 
           <form onSubmit={handleChangePassword}>
@@ -193,7 +194,7 @@ export const ProfilePage = () => {
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray)' }}
+                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
                   tabIndex={-1}
                 >
                   {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -216,7 +217,7 @@ export const ProfilePage = () => {
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray)' }}
+                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
                     tabIndex={-1}
                   >
                     {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -242,7 +243,7 @@ export const ProfilePage = () => {
               disabled={changingPassword}
               className="btn btn-primary"
             >
-              {changingPassword ? 'Updating Password...' : 'Change Password'}
+              {changingPassword ? 'Updating Password...' : 'Update Password'}
             </button>
           </form>
         </div>

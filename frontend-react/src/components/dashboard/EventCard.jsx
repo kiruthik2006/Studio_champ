@@ -63,12 +63,12 @@ export const EventCard = ({ event, onSearch, searching }) => {
       <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
           {event.description && (
-            <p style={{ color: 'var(--gray-light)', fontSize: '0.85rem', marginBottom: '1rem', lineHeight: 1.5 }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem', lineHeight: 1.5 }}>
               {event.description}
             </p>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--secondary)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-main)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Calendar size={14} color="var(--primary)" />
               <span>{formattedDate}</span>

@@ -47,10 +47,10 @@ export class ErrorBoundary extends React.Component {
             <AlertTriangle size={30} />
           </div>
 
-          <h2 style={{ color: '#fff', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+          <h2 style={{ color: 'var(--text-main)', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
             Something went wrong
           </h2>
-          <p style={{ color: 'var(--gray-light)', maxWidth: '420px', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+          <p style={{ color: 'var(--text-muted)', maxWidth: '420px', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
             {this.state.error?.message || 'An unexpected rendering error occurred.'}
           </p>
 
