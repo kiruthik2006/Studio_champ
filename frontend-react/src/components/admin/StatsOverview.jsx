@@ -13,28 +13,29 @@ export const StatsOverview = ({ stats }) => {
       label: 'Total Events',
       value: stats?.total_events ?? 0,
       icon: Calendar,
-      color: '#6ed696',
+      color: '#10b981',
     },
     {
       label: 'Indexed Photos',
       value: stats?.total_photos ?? 0,
       icon: ImageIcon,
-      color: '#dfb94a',
+      color: '#f59e0b',
     },
     {
       label: 'Face Matches Found',
       value: stats?.total_matches ?? 0,
       icon: Sparkles,
-      color: '#a68520',
+      color: '#8b5cf6',
     },
   ];
 
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
       gap: '1.25rem',
-      marginBottom: '2rem'
+      marginBottom: '2rem',
+      contain: 'layout style',
     }}>
       {statItems.map((item, idx) => {
         const Icon = item.icon;
@@ -43,34 +44,37 @@ export const StatsOverview = ({ stats }) => {
             key={idx}
             className="glass-card"
             style={{
-              padding: '1.5rem',
+              padding: '1.4rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              border: '1px solid rgba(201, 162, 39, 0.2)',
+              border: '1px solid var(--border-gold)',
             }}
           >
             <div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--gray-light)', marginBottom: '0.25rem' }}>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.35rem', fontWeight: 500 }}>
                 {item.label}
               </div>
-              <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1 }}>
                 {item.value.toLocaleString()}
               </div>
             </div>
 
-            <div style={{
-              width: 48,
-              height: 48,
-              borderRadius: 'var(--border-radius-md)',
-              background: 'rgba(201, 162, 39, 0.12)',
-              border: '1px solid rgba(201, 162, 39, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: item.color
-            }}>
-              <Icon size={24} />
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                background: 'rgba(201, 162, 39, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: item.color,
+                border: '1px solid rgba(201, 162, 39, 0.2)',
+                flexShrink: 0,
+              }}
+            >
+              <Icon size={20} />
             </div>
           </div>
         );

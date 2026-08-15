@@ -647,25 +647,31 @@ h1, h2, h3, h4, .font-display {
   flex: 1;
 }
 
-/* Tables */
+/* Tables (GPU Accelerated & Contained) */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
+  contain: layout paint;
+  table-layout: auto;
 }
 
 .admin-table th,
 .admin-table td {
-  padding: 1rem;
+  padding: 0.95rem 1rem;
   text-align: left;
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .admin-table th {
   font-weight: 600;
-  color: var(--gray);
-  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.admin-table tr {
+  transition: background-color var(--transition-fast);
 }
 
 .admin-table tr:hover {
