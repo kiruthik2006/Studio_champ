@@ -3,9 +3,11 @@ import { PhotoLightboxModal } from './PhotoLightboxModal';
 import { Sparkles, Download, Eye, Image as ImageIcon, Sliders } from 'lucide-react';
 import { photosApi } from '../../api/photos';
 
-export const PhotoGallery = ({ photos, title = "Matched Photos", emptyMessage }) => {
+export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessage }) => {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [minConfidence, setMinConfidence] = useState(50);
+
+  const safePhotos = Array.isArray(photos) ? photos : [];
 
   const formatImageUrl = (path) => {
     if (!path) return '';
@@ -14,7 +16,7 @@ export const PhotoGallery = ({ photos, title = "Matched Photos", emptyMessage })
     return `http://localhost:5001${clean}`;
   };
 
-  const filteredPhotos = photos.filter((p) => {
+  const filteredPhotos = safePhotos.filter((p) => {
     const score = p.similarity_score || p.confidence || 0;
     return score * 100 >= minConfidence;
   });
@@ -38,7 +40,7 @@ export const PhotoGallery = ({ photos, title = "Matched Photos", emptyMessage })
           </p>
         </div>
 
-        {photos.length > 0 && (
+        {safePhotos.length > 0 && (
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -62,7 +64,7 @@ export const PhotoGallery = ({ photos, title = "Matched Photos", emptyMessage })
         )}
       </div>
 
-      {photos.length === 0 ? (
+      {safePhotos.length === 0 ? (
         <div style={{
           textAlign: 'center',
           padding: '3.5rem 1rem',
