@@ -69,10 +69,19 @@ export const DashboardPage = () => {
     try {
       const res = await photosApi.getEvents();
       if (res?.data) {
-        setEvents(res.data);
+        const raw = res.data;
+        const eventsList = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw.events)
+          ? raw.events
+          : [];
+        setEvents(eventsList);
+      } else {
+        setEvents([]);
       }
     } catch (err) {
       console.error('Failed to load events:', err);
+      setEvents([]);
     } finally {
       setEventsLoading(false);
     }

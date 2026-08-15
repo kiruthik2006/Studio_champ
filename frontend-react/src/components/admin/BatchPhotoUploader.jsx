@@ -3,8 +3,9 @@ import { adminApi } from '../../api/admin';
 import { useToast } from '../../context/ToastContext';
 import { Upload, Image as ImageIcon, CheckCircle, AlertCircle, Trash2, Sparkles, X } from 'lucide-react';
 
-export const BatchPhotoUploader = ({ events, selectedEvent, onUploadComplete, onCancel }) => {
-  const [targetEventId, setTargetEventId] = useState(selectedEvent?.id || (events[0]?.id ?? ''));
+export const BatchPhotoUploader = ({ events = [], selectedEvent, onUploadComplete, onCancel }) => {
+  const safeEvents = Array.isArray(events) ? events : [];
+  const [targetEventId, setTargetEventId] = useState(selectedEvent?.id || (safeEvents[0]?.id ?? ''));
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -124,7 +125,7 @@ export const BatchPhotoUploader = ({ events, selectedEvent, onUploadComplete, on
           disabled={uploading}
         >
           <option value="">-- Choose Event --</option>
-          {events.map((ev) => (
+          {safeEvents.map((ev) => (
             <option key={ev.id} value={ev.id}>
               {ev.name} ({ev.photo_count || 0} existing photos)
             </option>

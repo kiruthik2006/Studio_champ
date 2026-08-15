@@ -5,8 +5,8 @@ import { Modal } from '../common/Modal';
 import { Plus, Edit, Trash2, Calendar, MapPin, Upload, RefreshCw, Sparkles, Image as ImageIcon } from 'lucide-react';
 
 export const EventManager = ({
-  events,
-  eventTypes,
+  events = [],
+  eventTypes = [],
   onRefresh,
   onSelectEventForUpload,
 }) => {
@@ -100,6 +100,9 @@ export const EventManager = ({
     }
   };
 
+  const safeEvents = Array.isArray(events) ? events : [];
+  const safeTypes = Array.isArray(eventTypes) ? eventTypes : [];
+
   return (
     <div className="glass-card" style={{ padding: '2rem' }}>
       <div style={{
@@ -112,7 +115,7 @@ export const EventManager = ({
       }}>
         <div>
           <h2 style={{ fontSize: '1.4rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Calendar size={20} color="#dfb94a" /> Event Management ({events.length})
+            <Calendar size={20} color="#dfb94a" /> Event Management ({safeEvents.length})
           </h2>
           <p style={{ color: 'var(--gray-light)', fontSize: '0.85rem' }}>
             Create events and manage photo galleries for facial recognition scanning.
@@ -124,7 +127,7 @@ export const EventManager = ({
         </button>
       </div>
 
-      {events.length === 0 ? (
+      {safeEvents.length === 0 ? (
         <div style={{
           textAlign: 'center',
           padding: '3rem 1rem',
@@ -155,7 +158,7 @@ export const EventManager = ({
               </tr>
             </thead>
             <tbody>
-              {events.map((ev) => (
+              {safeEvents.map((ev) => (
                 <tr key={ev.id}>
                   <td>
                     <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem' }}>
@@ -267,7 +270,7 @@ export const EventManager = ({
                 onChange={(e) => setFormData({ ...formData, event_type_id: e.target.value })}
               >
                 <option value="">Select Category</option>
-                {eventTypes.map((t) => (
+                {safeTypes.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name}
                   </option>

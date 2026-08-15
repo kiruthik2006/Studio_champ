@@ -43,14 +43,41 @@ export const AdminDashboardPage = () => {
       if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
         setStats(statsRes.value.data);
       }
+
       if (eventsRes.status === 'fulfilled' && eventsRes.value?.data) {
-        setEvents(eventsRes.value.data);
+        const rawEvents = eventsRes.value.data;
+        const eventsList = Array.isArray(rawEvents)
+          ? rawEvents
+          : Array.isArray(rawEvents.events)
+          ? rawEvents.events
+          : [];
+        setEvents(eventsList);
+      } else {
+        setEvents([]);
       }
+
       if (typesRes.status === 'fulfilled' && typesRes.value?.data) {
-        setEventTypes(typesRes.value.data);
+        const rawTypes = typesRes.value.data;
+        const typesList = Array.isArray(rawTypes)
+          ? rawTypes
+          : Array.isArray(rawTypes.event_types)
+          ? rawTypes.event_types
+          : [];
+        setEventTypes(typesList);
+      } else {
+        setEventTypes([]);
       }
+
       if (usersRes.status === 'fulfilled' && usersRes.value?.data) {
-        setUsers(usersRes.value.data);
+        const rawUsers = usersRes.value.data;
+        const usersList = Array.isArray(rawUsers)
+          ? rawUsers
+          : Array.isArray(rawUsers.users)
+          ? rawUsers.users
+          : [];
+        setUsers(usersList);
+      } else {
+        setUsers([]);
       }
     } catch (err) {
       console.error('Failed to load admin data:', err);
@@ -116,7 +143,7 @@ export const AdminDashboardPage = () => {
           </div>
 
           <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: '0.8rem', color: 'var(--gray)' }}>
-            Logged in as Admin ({user?.first_name})
+            Logged in as Admin ({user?.first_name || 'Admin'})
           </div>
         </aside>
 

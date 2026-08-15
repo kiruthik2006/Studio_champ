@@ -35,13 +35,10 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(res.data));
       }
     } catch (err) {
-      console.warn('Auth verification failed:', err);
-      // If unauthorized, clear tokens
-      if (err.status === 401) {
-        api.clearTokens();
-        setUser(null);
-        setToken(null);
-      }
+      // Clear expired / invalid tokens silently
+      api.clearTokens();
+      setUser(null);
+      setToken(null);
     } finally {
       setLoading(false);
     }
@@ -80,8 +77,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await authApi.logout();
-    } catch (err) {
-      console.error('Logout error:', err);
+    } catch {
+      // ignore
     } finally {
       api.clearTokens();
       setUser(null);

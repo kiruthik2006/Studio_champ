@@ -3,7 +3,7 @@ import { adminApi } from '../../api/admin';
 import { useToast } from '../../context/ToastContext';
 import { Tag, Plus } from 'lucide-react';
 
-export const EventTypeManager = ({ eventTypes, onRefresh }) => {
+export const EventTypeManager = ({ eventTypes = [], onRefresh }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -31,15 +31,17 @@ export const EventTypeManager = ({ eventTypes, onRefresh }) => {
     }
   };
 
+  const safeTypes = Array.isArray(eventTypes) ? eventTypes : [];
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
       {/* List */}
       <div className="glass-card" style={{ padding: '2rem' }}>
         <h2 style={{ fontSize: '1.3rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
-          <Tag size={20} color="#dfb94a" /> Existing Categories ({eventTypes.length})
+          <Tag size={20} color="#dfb94a" /> Existing Categories ({safeTypes.length})
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {eventTypes.map((t) => (
+          {safeTypes.map((t) => (
             <div
               key={t.id}
               style={{

@@ -3,7 +3,7 @@ import { adminApi } from '../../api/admin';
 import { useToast } from '../../context/ToastContext';
 import { Users, Shield, User, Check, X, ShieldAlert, Key } from 'lucide-react';
 
-export const UserManager = ({ users, onRefresh }) => {
+export const UserManager = ({ users = [], onRefresh }) => {
   const [updatingId, setUpdatingId] = useState(null);
   const { showToast } = useToast();
 
@@ -39,11 +39,13 @@ export const UserManager = ({ users, onRefresh }) => {
     }
   };
 
+  const safeUsers = Array.isArray(users) ? users : [];
+
   return (
     <div className="glass-card" style={{ padding: '2rem' }}>
       <div style={{ marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.4rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <Users size={20} color="#dfb94a" /> User Management ({users.length})
+          <Users size={20} color="#dfb94a" /> User Management ({safeUsers.length})
         </h2>
         <p style={{ color: 'var(--gray-light)', fontSize: '0.85rem' }}>
           Manage user accounts, administrator privileges, and authentication status.
@@ -63,7 +65,7 @@ export const UserManager = ({ users, onRefresh }) => {
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
+            {safeUsers.map((u) => (
               <tr key={u.id}>
                 <td>
                   <div style={{ fontWeight: 600, color: '#fff' }}>
