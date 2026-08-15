@@ -35,12 +35,31 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Scroll listener for glass navbar
+  // Scroll listener for glass navbar with hysteresis to prevent bounce stutter
   useEffect(() => {
+    let ticking = false;
+    let isScrolled = false;
+
     const handleScroll = () => {
-      setScrolled(window.scrollY > 15);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+          // Hysteresis: turn on at > 40px, turn off only when fully at top (<= 5px)
+          // Completely eliminates re-render flutter during macOS rubber-band bounce
+          if (currentY > 40 && !isScrolled) {
+            isScrolled = true;
+            setScrolled(true);
+          } else if (currentY <= 5 && isScrolled) {
+            isScrolled = false;
+            setScrolled(false);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

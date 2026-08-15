@@ -162,7 +162,6 @@
 
 html {
   font-size: 16px;
-  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
 
