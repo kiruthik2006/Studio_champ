@@ -647,11 +647,10 @@ h1, h2, h3, h4, .font-display {
   flex: 1;
 }
 
-/* Tables (GPU Accelerated & Contained) */
+/* Tables (Hardware Accelerated) */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  contain: layout paint;
   table-layout: auto;
 }
 

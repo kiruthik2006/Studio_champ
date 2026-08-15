@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { adminApi } from '../../api/admin';
 import { useToast } from '../../context/ToastContext';
-import { Users, Shield, User, Search, UserCheck, UserX } from 'lucide-react';
+import { Users, Shield, User, Search } from 'lucide-react';
 
 export const UserManager = ({ users = [], onRefresh }) => {
   const [updatingId, setUpdatingId] = useState(null);
@@ -56,7 +56,7 @@ export const UserManager = ({ users = [], onRefresh }) => {
   }, [safeUsers, searchQuery]);
 
   return (
-    <div className="glass-card" style={{ padding: '2rem', contain: 'layout paint' }}>
+    <div className="glass-card" style={{ padding: '2rem' }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -88,7 +88,7 @@ export const UserManager = ({ users = [], onRefresh }) => {
         </div>
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
+      <div style={{ overflowX: 'auto', overscrollBehavior: 'none' }}>
         <table className="admin-table">
           <thead>
             <tr>
@@ -108,73 +108,78 @@ export const UserManager = ({ users = [], onRefresh }) => {
                 </td>
               </tr>
             ) : (
-              filteredUsers.map((u) => (
-                <tr key={u.id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <div style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '50%',
-                        background: 'var(--avatar-bg)',
-                        color: 'var(--avatar-text)',
-                        border: '1px solid var(--avatar-border)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        flexShrink: 0,
-                      }}>
-                        {u.first_name ? u.first_name[0].toUpperCase() : 'U'}
-                      </div>
-                      <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '0.9rem' }}>
-                        {u.full_name || `${u.first_name} ${u.last_name}`}
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                    {u.email}
-                  </td>
-                  <td>
-                    <span className={`status-badge ${u.role === 'admin' ? 'badge-gold' : 'badge-active'}`}>
-                      {u.role === 'admin' ? <Shield size={11} /> : <User size={11} />}
-                      {u.role}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`status-badge ${u.is_active ? 'badge-active' : 'badge-inactive'}`}>
-                      {u.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    {u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '0.45rem' }}>
-                      <button
-                        onClick={() => handleToggleRole(u)}
-                        disabled={updatingId === u.id}
-                        className="btn btn-outline btn-sm"
-                        style={{ padding: '0.28rem 0.55rem', fontSize: '0.75rem' }}
-                        title="Toggle Admin/User Role"
-                      >
-                        <Shield size={12} /> {u.role === 'admin' ? 'Demote' : 'Make Admin'}
-                      </button>
+              filteredUsers.map((u) => {
+                const initial = u.first_name ? u.first_name[0].toUpperCase() : 'U';
+                const createdDate = u.created_at ? u.created_at.split('T')[0] : 'N/A';
 
-                      <button
-                        onClick={() => handleToggleActive(u)}
-                        disabled={updatingId === u.id}
-                        className={`btn ${u.is_active ? 'btn-danger' : 'btn-success'} btn-sm`}
-                        style={{ padding: '0.28rem 0.55rem', fontSize: '0.75rem' }}
-                        title="Toggle Active/Deactivated"
-                      >
-                        {u.is_active ? 'Deactivate' : 'Activate'}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                return (
+                  <tr key={u.id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <div style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          background: 'var(--avatar-bg)',
+                          color: 'var(--avatar-text)',
+                          border: '1px solid var(--avatar-border)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          flexShrink: 0,
+                        }}>
+                          {initial}
+                        </div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '0.9rem' }}>
+                          {u.full_name || `${u.first_name} ${u.last_name}`}
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                      {u.email}
+                    </td>
+                    <td>
+                      <span className={`status-badge ${u.role === 'admin' ? 'badge-gold' : 'badge-active'}`}>
+                        {u.role === 'admin' ? <Shield size={11} /> : <User size={11} />}
+                        {u.role}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`status-badge ${u.is_active ? 'badge-active' : 'badge-inactive'}`}>
+                        {u.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      {createdDate}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '0.45rem' }}>
+                        <button
+                          onClick={() => handleToggleRole(u)}
+                          disabled={updatingId === u.id}
+                          className="btn btn-outline btn-sm"
+                          style={{ padding: '0.28rem 0.55rem', fontSize: '0.75rem' }}
+                          title="Toggle Admin/User Role"
+                        >
+                          <Shield size={12} /> {u.role === 'admin' ? 'Demote' : 'Make Admin'}
+                        </button>
+
+                        <button
+                          onClick={() => handleToggleActive(u)}
+                          disabled={updatingId === u.id}
+                          className={`btn ${u.is_active ? 'btn-danger' : 'btn-success'} btn-sm`}
+                          style={{ padding: '0.28rem 0.55rem', fontSize: '0.75rem' }}
+                          title="Toggle Active/Deactivated"
+                        >
+                          {u.is_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
