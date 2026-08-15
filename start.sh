@@ -123,26 +123,29 @@ print_status "Backend directory: $BACKEND_DIR"
 cd "$BACKEND_DIR" || { print_error "Cannot access $BACKEND_DIR"; exit 1; }
 
 # Activate virtual environment
+VENV_BIN=""
 if [ -f "venv/bin/activate" ]; then
-    source venv/bin/activate
+    VENV_BIN="venv/bin"
 elif [ -f "venv/Scripts/activate" ]; then
-    source venv/Scripts/activate
+    VENV_BIN="venv/Scripts"
 else
     print_error "Virtual environment activation script not found"
     exit 1
 fi
 
-# Check if required packages are installed
-if ! python -c "import flask" 2>/dev/null; then
-    print_status "Installing backend dependencies..."
-    pip install -q flask flask-sqlalchemy flask-jwt-extended flask-cors flask-migrate pymysql bcrypt pillow opencv-python-headless numpy python-dotenv werkzeug marshmallow marshmallow-sqlalchemy piexif
-    if [ $? -ne 0 ]; then
-        print_warning "Some packages may have failed to install, but continuing..."
-    fi
+# Use venv binaries for subsequent commands
+PIP_CMD="$VENV_BIN/pip"
+PYTHON_CMD_VENV="$VENV_BIN/python"
+
+# Install backend dependencies from requirements.txt
+print_status "Installing/Updating backend dependencies..."
+$PIP_CMD install -r requirements.txt
+if [ $? -ne 0 ]; then
+    print_warning "Some packages may have failed to install, but continuing..."
 fi
 
 # Start the Flask app
-python app.py > /tmp/facerec_backend.log 2>&1 &
+$PYTHON_CMD_VENV app.py > /tmp/facerec_backend.log 2>&1 &
 BACKEND_PID=$!
 print_success "Backend server started (PID: $BACKEND_PID)"
 
