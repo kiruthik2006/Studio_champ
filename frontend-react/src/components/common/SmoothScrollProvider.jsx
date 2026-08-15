@@ -7,16 +7,16 @@ export const SmoothScrollProvider = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    // Tuned with lower inertia & snappier response (lerp: 0.15, duration: 0.8)
+    // Ultra-subtle damping: lerp 0.24 & duration 0.55 for crisp, immediate response
     const lenis = new Lenis({
-      duration: 0.8,
+      duration: 0.55,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       direction: 'vertical',
       gestureDirection: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1.0,
       touchMultiplier: 1.0,
-      lerp: 0.15, // Lower inertia for immediate, responsive control
+      lerp: 0.24, // High lerp = ultra-subtle damping, crisp direct control
     });
 
     lenisRef.current = lenis;
