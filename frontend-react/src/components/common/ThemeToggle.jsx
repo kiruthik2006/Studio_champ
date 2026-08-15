@@ -3,7 +3,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
 
 export const ThemeToggle = ({ className = '' }) => {
-  const { theme, isLight, toggleTheme } = useTheme();
+  const { isLight, toggleTheme } = useTheme();
 
   return (
     <button
@@ -17,8 +17,8 @@ export const ThemeToggle = ({ className = '' }) => {
         width: '56px',
         height: '28px',
         borderRadius: '999px',
-        background: isLight ? 'rgba(201, 162, 39, 0.2)' : 'rgba(255, 255, 255, 0.08)',
-        border: '1px solid rgba(201, 162, 39, 0.35)',
+        background: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.08)',
+        border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.12)' : 'rgba(201, 162, 39, 0.35)'}`,
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
@@ -33,17 +33,17 @@ export const ThemeToggle = ({ className = '' }) => {
           width: '22px',
           height: '22px',
           borderRadius: '50%',
-          background: 'var(--gradient-gold)',
-          color: '#0d0d0d',
+          background: isLight ? '#ffffff' : 'var(--gradient-gold)',
+          color: isLight ? '#b88a1b' : '#0d0d0d',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+          boxShadow: isLight ? '0 2px 6px rgba(0,0,0,0.15)' : '0 2px 6px rgba(0,0,0,0.4)',
           transform: isLight ? 'translateX(28px)' : 'translateX(0px)',
-          transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease',
         }}
       >
-        {isLight ? <Sun size={13} color="#0d0d0d" strokeWidth={2.5} /> : <Moon size={13} color="#0d0d0d" strokeWidth={2.5} />}
+        {isLight ? <Sun size={13} color="#b88a1b" strokeWidth={2.5} /> : <Moon size={13} color="#0d0d0d" strokeWidth={2.5} />}
       </div>
     </button>
   );
