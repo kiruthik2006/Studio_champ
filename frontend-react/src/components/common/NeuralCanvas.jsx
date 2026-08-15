@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 
 export const NeuralCanvas = () => {
   const canvasRef = useRef(null);
+  const { isLight } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -15,7 +17,7 @@ export const NeuralCanvas = () => {
     const config = {
       particleCount: Math.min(window.innerWidth < 768 ? 50 : 100, 120),
       connectionDistance: 140,
-      color: '201, 162, 39',
+      color: isLight ? '176, 136, 26' : '201, 162, 39',
     };
 
     function resize() {
@@ -34,7 +36,7 @@ export const NeuralCanvas = () => {
           vx: (Math.random() - 0.5) * 0.35,
           vy: (Math.random() - 0.5) * 0.35,
           size: Math.random() * 1.5 + 0.6,
-          opacity: Math.random() * 0.4 + 0.1,
+          opacity: isLight ? (Math.random() * 0.25 + 0.08) : (Math.random() * 0.4 + 0.1),
           phase: Math.random() * Math.PI * 2,
         });
       }
@@ -43,10 +45,12 @@ export const NeuralCanvas = () => {
     resize();
     createParticles();
 
-    window.addEventListener('resize', () => {
+    const handleResize = () => {
       resize();
       createParticles();
-    });
+    };
+
+    window.addEventListener('resize', handleResize);
 
     function draw() {
       ctx.clearRect(0, 0, width, height);
@@ -59,7 +63,7 @@ export const NeuralCanvas = () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < config.connectionDistance) {
-            const opacity = (1 - dist / config.connectionDistance) * 0.14;
+            const opacity = (1 - dist / config.connectionDistance) * (isLight ? 0.1 : 0.15);
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -94,9 +98,9 @@ export const NeuralCanvas = () => {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isLight]);
 
   return (
     <>

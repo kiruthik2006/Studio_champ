@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { ThemeToggle } from './ThemeToggle';
 import { Camera, User, LogOut, Shield, LayoutDashboard, Menu, X, ChevronDown } from 'lucide-react';
 
 export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
@@ -44,7 +45,7 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
         }}>
           <Camera size={22} />
         </div>
-        <span className="font-display" style={{ fontSize: '1.6rem', color: '#fff' }}>
+        <span className="font-display" style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>
           Face<span className="gold-text">Rec</span>
         </span>
       </Link>
@@ -66,6 +67,9 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
 
       {/* Right Side Actions */}
       <div className="nav-actions">
+        {/* Theme Toggle Slider */}
+        <ThemeToggle />
+
         {isAuthenticated ? (
           <div style={{ position: 'relative' }}>
             <button
@@ -98,8 +102,8 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
                   top: '110%',
                   right: 0,
                   width: '210px',
-                  background: '#1a1917',
-                  border: '1px solid rgba(201,162,39,0.25)',
+                  background: 'var(--card-bg-elevated)',
+                  border: '1px solid var(--border-gold)',
                   borderRadius: 'var(--border-radius-md)',
                   boxShadow: 'var(--shadow-xl)',
                   padding: '0.5rem',
@@ -109,8 +113,8 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
                   gap: '0.25rem'
                 }}
               >
-                <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff' }}>
+                <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-main)' }}>
                     {user?.full_name || `${user?.first_name} ${user?.last_name}`}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--gray-light)' }}>
@@ -136,7 +140,7 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
                     to="/admin"
                     onClick={() => setUserDropdownOpen(false)}
                     className="sidebar-item"
-                    style={{ padding: '0.6rem 0.75rem', color: '#dfb94a' }}
+                    style={{ padding: '0.6rem 0.75rem', color: 'var(--primary)' }}
                   >
                     <Shield size={16} />
                     <span>Admin Panel</span>
@@ -199,8 +203,8 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
             top: '70px',
             left: 0,
             right: 0,
-            background: 'rgba(18, 17, 16, 0.98)',
-            borderBottom: '1px solid rgba(201,162,39,0.2)',
+            background: 'var(--card-bg-elevated)',
+            borderBottom: '1px solid var(--border-gold)',
             padding: '1.5rem',
             display: 'flex',
             flexDirection: 'column',
@@ -208,11 +212,16 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
             zIndex: 999
           }}
         >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-subtle)' }}>
+            <span style={{ color: 'var(--text-main)', fontSize: '0.9rem', fontWeight: 600 }}>Theme Mode</span>
+            <ThemeToggle />
+          </div>
+
           {isHome && (
             <>
-              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', padding: '0.5rem 0' }}>How it Works</a>
-              <a href="#features" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', padding: '0.5rem 0' }}>Features</a>
-              <a href="#technology" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', padding: '0.5rem 0' }}>AI Tech</a>
+              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-main)', padding: '0.5rem 0' }}>How it Works</a>
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-main)', padding: '0.5rem 0' }}>Features</a>
+              <a href="#technology" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-main)', padding: '0.5rem 0' }}>AI Tech</a>
             </>
           )}
 
