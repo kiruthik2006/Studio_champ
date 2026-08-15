@@ -7,16 +7,16 @@ export const SmoothScrollProvider = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    // Initialize Lenis with subtle luxury damping (lerp: 0.09)
+    // Tuned with lower inertia & snappier response (lerp: 0.15, duration: 0.8)
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential smooth deceleration
+      duration: 0.8,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       direction: 'vertical',
       gestureDirection: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 0.95,
-      touchMultiplier: 1.1,
-      lerp: 0.09, // Delicate damping for zero-jitter smooth scroll
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.0,
+      lerp: 0.15, // Lower inertia for immediate, responsive control
     });
 
     lenisRef.current = lenis;
