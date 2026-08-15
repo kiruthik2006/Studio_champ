@@ -46,6 +46,10 @@
   --event-header-bg: linear-gradient(135deg, rgba(201, 162, 39, 0.25) 0%, rgba(20, 20, 20, 0.9) 100%);
   --footer-bg: rgba(10, 10, 10, 0.95);
 
+  --avatar-bg: #22201d;
+  --avatar-text: #dfb94a;
+  --avatar-border: rgba(201, 162, 39, 0.35);
+
   --success: #4a9d6b;
   --warning: #d4a843;
   --error: #c45c5c;
@@ -111,6 +115,10 @@
 
   --event-header-bg: linear-gradient(135deg, rgba(158, 117, 21, 0.15) 0%, rgba(245, 242, 235, 0.95) 100%);
   --footer-bg: #ffffff;
+
+  --avatar-bg: #18181b;
+  --avatar-text: #ffffff;
+  --avatar-border: rgba(0, 0, 0, 0.15);
 
   --success: #257946;
   --warning: #ad7915;

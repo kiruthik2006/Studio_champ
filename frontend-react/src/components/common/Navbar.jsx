@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from './ThemeToggle';
+import { BrandLogo } from './BrandLogo';
 import { Camera, User, LogOut, Shield, LayoutDashboard, Menu, X, ChevronDown } from 'lucide-react';
 
 export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
@@ -31,23 +32,8 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <Link to="/" className="nav-brand">
-        <div style={{
-          width: 38,
-          height: 38,
-          borderRadius: 10,
-          background: 'var(--gradient-gold)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#0d0d0d',
-          boxShadow: '0 2px 10px rgba(201,162,39,0.3)'
-        }}>
-          <Camera size={22} />
-        </div>
-        <span className="font-display" style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>
-          Face<span className="gold-text">Rec</span>
-        </span>
+      <Link to="/" className="nav-brand" style={{ textDecoration: 'none' }}>
+        <BrandLogo size="normal" />
       </Link>
 
       {/* Center Links (on Landing) */}
@@ -81,8 +67,9 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
                 width: 26,
                 height: 26,
                 borderRadius: '50%',
-                background: 'var(--gradient-gold)',
-                color: '#0d0d0d',
+                background: 'var(--avatar-bg)',
+                color: 'var(--avatar-text)',
+                border: '1px solid var(--avatar-border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -91,7 +78,7 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
               }}>
                 {user?.first_name ? user.first_name[0].toUpperCase() : 'U'}
               </div>
-              <span>{user?.first_name || 'Account'}</span>
+              <span style={{ fontWeight: 600 }}>{user?.first_name || 'Account'}</span>
               <ChevronDown size={14} />
             </button>
 
