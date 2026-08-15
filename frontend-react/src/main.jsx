@@ -5,7 +5,6 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
-import { SmoothScrollProvider } from './components/common/SmoothScrollProvider';
 import App from './App';
 import './index.css';
 
@@ -14,13 +13,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <ErrorBoundary>
       <ThemeProvider>
         <BrowserRouter>
-          <SmoothScrollProvider>
-            <ToastProvider>
-              <AuthProvider>
-                <App />
-              </AuthProvider>
-            </ToastProvider>
-          </SmoothScrollProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </ToastProvider>
         </BrowserRouter>
       </ThemeProvider>
     </ErrorBoundary>
