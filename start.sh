@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # FaceRec Events - Complete Startup Script
-# This script starts both the Flask backend and the frontend HTTP server
+# This script starts both the Flask backend and the React frontend Vite dev server
 
 # Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -20,7 +20,7 @@ NC='\033[0m' # No Color
 BACKEND_PORT=5001
 FRONTEND_PORT=8000
 BACKEND_DIR="$SCRIPT_DIR/backend"
-FRONTEND_DIR="$SCRIPT_DIR/frontend"
+FRONTEND_DIR="$SCRIPT_DIR/frontend-react"
 
 # Function to print colored output
 print_status() {
@@ -76,13 +76,12 @@ clear
 echo -e "${GREEN}"
 echo "╔════════════════════════════════════════════════════════════╗"
 echo "║                                                            ║"
-echo "║         🎭 FaceRec Events - AI Photo Discovery             ║"
+echo "║      🎭 FaceRec Events (Studio Champ) - React + AI         ║"
 echo "║                                                            ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 echo ""
 
-# Print script location for debugging
 print_status "Script directory: $SCRIPT_DIR"
 
 # Verify directories exist
@@ -165,41 +164,47 @@ for i in {1..30}; do
     fi
 done
 
-# Start Frontend Server
-print_status "Starting Frontend HTTP Server..."
-print_status "Frontend directory: $FRONTEND_DIR"
+# Start Frontend React Vite Server
+print_status "Starting React Vite Dev Server..."
+print_status "React directory: $FRONTEND_DIR"
 cd "$FRONTEND_DIR" || { print_error "Cannot access $FRONTEND_DIR"; exit 1; }
 
-# Start the HTTP server
-$PYTHON_CMD -m http.server $FRONTEND_PORT > /tmp/facerec_frontend.log 2>&1 &
+# Check node_modules
+if [ ! -d "node_modules" ]; then
+    print_status "Installing frontend dependencies..."
+    npm install
+fi
+
+# Start Vite dev server
+npx vite --port $FRONTEND_PORT --host > /tmp/facerec_frontend.log 2>&1 &
 FRONTEND_PID=$!
-print_success "Frontend server started (PID: $FRONTEND_PID)"
+print_success "React Frontend server started (PID: $FRONTEND_PID)"
 
 # Wait for frontend to be ready
-print_status "Waiting for frontend to initialize..."
-for i in {1..10}; do
-    if curl -s -o /dev/null -w "%{http_code}" http://localhost:$FRONTEND_PORT | grep -q "200\|304"; then
-        print_success "Frontend is ready!"
+print_status "Waiting for React dev server to initialize..."
+for i in {1..15}; do
+    if curl -s http://localhost:$FRONTEND_PORT >/dev/null 2>&1; then
+        print_success "React Frontend is ready!"
         break
     fi
     sleep 1
-    if [ $i -eq 10 ]; then
-        print_warning "Frontend may not be fully ready yet"
+    if [ $i -eq 15 ]; then
+        print_warning "React frontend may still be compiling..."
     fi
 done
 
 # Display success message
 echo ""
 echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}  ✅ All services started successfully!${NC}"
+echo -e "${GREEN}  ✅ FaceRec Events (React SPA) is running!${NC}"
 echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
 echo ""
 echo -e "${BLUE}Access the application:${NC}"
-echo -e "  🌐 Frontend:    ${YELLOW}http://localhost:$FRONTEND_PORT${NC}"
+echo -e "  🌐 React App:   ${YELLOW}http://localhost:$FRONTEND_PORT${NC}"
 echo -e "  ⚙️  Backend API: ${YELLOW}http://localhost:$BACKEND_PORT${NC}"
 echo -e "  🔍 Health:      ${YELLOW}http://localhost:$BACKEND_PORT/api/health${NC}"
 echo ""
-echo -e "${BLUE}Default Login:${NC}"
+echo -e "${BLUE}Default Admin Account:${NC}"
 echo -e "  📧 Email:    ${YELLOW}admin@facerec.com${NC}"
 echo -e "  🔑 Password: ${YELLOW}admin123${NC}"
 echo ""
@@ -224,7 +229,7 @@ cleanup() {
     # Kill frontend
     if kill -0 $FRONTEND_PID 2>/dev/null; then
         kill $FRONTEND_PID 2>/dev/null
-        print_success "Frontend server stopped"
+        print_success "React frontend server stopped"
     fi
     
     print_success "All services stopped. Goodbye!"
@@ -236,7 +241,6 @@ trap cleanup INT
 
 # Keep the script running
 while true; do
-    # Check if processes are still running
     if ! kill -0 $BACKEND_PID 2>/dev/null; then
         print_error "Backend server stopped unexpectedly!"
         print_status "Check logs: /tmp/facerec_backend.log"

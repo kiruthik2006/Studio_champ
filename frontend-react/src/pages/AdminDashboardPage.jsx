@@ -1,0 +1,185 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { Navbar } from '../components/common/Navbar';
+import { Footer } from '../components/common/Footer';
+import { StatsOverview } from '../components/admin/StatsOverview';
+import { EventManager } from '../components/admin/EventManager';
+import { BatchPhotoUploader } from '../components/admin/BatchPhotoUploader';
+import { EventTypeManager } from '../components/admin/EventTypeManager';
+import { UserManager } from '../components/admin/UserManager';
+import { adminApi } from '../api/admin';
+import {
+  Shield,
+  Calendar,
+  Upload,
+  Tag,
+  Users,
+  RefreshCw,
+} from 'lucide-react';
+
+export const AdminDashboardPage = () => {
+  const { user } = useAuth();
+  const { showToast } = useToast();
+
+  const [activeTab, setActiveTab] = useState('events');
+  const [stats, setStats] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [eventTypes, setEventTypes] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [uploadSelectedEvent, setUploadSelectedEvent] = useState(null);
+
+  const fetchAdminData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [statsRes, eventsRes, typesRes, usersRes] = await Promise.allSettled([
+        adminApi.getStats(),
+        adminApi.getEvents(),
+        adminApi.getEventTypes(),
+        adminApi.getUsers(),
+      ]);
+
+      if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
+        setStats(statsRes.value.data);
+      }
+      if (eventsRes.status === 'fulfilled' && eventsRes.value?.data) {
+        setEvents(eventsRes.value.data);
+      }
+      if (typesRes.status === 'fulfilled' && typesRes.value?.data) {
+        setEventTypes(typesRes.value.data);
+      }
+      if (usersRes.status === 'fulfilled' && usersRes.value?.data) {
+        setUsers(usersRes.value.data);
+      }
+    } catch (err) {
+      console.error('Failed to load admin data:', err);
+      showToast('Error loading administrative data', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchAdminData();
+  }, [fetchAdminData]);
+
+  const handleSelectEventForUpload = (ev) => {
+    setUploadSelectedEvent(ev);
+    setActiveTab('uploader');
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--dark)' }}>
+      <Navbar />
+
+      <div className="dashboard-layout">
+        {/* Sidebar */}
+        <aside className="dashboard-sidebar">
+          <div className="sidebar-menu">
+            <div style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#dfb94a', fontWeight: 700, fontSize: '0.9rem' }}>
+              <Shield size={18} />
+              <span>ADMINISTRATION</span>
+            </div>
+
+            <button
+              className={`sidebar-item ${activeTab === 'events' ? 'active' : ''}`}
+              onClick={() => setActiveTab('events')}
+            >
+              <Calendar size={18} />
+              <span>Events & Photos</span>
+            </button>
+
+            <button
+              className={`sidebar-item ${activeTab === 'uploader' ? 'active' : ''}`}
+              onClick={() => setActiveTab('uploader')}
+            >
+              <Upload size={18} />
+              <span>Bulk Photo Ingestion</span>
+            </button>
+
+            <button
+              className={`sidebar-item ${activeTab === 'categories' ? 'active' : ''}`}
+              onClick={() => setActiveTab('categories')}
+            >
+              <Tag size={18} />
+              <span>Event Categories</span>
+            </button>
+
+            <button
+              className={`sidebar-item ${activeTab === 'users' ? 'active' : ''}`}
+              onClick={() => setActiveTab('users')}
+            >
+              <Users size={18} />
+              <span>User Directory</span>
+            </button>
+          </div>
+
+          <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: '0.8rem', color: 'var(--gray)' }}>
+            Logged in as Admin ({user?.first_name})
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="dashboard-main">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h1 style={{ fontSize: '2rem', color: '#fff', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <Shield size={26} color="#dfb94a" /> Control Center
+              </h1>
+              <p style={{ color: 'var(--gray-light)', fontSize: '0.95rem' }}>
+                Manage events, batch ingestion, DeepFace AI embeddings, and users.
+              </p>
+            </div>
+
+            <button
+              onClick={fetchAdminData}
+              className="btn btn-outline btn-sm"
+              title="Refresh all metrics"
+            >
+              <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh Metrics
+            </button>
+          </div>
+
+          {/* Metric Cards */}
+          <StatsOverview stats={stats} />
+
+          {/* Tab Content */}
+          {activeTab === 'events' && (
+            <EventManager
+              events={events}
+              eventTypes={eventTypes}
+              onRefresh={fetchAdminData}
+              onSelectEventForUpload={handleSelectEventForUpload}
+            />
+          )}
+
+          {activeTab === 'uploader' && (
+            <BatchPhotoUploader
+              events={events}
+              selectedEvent={uploadSelectedEvent}
+              onUploadComplete={fetchAdminData}
+              onCancel={() => setActiveTab('events')}
+            />
+          )}
+
+          {activeTab === 'categories' && (
+            <EventTypeManager
+              eventTypes={eventTypes}
+              onRefresh={fetchAdminData}
+            />
+          )}
+
+          {activeTab === 'users' && (
+            <UserManager
+              users={users}
+              onRefresh={fetchAdminData}
+            />
+          )}
+        </main>
+      </div>
+
+      <Footer />
+    </div>
+  );
+};

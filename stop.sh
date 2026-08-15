@@ -12,13 +12,14 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo -e "${YELLOW}Stopping backend server...${NC}"
+echo -e "${YELLOW}Stopping backend server (Port 5001)...${NC}"
 pkill -f "python app.py" 2>/dev/null
+lsof -ti:5001 | xargs kill -9 2>/dev/null
 echo -e "${GREEN}✅ Backend stopped${NC}"
 
-echo -e "${YELLOW}Stopping frontend server...${NC}"
-pkill -f "http.server 8000" 2>/dev/null
-pkill -f "python -m http.server" 2>/dev/null
+echo -e "${YELLOW}Stopping React frontend server (Port 8000)...${NC}"
+pkill -f "vite" 2>/dev/null
+lsof -ti:8000 | xargs kill -9 2>/dev/null
 echo -e "${GREEN}✅ Frontend stopped${NC}"
 
 echo ""

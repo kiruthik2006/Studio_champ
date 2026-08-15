@@ -1,8 +1,19 @@
+# Python / Virtualenv
+venv/
+backend/venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+/tmp/
+
 # Node / frontend
 node_modules/
+frontend-react/node_modules/
+frontend-react/dist/
 dist/
 build/
 .env
-*.log
+.env.local
 coverage/
 .DS_Store
