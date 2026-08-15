@@ -1,25 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { ThemeToggle } from './ThemeToggle';
 import { BrandLogo } from './BrandLogo';
-import { Camera, User, LogOut, Shield, LayoutDashboard, Menu, X, ChevronDown } from 'lucide-react';
+import { SpotlightSearchModal } from './SpotlightSearchModal';
+import {
+  Camera,
+  User,
+  LogOut,
+  Shield,
+  LayoutDashboard,
+  Menu,
+  X,
+  ChevronDown,
+  Search,
+  Activity,
+  Sparkles,
+  Command,
+} from 'lucide-react';
 
 export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { isLight } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [spotlightOpen, setSpotlightOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Scroll listener for glass navbar
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 15);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Cmd+K / Ctrl+K keyboard shortcut listener
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSpotlightOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleLogout = async () => {
@@ -31,205 +61,308 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
   const isHome = location.pathname === '/';
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <Link to="/" className="nav-brand" style={{ textDecoration: 'none' }}>
-        <BrandLogo size="normal" />
-      </Link>
+    <>
+      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+        {/* Left: Brand Identity */}
+        <Link to="/" className="nav-brand" style={{ textDecoration: 'none' }}>
+          <BrandLogo size="normal" showBadge={true} />
+        </Link>
 
-      {/* Center Links (on Landing) */}
-      {isHome && (
-        <ul className="nav-links">
-          <li>
-            <a href="#how-it-works" className="nav-link">How it Works</a>
-          </li>
-          <li>
-            <a href="#features" className="nav-link">Features</a>
-          </li>
-          <li>
-            <a href="#technology" className="nav-link">AI Tech</a>
-          </li>
-        </ul>
-      )}
+        {/* Center: Creative Spotlight Search & AI Status */}
+        <div className="nav-center-creative" style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.85rem',
+        }}>
+          {/* Spotlight Search Trigger */}
+          <button
+            onClick={() => setSpotlightOpen(true)}
+            className="spotlight-trigger-btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1.2rem',
+              padding: '0.45rem 0.9rem',
+              borderRadius: '999px',
+              background: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)',
+              border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.09)' : 'rgba(255, 255, 255, 0.1)'}`,
+              color: 'var(--text-muted)',
+              fontSize: '0.83rem',
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)',
+              minWidth: '220px',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = isLight ? 'rgba(0, 0, 0, 0.07)' : 'rgba(255, 255, 255, 0.09)';
+              e.currentTarget.style.borderColor = 'var(--primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.borderColor = isLight ? 'rgba(0, 0, 0, 0.09)' : 'rgba(255, 255, 255, 0.1)';
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Search size={14} color="var(--primary)" />
+              <span>Search actions & events...</span>
+            </span>
+            <kbd style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '2px',
+              background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
+              border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.15)'}`,
+              borderRadius: '5px',
+              padding: '0.1rem 0.35rem',
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              color: 'var(--text-main)',
+            }}>
+              ⌘K
+            </kbd>
+          </button>
 
-      {/* Right Side Actions */}
-      <div className="nav-actions">
-        {/* Theme Toggle Slider */}
-        <ThemeToggle />
-
-        {isAuthenticated ? (
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="btn btn-outline btn-sm"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
-            >
-              <div style={{
-                width: 26,
-                height: 26,
-                borderRadius: '50%',
-                background: 'var(--avatar-bg)',
-                color: 'var(--avatar-text)',
-                border: '1px solid var(--avatar-border)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '0.8rem',
-                fontWeight: 700
-              }}>
-                {user?.first_name ? user.first_name[0].toUpperCase() : 'U'}
-              </div>
-              <span style={{ fontWeight: 600 }}>{user?.first_name || 'Account'}</span>
-              <ChevronDown size={14} />
-            </button>
-
-            {userDropdownOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '110%',
-                  right: 0,
-                  width: '210px',
-                  background: 'var(--card-bg-elevated)',
-                  border: '1px solid var(--border-gold)',
-                  borderRadius: 'var(--border-radius-md)',
-                  boxShadow: 'var(--shadow-xl)',
-                  padding: '0.5rem',
-                  zIndex: 1100,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.25rem'
-                }}
-              >
-                <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-main)' }}>
-                    {user?.full_name || `${user?.first_name} ${user?.last_name}`}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--gray-light)' }}>
-                    {user?.email}
-                  </div>
-                  <span className="status-badge badge-gold" style={{ marginTop: '0.3rem', fontSize: '0.65rem' }}>
-                    {user?.role}
-                  </span>
-                </div>
-
-                <Link
-                  to="/dashboard"
-                  onClick={() => setUserDropdownOpen(false)}
-                  className="sidebar-item"
-                  style={{ padding: '0.6rem 0.75rem' }}
-                >
-                  <LayoutDashboard size={16} />
-                  <span>User Dashboard</span>
-                </Link>
-
-                {isAdmin && (
-                  <Link
-                    to="/admin"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="sidebar-item"
-                    style={{ padding: '0.6rem 0.75rem', color: 'var(--primary)' }}
-                  >
-                    <Shield size={16} />
-                    <span>Admin Panel</span>
-                  </Link>
-                )}
-
-                <Link
-                  to="/profile"
-                  onClick={() => setUserDropdownOpen(false)}
-                  className="sidebar-item"
-                  style={{ padding: '0.6rem 0.75rem' }}
-                >
-                  <User size={16} />
-                  <span>Profile Settings</span>
-                </Link>
-
-                <button
-                  onClick={handleLogout}
-                  className="sidebar-item"
-                  style={{ padding: '0.6rem 0.75rem', color: '#ff8585' }}
-                >
-                  <LogOut size={16} />
-                  <span>Log Out</span>
-                </button>
-              </div>
-            )}
+          {/* AI Neural Status Pill */}
+          <div
+            className="ai-status-pill"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.4rem 0.8rem',
+              borderRadius: '999px',
+              background: isLight ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.12)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              fontSize: '0.74rem',
+              fontWeight: 600,
+              color: isLight ? '#047857' : '#34d399',
+              letterSpacing: '0.01em',
+              userSelect: 'none',
+            }}
+            title="DeepFace Facenet512 Neural Matcher is operational"
+          >
+            <span style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: '#10b981',
+              boxShadow: '0 0 8px #10b981',
+              animation: 'pulse 2s infinite',
+            }} />
+            <span>Facenet512 Active</span>
           </div>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-            <button
-              onClick={onOpenLogin}
-              className="btn btn-outline btn-sm"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={onOpenRegister}
-              className="btn btn-primary btn-sm"
-            >
-              Register Face
-            </button>
-          </div>
-        )}
+        </div>
 
-        {/* Mobile Hamburger */}
-        <button
-          className="hamburger"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle Navigation"
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '70px',
-            left: 0,
-            right: 0,
-            background: 'var(--card-bg-elevated)',
-            borderBottom: '1px solid var(--border-gold)',
-            padding: '1.5rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            zIndex: 999
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-subtle)' }}>
-            <span style={{ color: 'var(--text-main)', fontSize: '0.9rem', fontWeight: 600 }}>Theme Mode</span>
-            <ThemeToggle />
-          </div>
-
+        {/* Right: Actions, Theme & Profile */}
+        <div className="nav-actions">
+          {/* Landing Nav Links */}
           {isHome && (
-            <>
-              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-main)', padding: '0.5rem 0' }}>How it Works</a>
-              <a href="#features" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-main)', padding: '0.5rem 0' }}>Features</a>
-              <a href="#technology" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-main)', padding: '0.5rem 0' }}>AI Tech</a>
-            </>
+            <div className="nav-links-desktop" style={{ display: 'flex', gap: '1.2rem', marginRight: '0.5rem' }}>
+              <a href="#how-it-works" className="nav-link" style={{ fontSize: '0.875rem' }}>How it Works</a>
+              <a href="#technology" className="nav-link" style={{ fontSize: '0.875rem' }}>AI Tech</a>
+            </div>
           )}
 
-          {!isAuthenticated && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '0.5rem' }}>
+          {/* Theme Toggle Slider */}
+          <ThemeToggle />
+
+          {isAuthenticated ? (
+            <div style={{ position: 'relative' }}>
               <button
-                onClick={() => { setMobileMenuOpen(false); onOpenLogin(); }}
-                className="btn btn-outline"
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                className="btn btn-outline btn-sm"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '999px',
+                }}
+              >
+                <div style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: '50%',
+                  background: 'var(--avatar-bg)',
+                  color: 'var(--avatar-text)',
+                  border: '1px solid var(--avatar-border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                }}>
+                  {user?.first_name ? user.first_name[0].toUpperCase() : 'U'}
+                </div>
+                <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                  {user?.first_name || 'Account'}
+                </span>
+                <ChevronDown size={13} style={{ opacity: 0.7 }} />
+              </button>
+
+              {userDropdownOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '115%',
+                    right: 0,
+                    width: '220px',
+                    background: 'var(--card-bg-elevated)',
+                    border: '1px solid var(--border-gold)',
+                    borderRadius: 'var(--border-radius-md)',
+                    boxShadow: 'var(--shadow-xl)',
+                    padding: '0.5rem',
+                    zIndex: 1100,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.25rem',
+                  }}
+                >
+                  <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text-main)' }}>
+                      {user?.full_name || `${user?.first_name} ${user?.last_name}`}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {user?.email}
+                    </div>
+                    <span className="status-badge badge-gold" style={{ marginTop: '0.35rem', fontSize: '0.65rem' }}>
+                      {user?.role}
+                    </span>
+                  </div>
+
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="sidebar-item"
+                    style={{ padding: '0.55rem 0.75rem', fontSize: '0.88rem' }}
+                  >
+                    <LayoutDashboard size={15} />
+                    <span>User Dashboard</span>
+                  </Link>
+
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="sidebar-item"
+                      style={{ padding: '0.55rem 0.75rem', fontSize: '0.88rem', color: 'var(--primary)' }}
+                    >
+                      <Shield size={15} />
+                      <span>Admin Control</span>
+                    </Link>
+                  )}
+
+                  <Link
+                    to="/profile"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="sidebar-item"
+                    style={{ padding: '0.55rem 0.75rem', fontSize: '0.88rem' }}
+                  >
+                    <User size={15} />
+                    <span>Profile Settings</span>
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="sidebar-item"
+                    style={{ padding: '0.55rem 0.75rem', fontSize: '0.88rem', color: '#ef4444' }}
+                  >
+                    <LogOut size={15} />
+                    <span>Log Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <button
+                onClick={onOpenLogin}
+                className="btn btn-outline btn-sm"
               >
                 Sign In
               </button>
               <button
-                onClick={() => { setMobileMenuOpen(false); onOpenRegister(); }}
-                className="btn btn-primary"
+                onClick={onOpenRegister}
+                className="btn btn-primary btn-sm"
               >
-                Register Face
+                <Camera size={14} /> Register Face
               </button>
             </div>
           )}
+
+          {/* Mobile Hamburger */}
+          <button
+            className="hamburger"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle Navigation"
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
-      )}
-    </nav>
+
+        {/* Mobile Drawer */}
+        {mobileMenuOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              top: '70px',
+              left: 0,
+              right: 0,
+              background: 'var(--card-bg-elevated)',
+              borderBottom: '1px solid var(--border-gold)',
+              padding: '1.25rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.9rem',
+              zIndex: 999,
+              boxShadow: 'var(--shadow-xl)',
+            }}
+          >
+            <button
+              onClick={() => { setMobileMenuOpen(false); setSpotlightOpen(true); }}
+              className="btn btn-outline"
+              style={{ justifyContent: 'flex-start', gap: '0.6rem', fontSize: '0.9rem' }}
+            >
+              <Search size={16} /> Quick Search Actions (⌘K)
+            </button>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-main)', fontSize: '0.9rem', fontWeight: 600 }}>Theme Mode</span>
+              <ThemeToggle />
+            </div>
+
+            {isHome && (
+              <>
+                <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-main)', padding: '0.3rem 0' }}>How it Works</a>
+                <a href="#technology" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-main)', padding: '0.3rem 0' }}>AI Tech</a>
+              </>
+            )}
+
+            {!isAuthenticated && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', paddingTop: '0.3rem' }}>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); onOpenLogin(); }}
+                  className="btn btn-outline"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); onOpenRegister(); }}
+                  className="btn btn-primary"
+                >
+                  <Camera size={15} /> Register Face
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </nav>
+
+      {/* Spotlight Command Modal */}
+      <SpotlightSearchModal
+        isOpen={spotlightOpen}
+        onClose={() => setSpotlightOpen(false)}
+      />
+    </>
   );
 };
