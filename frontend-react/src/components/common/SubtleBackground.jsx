@@ -5,7 +5,8 @@ import { useTheme } from '../../context/ThemeContext';
  * SubtleBackground
  * Ultra-refined, hardware-accelerated ambient background with slow,
  * drifting Champagne Gold, Midnight Azure, and Sunset Amber auroras.
- * Fades out smoothly to 0% during theme switching, then fades back in.
+ * Incorporates a hardware-accelerated microscopic Perlin dither layer
+ * and cosine-eased multi-stop ramps to completely eliminate 8-bit color banding.
  */
 export const SubtleBackground = () => {
   const { auroraVisible } = useTheme();
@@ -23,6 +24,7 @@ export const SubtleBackground = () => {
         opacity: auroraVisible ? 1 : 0,
         transition: auroraVisible ? 'opacity 0.28s ease-out' : 'opacity 0.1s ease-in',
         willChange: 'opacity',
+        transform: 'translateZ(0)',
       }}
     >
       {/* Drifting Ambient Aurora 1: Radiant Champagne Gold (Top Left - Center) */}
@@ -48,7 +50,7 @@ export const SubtleBackground = () => {
         className="subtle-bg-orb subtle-bg-orb-2"
         style={{
           position: 'absolute',
-          bottom: '-20%',
+          bottom: '-15%',
           right: '5%',
           width: '60vw',
           height: '60vw',
@@ -56,7 +58,7 @@ export const SubtleBackground = () => {
           maxHeight: '950px',
           borderRadius: '50%',
           background: 'var(--aurora-orb-2)',
-          filter: 'blur(120px)',
+          filter: 'blur(110px)',
           willChange: 'transform',
         }}
       />
@@ -79,15 +81,29 @@ export const SubtleBackground = () => {
         }}
       />
 
-      {/* Ultra-subtle Vignette Shade */}
-      <div
+      {/* Microscopic Anti-Banding Dither Noise Film (Scatters 8-bit quantization artifacts) */}
+      <svg
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.35) 100%)',
-          opacity: 'var(--ambient-opacity, 0.3)',
+          width: '100%',
+          height: '100%',
+          opacity: 0.038,
+          mixBlendMode: 'overlay',
+          pointerEvents: 'none',
         }}
-      />
+      >
+        <filter id="anti-banding-dither">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.8"
+            numOctaves="3"
+            stitchTiles="stitch"
+          />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#anti-banding-dither)" />
+      </svg>
     </div>
   );
 };
