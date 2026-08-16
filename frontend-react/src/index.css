@@ -197,10 +197,16 @@ body {
 }
 
 /* ===== Slick View Transition Circular Ripple Animation ===== */
+::view-transition-group(root) {
+  animation-duration: 0.5s;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+  height: 100%;
+  overflow: clip;
 }
 
 /* Directional View Transitions Layer Stacking */
