@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 const ThemeContext = createContext(null);
 
@@ -9,12 +9,17 @@ export const ThemeProvider = ({ children }) => {
     return 'dark'; // default dark theme
   });
 
+  const isTransitioningRef = useRef(false);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('app_theme', theme);
   }, [theme]);
 
   const toggleTheme = useCallback((e) => {
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
+
     const isCurrentlyDark = theme === 'dark';
     const nextTheme = isCurrentlyDark ? 'light' : 'dark';
 
@@ -22,7 +27,6 @@ export const ThemeProvider = ({ children }) => {
     if (document.startViewTransition) {
       const x = e?.clientX ?? window.innerWidth - 60;
       const y = e?.clientY ?? 35;
-      // Generous radius ensures circle completely clears the furthest screen corner
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
         Math.max(y, window.innerHeight - y)
@@ -42,16 +46,15 @@ export const ThemeProvider = ({ children }) => {
       transition.finished.finally(() => {
         requestAnimationFrame(() => {
           document.documentElement.removeAttribute('data-theme-transition');
+          isTransitioningRef.current = false;
         });
       });
     } else {
-      // Fallback smooth transition
-      document.documentElement.classList.add('theme-transitioning');
       document.documentElement.setAttribute('data-theme', nextTheme);
       setTheme(nextTheme);
       setTimeout(() => {
-        document.documentElement.classList.remove('theme-transitioning');
-      }, 500);
+        isTransitioningRef.current = false;
+      }, 300);
     }
   }, [theme]);
 

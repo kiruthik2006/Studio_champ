@@ -9,7 +9,11 @@ export const ThemeToggle = ({ className = '' }) => {
   return (
     <button
       type="button"
-      onClick={(e) => toggleTheme(e)}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleTheme(e);
+      }}
       className={`theme-toggle-slider ${className}`}
       aria-label={`Switch to ${isDarkOn ? 'light' : 'dark'} mode`}
       title={`Dark Mode: ${isDarkOn ? 'ON (Click to turn off)' : 'OFF (Click to turn on)'}`}
