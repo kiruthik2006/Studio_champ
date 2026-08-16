@@ -1,40 +1,49 @@
 import React from 'react';
-import { Cloud, Folder, ExternalLink } from 'lucide-react';
+import { Folder, ExternalLink } from 'lucide-react';
 
 /**
- * GoogleDriveIcon
- * Official Google Drive 3-color brand geometry
+ * Official Google Drive 2020 SVG Vector Icon (from Wikimedia Commons)
  */
-export const GoogleDriveIcon = ({ size = 18 }) => (
-  <svg width={size} height={size} viewBox="0 0 512 443.3" fill="none" style={{ flexShrink: 0 }}>
-    <path d="M165.7 443.3H0l173.3-300h165.7L165.7 443.3z" fill="#00AC47" />
-    <path d="M512 295.6L429.2 443.3H165.7l82.8-147.7H512z" fill="#0066DA" />
-    <path d="M339 143.3L256.2 0H82.9l82.8 143.3H339z" fill="#FFBA00" />
-    <path d="M256.2 0l173 300H263.5L90.5 0H256.2z" fill="#EA4335" />
+export const GoogleDriveIcon = ({ size = 20 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 87.3 78"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ flexShrink: 0 }}
+  >
+    <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da" />
+    <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47" />
+    <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335" />
+    <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.25z" fill="#00832d" />
+    <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.25z" fill="#2684fc" />
+    <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00" />
   </svg>
 );
 
 /**
- * GooglePhotosIcon
- * Official Google Photos 4-pinwheel brand geometry
+ * Official Google Photos Pinwheel SVG Icon
  */
 export const GooglePhotosIcon = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-    <path d="M12 2a4 4 0 00-4 4v2h4a4 4 0 004-4 4 4 0 00-4-4z" fill="#EA4335" />
-    <path d="M22 12a4 4 0 00-4-4h-2v4a4 4 0 004 4 4 4 0 002-4z" fill="#FBBC05" />
-    <path d="M12 22a4 4 0 004-4v-2h-4a4 4 0 00-4 4 4 4 0 004 4z" fill="#34A853" />
-    <path d="M2 12a4 4 0 004 4h2v-4a4 4 0 00-4-4 4 4 0 00-2 4z" fill="#4285F4" />
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 192 192"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ flexShrink: 0 }}
+  >
+    <path d="M96 96V36a36 36 0 10-36 36h36z" fill="#EA4335" />
+    <path d="M96 96h60a36 36 0 10-36-36v36z" fill="#FBBC05" />
+    <path d="M96 96v60a36 36 0 1036-36H96z" fill="#34A853" />
+    <path d="M96 96H36a36 36 0 1036 36V96z" fill="#4285F4" />
   </svg>
 );
 
 /**
  * GoogleDriveStorageWidget
- * Inspired by the reference design:
- * - Clean theme-adaptive surface (never dark in light mode)
- * - Authentic Google Drive & Photos brand iconography
- * - Multi-color circular ring meter
- * - Consumed vs Available storage stats (10.4 GB / 15 GB, 4.6 GB Free)
- * - Cloud Add-ons & Connected Folder integration
+ * Matches reference layout with zero overflow, theme-adaptive surfaces,
+ * authentic Google Drive vector geometry, and circular capacity meter.
  */
 export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const usedGB = 10.4;
@@ -42,8 +51,8 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const freeGB = (totalGB - usedGB).toFixed(1);
   const percentage = Math.round((usedGB / totalGB) * 100);
 
-  // Circular gauge math for radius 22 (circumference ~138.2)
-  const radius = 22;
+  // Circular gauge math for radius 20 (circumference ~125.6)
+  const radius = 20;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
@@ -59,13 +68,16 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         flexDirection: 'column',
         gap: '0.65rem',
         boxShadow: 'var(--shadow-sm)',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
+        width: '100%',
         transition: 'background-color 0.25s ease, border-color 0.25s ease',
       }}
     >
       {/* Header with Title & Auto-Sync Pill */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <GoogleDriveIcon size={18} />
+          <GoogleDriveIcon size={19} />
           <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)' }}>
             Google Drive
           </span>
@@ -83,6 +95,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.3rem',
+            flexShrink: 0,
           }}
         >
           <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
@@ -90,50 +103,52 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         </span>
       </div>
 
-      {/* Main Meter & Add-ons Grid (Clean Theme-Adaptive Box) */}
+      {/* Main Meter & Add-ons (Fits snugly with zero overflow) */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1.05fr 0.95fr',
-          gap: '0.5rem',
+          display: 'flex',
           alignItems: 'center',
-          padding: '0.65rem 0.75rem',
+          justifyContent: 'space-between',
+          padding: '0.6rem 0.65rem',
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-subtle)',
           borderRadius: 'var(--border-radius-sm)',
-          transition: 'background-color 0.25s ease',
+          boxSizing: 'border-box',
+          width: '100%',
+          overflow: 'hidden',
         }}
       >
-        {/* Left Column: Radial Storage Meter */}
+        {/* Left: Radial Storage Meter */}
         <div
           onClick={onOpenSyncModal}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.55rem',
+            gap: '0.5rem',
             cursor: 'pointer',
+            minWidth: 0,
           }}
           title="Click to configure Google Drive storage"
         >
-          <div style={{ position: 'relative', width: '50px', height: '50px', flexShrink: 0 }}>
-            <svg width="50" height="50" viewBox="0 0 54 54" style={{ transform: 'rotate(-90deg)' }}>
+          <div style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
+            <svg width="46" height="46" viewBox="0 0 50 50" style={{ transform: 'rotate(-90deg)' }}>
               {/* Background Track */}
               <circle
-                cx="27"
-                cy="27"
+                cx="25"
+                cy="25"
                 r={radius}
                 fill="transparent"
                 stroke="var(--border-subtle)"
-                strokeWidth="4"
+                strokeWidth="3.5"
               />
-              {/* Active Segment Arc */}
+              {/* Active Arc */}
               <circle
-                cx="27"
-                cy="27"
+                cx="25"
+                cy="25"
                 r={radius}
                 fill="transparent"
                 stroke="#2684FC"
-                strokeWidth="4"
+                strokeWidth="3.5"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
                 strokeLinecap="round"
@@ -143,7 +158,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
               />
             </svg>
 
-            {/* Inner Text Center */}
+            {/* Inner Text */}
             <div
               style={{
                 position: 'absolute',
@@ -155,90 +170,102 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
                 pointerEvents: 'none',
               }}
             >
-              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1 }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1 }}>
                 {usedGB}
               </span>
-              <span style={{ fontSize: '0.52rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.48rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
                 GB
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
               Storage
             </span>
-            <span style={{ fontSize: '0.68rem', color: '#10b981', fontWeight: 600, marginTop: '2px' }}>
+            <span style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap' }}>
               {freeGB} GB Free
             </span>
-            <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: '0.58rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
               of {totalGB} GB
             </span>
           </div>
         </div>
 
-        {/* Right Column: Connected Cloud Add-ons */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', borderLeft: '1px solid var(--border-subtle)', paddingLeft: '0.6rem' }}>
-          <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+        {/* Right: Connected Cloud Add-ons (Contained snugly) */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.3rem',
+            borderLeft: '1px solid var(--border-subtle)',
+            paddingLeft: '0.5rem',
+            flexShrink: 0,
+          }}
+        >
+          <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-muted)' }}>
             Add-ons
           </span>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             {/* Google Drive Icon Box */}
             <div
               onClick={onOpenSyncModal}
               style={{
-                width: '26px',
-                height: '26px',
-                borderRadius: '6px',
+                width: '23px',
+                height: '23px',
+                borderRadius: '5px',
                 background: 'rgba(66, 133, 244, 0.12)',
                 border: '1px solid rgba(66, 133, 244, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
+                flexShrink: 0,
               }}
-              title="Google Drive (Active)"
+              title="Google Drive"
             >
-              <GoogleDriveIcon size={14} />
+              <GoogleDriveIcon size={13} />
             </div>
 
             {/* Google Photos Icon Box */}
             <div
               onClick={onOpenSyncModal}
               style={{
-                width: '26px',
-                height: '26px',
-                borderRadius: '6px',
+                width: '23px',
+                height: '23px',
+                borderRadius: '5px',
                 background: 'rgba(234, 67, 53, 0.10)',
                 border: '1px solid rgba(234, 67, 53, 0.22)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
+                flexShrink: 0,
               }}
-              title="Google Photos Backup"
+              title="Google Photos"
             >
-              <GooglePhotosIcon size={14} />
+              <GooglePhotosIcon size={13} />
             </div>
 
             {/* Cloud Vault Folder Box */}
             <div
               onClick={onOpenSyncModal}
               style={{
-                width: '26px',
-                height: '26px',
-                borderRadius: '6px',
+                width: '23px',
+                height: '23px',
+                borderRadius: '5px',
                 background: 'rgba(201, 162, 39, 0.12)',
                 border: '1px solid var(--border-gold)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
+                flexShrink: 0,
               }}
-              title="Drive Folder: /StudioChamp/Events"
+              title="Drive Folder: /StudioChamp"
             >
-              <Folder size={12} color="var(--primary)" />
+              <Folder size={11} color="var(--primary)" />
             </div>
           </div>
 
@@ -246,7 +273,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
             type="button"
             onClick={onOpenSyncModal}
             style={{
-              fontSize: '0.68rem',
+              fontSize: '0.65rem',
               color: 'var(--primary)',
               fontWeight: 600,
               display: 'inline-flex',
@@ -254,12 +281,12 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
               gap: '0.2rem',
               textAlign: 'left',
               padding: 0,
-              marginTop: '0.1rem',
+              marginTop: '0.05rem',
               cursor: 'pointer',
             }}
           >
-            <span>Manage Sync</span>
-            <ExternalLink size={9} />
+            <span>Manage</span>
+            <ExternalLink size={8} />
           </button>
         </div>
       </div>
