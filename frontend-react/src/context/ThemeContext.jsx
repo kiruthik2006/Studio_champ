@@ -29,6 +29,9 @@ export const ThemeProvider = ({ children }) => {
       ) + 30;
 
       const transitionType = isCurrentlyDark ? 'dark-to-light' : 'light-to-dark';
+      document.documentElement.style.setProperty('--clip-x', `${x}px`);
+      document.documentElement.style.setProperty('--clip-y', `${y}px`);
+      document.documentElement.style.setProperty('--clip-radius', `${endRadius}px`);
       document.documentElement.setAttribute('data-theme-transition', transitionType);
 
       const transition = document.startViewTransition(() => {
@@ -36,44 +39,7 @@ export const ThemeProvider = ({ children }) => {
         setTheme(nextTheme);
       });
 
-      transition.ready.then(() => {
-        if (!isCurrentlyDark) {
-          // FORWARD: Turning Dark Mode ON (expanding dark circle outward)
-          const anim = document.documentElement.animate(
-            {
-              clipPath: [
-                `circle(0px at ${x}px ${y}px)`,
-                `circle(${endRadius}px at ${x}px ${y}px)`,
-              ],
-            },
-            {
-              duration: 500,
-              easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
-              pseudoElement: '::view-transition-new(root)',
-              fill: 'forwards',
-            }
-          );
-        } else {
-          // REVERSE: Turning Dark Mode OFF (dark view collapses inward)
-          const anim = document.documentElement.animate(
-            {
-              clipPath: [
-                `circle(${endRadius}px at ${x}px ${y}px)`,
-                `circle(0px at ${x}px ${y}px)`,
-              ],
-            },
-            {
-              duration: 500,
-              easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
-              pseudoElement: '::view-transition-old(root)',
-              fill: 'forwards',
-            }
-          );
-        }
-      });
-
       transition.finished.finally(() => {
-        // Small RAF delay ensures the final snapshot is dismissed before removing the transition class
         requestAnimationFrame(() => {
           document.documentElement.removeAttribute('data-theme-transition');
         });
