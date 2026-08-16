@@ -222,8 +222,9 @@ export const DashboardPage = () => {
         {/* Main Content Area */}
         <main className="dashboard-main">
           <div className="dashboard-content">
-            {/* TAB 1: Face Registration */}
-            {activeTab === 'face-registration' && (
+            <div key={activeTab} className="tab-content-enter">
+              {/* TAB 1: Face Registration */}
+              {activeTab === 'face-registration' && (
             <div>
               <div style={{ marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
@@ -464,6 +465,7 @@ export const DashboardPage = () => {
               </div>
             </div>
           )}
+            </div>
           </div>
           <Footer />
         </main>

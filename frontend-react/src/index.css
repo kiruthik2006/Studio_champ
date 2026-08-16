@@ -971,6 +971,21 @@ h1, h2, h3, h4, .font-display {
   }
 }
 
+.tab-content-enter {
+  animation: tabContentFadeIn 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tabContentFadeIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

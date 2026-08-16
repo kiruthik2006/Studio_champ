@@ -183,37 +183,39 @@ export const AdminDashboardPage = () => {
             <StatsOverview stats={stats} />
 
             {/* Tab Content */}
-            {activeTab === 'events' && (
-              <EventManager
-                events={events}
-                eventTypes={eventTypes}
-                onRefresh={fetchAdminData}
-                onSelectEventForUpload={handleSelectEventForUpload}
-              />
-            )}
+            <div key={activeTab} className="tab-content-enter">
+              {activeTab === 'events' && (
+                <EventManager
+                  events={events}
+                  eventTypes={eventTypes}
+                  onRefresh={fetchAdminData}
+                  onSelectEventForUpload={handleSelectEventForUpload}
+                />
+              )}
 
-            {activeTab === 'uploader' && (
-              <BatchPhotoUploader
-                events={events}
-                selectedEvent={uploadSelectedEvent}
-                onUploadComplete={fetchAdminData}
-                onCancel={() => setActiveTab('events')}
-              />
-            )}
+              {activeTab === 'uploader' && (
+                <BatchPhotoUploader
+                  events={events}
+                  selectedEvent={uploadSelectedEvent}
+                  onUploadComplete={fetchAdminData}
+                  onCancel={() => setActiveTab('events')}
+                />
+              )}
 
-            {activeTab === 'categories' && (
-              <EventTypeManager
-                eventTypes={eventTypes}
-                onRefresh={fetchAdminData}
-              />
-            )}
+              {activeTab === 'categories' && (
+                <EventTypeManager
+                  eventTypes={eventTypes}
+                  onRefresh={fetchAdminData}
+                />
+              )}
 
-            {activeTab === 'users' && (
-              <UserManager
-                users={users}
-                onRefresh={fetchAdminData}
-              />
-            )}
+              {activeTab === 'users' && (
+                <UserManager
+                  users={users}
+                  onRefresh={fetchAdminData}
+                />
+              )}
+            </div>
           </div>
 
           <Footer />
