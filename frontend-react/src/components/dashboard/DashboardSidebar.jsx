@@ -348,62 +348,64 @@ export const DashboardSidebar = ({
           </button>
         </div>
 
-        {/* 4. AI Engine Status */}
-        <div
-          style={{
-            padding: '0.65rem 0.8rem',
-            background: 'var(--card-bg)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--border-radius-md)',
-            fontSize: '0.75rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)', fontWeight: 600 }}>
-            <Cpu size={13} color="var(--primary)" />
-            <span>ArcFace 512-D Engine</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.68rem', color: '#10b981', fontWeight: 600 }}>
-            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
-            <span>Online</span>
-          </div>
-        </div>
-
-        {/* 5. Google Drive Radial Storage Meter & Cloud Sync Widget (Bottom Placement) */}
-        <GoogleDriveStorageWidget onOpenSyncModal={() => setIsDriveModalOpen(true)} />
-
-        {/* 6. Footer & Quick Logout */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: '0.4rem',
-            borderTop: '1px solid var(--border-subtle)',
-            fontSize: '0.72rem',
-            color: 'var(--text-muted)',
-            marginTop: 'auto',
-          }}
-        >
-          <span>Studio Champ v2.4</span>
-          <button
-            type="button"
-            onClick={logout}
+        {/* Bottom Dock Group (Pinned directly to the bottom above sign out) */}
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.65rem', paddingTop: '0.75rem' }}>
+          {/* AI Engine Status */}
+          <div
             style={{
-              display: 'inline-flex',
+              padding: '0.55rem 0.75rem',
+              background: 'var(--card-bg)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--border-radius-md)',
+              fontSize: '0.72rem',
+              display: 'flex',
               alignItems: 'center',
-              gap: '0.25rem',
-              color: 'var(--text-muted)',
-              transition: 'color 0.18s ease',
-              cursor: 'pointer',
+              justifyContent: 'space-between',
             }}
-            title="Sign out of your session"
           >
-            <LogOut size={12} />
-            <span>Sign Out</span>
-          </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)', fontWeight: 600 }}>
+              <Cpu size={12} color="var(--primary)" />
+              <span>ArcFace 512-D Engine</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.65rem', color: '#10b981', fontWeight: 600 }}>
+              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
+              <span>Online</span>
+            </div>
+          </div>
+
+          {/* Google Drive Radial Storage Meter & Cloud Sync Widget (Directly above Sign Out) */}
+          <GoogleDriveStorageWidget onOpenSyncModal={() => setIsDriveModalOpen(true)} />
+
+          {/* Footer & Quick Logout */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingTop: '0.45rem',
+              borderTop: '1px solid var(--border-subtle)',
+              fontSize: '0.72rem',
+              color: 'var(--text-muted)',
+            }}
+          >
+            <span>Studio Champ v2.4</span>
+            <button
+              type="button"
+              onClick={logout}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                color: 'var(--text-muted)',
+                transition: 'color 0.18s ease',
+                cursor: 'pointer',
+              }}
+              title="Sign out of your session"
+            >
+              <LogOut size={12} />
+              <span>Sign Out</span>
+            </button>
+          </div>
         </div>
       </aside>
 
