@@ -554,7 +554,7 @@ h1, h2, h3, h4, .font-display {
   }
 }
 
-/* Modals (Kinematic Optical Velocity Entrance) */
+/* Modals (Cyclic Symmetric Motion Blur Lifecycle) */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -563,12 +563,21 @@ h1, h2, h3, h4, .font-display {
   bottom: 0;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  animation: precisionOverlayFade 140ms ease-out;
+}
+
+.modal-overlay-entering {
+  animation: precisionOverlayFadeIn 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-overlay-closing {
+  animation: precisionOverlayFadeOut 220ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
 }
 
 .modal-content {
@@ -580,9 +589,18 @@ h1, h2, h3, h4, .font-display {
   max-width: 480px;
   position: relative;
   box-shadow: var(--shadow-xl), var(--shadow-glow);
-  animation: precisionModalSnap 240ms var(--ease-smooth) forwards;
   color: var(--text-main);
   transform-origin: center center;
+  will-change: transform, filter, opacity;
+}
+
+.modal-content-entering {
+  animation: precisionModalEnterMotionBlur 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-content-closing {
+  animation: precisionModalExitMotionBlur 220ms cubic-bezier(0.4, 0, 0.8, 1) forwards;
+  pointer-events: none;
 }
 
 .modal-close-btn {
@@ -841,8 +859,17 @@ h1, h2, h3, h4, .font-display {
   box-shadow: var(--shadow-lg);
   color: var(--text-main);
   font-size: 0.9rem;
-  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   max-width: 380px;
+  will-change: transform, filter, opacity;
+}
+
+.toast-entering {
+  animation: toastSlideEnterBlur 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast-closing {
+  animation: toastSlideExitBlur 200ms cubic-bezier(0.4, 0, 0.8, 1) forwards;
+  pointer-events: none;
 }
 
 .toast.toast-success {
@@ -857,15 +884,20 @@ h1, h2, h3, h4, .font-display {
   border-left: 4px solid var(--primary);
 }
 
-/* Kinematic Optical Deceleration Keyframes */
+/* Cyclic Motion Blur Keyframes (Vivid Physical Velocity) */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes precisionOverlayFade {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+@keyframes precisionOverlayFadeIn {
+  0% { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  100% { opacity: 1; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+}
+
+@keyframes precisionOverlayFadeOut {
+  0% { opacity: 1; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  100% { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
 }
 
 @keyframes scaleUp {
@@ -873,25 +905,63 @@ h1, h2, h3, h4, .font-display {
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes precisionModalSnap {
+/* Clear, vivid, directional optical motion blur on entry */
+@keyframes precisionModalEnterMotionBlur {
   0% {
     opacity: 0;
-    transform: translate3d(0, 10px, 0) scale(0.985);
+    transform: translate3d(0, 32px, 0) scale(0.93);
+    filter: blur(10px) brightness(1.12);
+  }
+  55% {
+    filter: blur(2.5px) brightness(1.03);
   }
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0px) brightness(1);
   }
 }
 
-@keyframes slideInRight {
+/* Symmetric reverse exit motion blur */
+@keyframes precisionModalExitMotionBlur {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0px) brightness(1);
+  }
+  45% {
+    filter: blur(3px) brightness(0.98);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.93);
+    filter: blur(10px) brightness(0.92);
+  }
+}
+
+@keyframes toastSlideEnterBlur {
   0% {
     opacity: 0;
-    transform: translate3d(24px, 0, 0);
+    transform: translate3d(40px, 0, 0) scale(0.94);
+    filter: blur(8px);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes toastSlideExitBlur {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(40px, 0, 0) scale(0.94);
+    filter: blur(8px);
   }
 }
 

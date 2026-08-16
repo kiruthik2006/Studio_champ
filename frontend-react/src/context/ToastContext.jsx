@@ -6,25 +6,33 @@ const ToastContext = createContext(null);
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
-  const showToast = useCallback((message, type = 'info', duration = 4000) => {
-    const id = Date.now() + Math.random().toString(36).substr(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
-
+  const removeToast = useCallback((id) => {
+    setToasts((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, isClosing: true } : t))
+    );
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, duration);
+    }, 220);
   }, []);
 
-  const removeToast = useCallback((id) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+  const showToast = useCallback((message, type = 'info', duration = 4000) => {
+    const id = Date.now() + Math.random().toString(36).substr(2, 9);
+    setToasts((prev) => [...prev, { id, message, type, isClosing: false }]);
+
+    setTimeout(() => {
+      removeToast(id);
+    }, duration);
+  }, [removeToast]);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
       <div className="toast-container" aria-live="polite">
         {toasts.map((toast) => (
-          <div key={toast.id} className={`toast toast-${toast.type}`}>
+          <div
+            key={toast.id}
+            className={`toast toast-${toast.type} ${toast.isClosing ? 'toast-closing' : 'toast-entering'}`}
+          >
             {toast.type === 'success' && <CheckCircle2 size={18} color="#6ed696" />}
             {toast.type === 'error' && <AlertCircle size={18} color="#ff8585" />}
             {toast.type === 'info' && <Info size={18} color="#dfb94a" />}

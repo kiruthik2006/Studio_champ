@@ -25,14 +25,25 @@ export const SpotlightSearchModal = ({ isOpen, onClose }) => {
   const { isLight } = useTheme();
   const { isAuthenticated, isAdmin } = useAuth();
 
+  const [isRendered, setIsRendered] = useState(isOpen);
+  const [isClosing, setIsClosing] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
+      setIsRendered(true);
+      setIsClosing(false);
       setTimeout(() => inputRef.current?.focus(), 50);
       loadEvents();
-    } else {
-      setQuery('');
+    } else if (isRendered) {
+      setIsClosing(true);
+      const timer = setTimeout(() => {
+        setIsRendered(false);
+        setIsClosing(false);
+        setQuery('');
+      }, 240);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, isRendered]);
 
   const loadEvents = async () => {
     if (!isAuthenticated) return;
@@ -49,7 +60,17 @@ export const SpotlightSearchModal = ({ isOpen, onClose }) => {
     }
   };
 
-  if (!isOpen) return null;
+  const handleSelectPage = (path) => {
+    navigate(path);
+    onClose();
+  };
+
+  const handleSelectEvent = (event) => {
+    navigate(`/dashboard`);
+    onClose();
+  };
+
+  if (!isRendered) return null;
 
   const quickActions = [
     ...(isAuthenticated ? [
@@ -103,12 +124,12 @@ export const SpotlightSearchModal = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="modal-overlay"
+      className={`modal-overlay ${isClosing ? 'modal-overlay-closing' : 'modal-overlay-entering'}`}
       onClick={onClose}
       style={{ zIndex: 3000, alignItems: 'flex-start', paddingTop: '12vh' }}
     >
       <div
-        className="modal-content glass-card-elevated"
+        className={`modal-content glass-card-elevated ${isClosing ? 'modal-content-closing' : 'modal-content-entering'}`}
         onClick={(e) => e.stopPropagation()}
         style={{
           maxWidth: '620px',
