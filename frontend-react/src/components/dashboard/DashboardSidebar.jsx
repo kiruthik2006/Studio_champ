@@ -348,33 +348,31 @@ export const DashboardSidebar = ({
           </button>
         </div>
 
-        {/* 4. Google Drive Radial Storage Meter & Cloud Sync Widget (From Reference Design) */}
-        <GoogleDriveStorageWidget onOpenSyncModal={() => setIsDriveModalOpen(true)} />
-
-        {/* 5. AI Engine & Matching Telemetry Card */}
+        {/* 4. AI Engine Status */}
         <div
           style={{
-            padding: '0.75rem 0.85rem',
+            padding: '0.65rem 0.8rem',
             background: 'var(--card-bg)',
             border: '1px solid var(--border-subtle)',
             borderRadius: 'var(--border-radius-md)',
             fontSize: '0.75rem',
             display: 'flex',
-            flexDirection: 'column',
-            gap: '0.35rem',
+            alignItems: 'center',
+            justifyContent: 'space-between',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)', fontWeight: 600 }}>
-              <Cpu size={12} color="var(--primary)" />
-              <span>ArcFace 512-D</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.68rem', color: '#10b981', fontWeight: 600 }}>
-              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
-              <span>Online</span>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)', fontWeight: 600 }}>
+            <Cpu size={13} color="var(--primary)" />
+            <span>ArcFace 512-D Engine</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.68rem', color: '#10b981', fontWeight: 600 }}>
+            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
+            <span>Online</span>
           </div>
         </div>
+
+        {/* 5. Google Drive Radial Storage Meter & Cloud Sync Widget (Bottom Placement) */}
+        <GoogleDriveStorageWidget onOpenSyncModal={() => setIsDriveModalOpen(true)} />
 
         {/* 6. Footer & Quick Logout */}
         <div
