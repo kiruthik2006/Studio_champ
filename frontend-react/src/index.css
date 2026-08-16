@@ -203,11 +203,30 @@ body {
   mix-blend-mode: normal;
 }
 
+/* Directional View Transitions Layer Stacking */
 ::view-transition-old(root) {
   z-index: 1;
 }
 
 ::view-transition-new(root) {
+  z-index: 999999;
+}
+
+/* When switching Dark -> Light (Reverse): Keep old dark layer on top so it collapses inward */
+[data-theme-transition="dark-to-light"]::view-transition-old(root) {
+  z-index: 999999;
+}
+
+[data-theme-transition="dark-to-light"]::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* When switching Light -> Dark (Forward): Keep new dark layer on top so it expands outward */
+[data-theme-transition="light-to-dark"]::view-transition-old(root) {
+  z-index: 1;
+}
+
+[data-theme-transition="light-to-dark"]::view-transition-new(root) {
   z-index: 999999;
 }
 

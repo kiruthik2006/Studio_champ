@@ -4,21 +4,22 @@ import { Sun, Moon } from 'lucide-react';
 
 export const ThemeToggle = ({ className = '' }) => {
   const { isLight, toggleTheme } = useTheme();
+  const isDarkOn = !isLight;
 
   return (
     <button
       type="button"
       onClick={(e) => toggleTheme(e)}
       className={`theme-toggle-slider ${className}`}
-      aria-label={`Switch to ${isLight ? 'dark' : 'light'} mode`}
-      title={`Switch to ${isLight ? 'dark' : 'light'} mode`}
+      aria-label={`Switch to ${isDarkOn ? 'light' : 'dark'} mode`}
+      title={`Dark Mode: ${isDarkOn ? 'ON (Click to turn off)' : 'OFF (Click to turn on)'}`}
       style={{
         position: 'relative',
         width: '56px',
         height: '28px',
         borderRadius: '999px',
-        background: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.08)',
-        border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.12)' : 'rgba(201, 162, 39, 0.35)'}`,
+        background: isDarkOn ? 'rgba(201, 162, 39, 0.15)' : 'rgba(0, 0, 0, 0.07)',
+        border: `1px solid ${isDarkOn ? 'rgba(201, 162, 39, 0.4)' : 'rgba(0, 0, 0, 0.14)'}`,
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
@@ -27,23 +28,27 @@ export const ThemeToggle = ({ className = '' }) => {
         outline: 'none',
       }}
     >
-      {/* Sliding Knob */}
+      {/* Sliding Knob (ON = Right for Dark Mode, OFF = Left for Light Mode) */}
       <div
         style={{
           width: '22px',
           height: '22px',
           borderRadius: '50%',
-          background: isLight ? '#ffffff' : 'var(--gradient-gold)',
-          color: isLight ? '#b88a1b' : '#0d0d0d',
+          background: isDarkOn ? 'var(--gradient-gold)' : '#ffffff',
+          color: isDarkOn ? '#0d0d0d' : '#8c640e',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: isLight ? '0 2px 6px rgba(0,0,0,0.15)' : '0 2px 6px rgba(0,0,0,0.4)',
-          transform: isLight ? 'translateX(28px)' : 'translateX(0px)',
+          boxShadow: isDarkOn ? '0 2px 6px rgba(0,0,0,0.45)' : '0 2px 5px rgba(0,0,0,0.15)',
+          transform: isDarkOn ? 'translateX(28px)' : 'translateX(0px)',
           transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease',
         }}
       >
-        {isLight ? <Sun size={13} color="#b88a1b" strokeWidth={2.5} /> : <Moon size={13} color="#0d0d0d" strokeWidth={2.5} />}
+        {isDarkOn ? (
+          <Moon size={13} color="#0d0d0d" strokeWidth={2.5} />
+        ) : (
+          <Sun size={13} color="#8c640e" strokeWidth={2.5} />
+        )}
       </div>
     </button>
   );
