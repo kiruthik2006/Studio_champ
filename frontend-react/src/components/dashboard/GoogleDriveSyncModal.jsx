@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { GoogleDriveIcon } from './GoogleDriveStorageWidget';
 import {
   Cloud,
   CheckCircle,
@@ -72,16 +73,17 @@ export const GoogleDriveSyncModal = ({ isOpen, onClose }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <div
               style={{
-                width: '36px',
-                height: '36px',
+                width: '38px',
+                height: '38px',
                 borderRadius: '8px',
-                background: 'linear-gradient(135deg, #4285F4 0%, #34A853 50%, #FBBC05 100%)',
+                background: 'rgba(66, 133, 244, 0.12)',
+                border: '1px solid rgba(66, 133, 244, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Cloud size={20} color="#ffffff" />
+              <GoogleDriveIcon size={22} />
             </div>
             <div>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--text-main)', margin: 0 }}>
