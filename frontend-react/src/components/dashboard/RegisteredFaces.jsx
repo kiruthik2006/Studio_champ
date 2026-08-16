@@ -51,9 +51,7 @@ export const RegisteredFaces = ({ refreshTrigger }) => {
   const formatImageUrl = (path) => {
     if (!path) return '';
     if (path.startsWith('http')) return path;
-    // Strip leading slash if needed or point to backend
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    return `http://localhost:5001${cleanPath}`;
+    return path.startsWith('/') ? path : `/${path}`;
   };
 
   return (

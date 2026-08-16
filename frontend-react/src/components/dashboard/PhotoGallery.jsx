@@ -12,8 +12,7 @@ export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessa
   const formatImageUrl = (path) => {
     if (!path) return '';
     if (path.startsWith('http')) return path;
-    const clean = path.startsWith('/') ? path : `/${path}`;
-    return `http://localhost:5001${clean}`;
+    return path.startsWith('/') ? path : `/${path}`;
   };
 
   const filteredPhotos = safePhotos.filter((p) => {

@@ -134,12 +134,15 @@ def create_app(config_name="default"):
     def health_check():
         return {"success": True, "message": "Server is running"}, 200
 
-    # Serve uploaded files
+    # Serve uploaded files with CORS and CORP headers to prevent OpaqueResponseBlocking
     @app.route("/uploads/<path:filename>")
     def serve_upload(filename):
         from flask import send_from_directory
 
-        return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+        response = send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
+        return response
 
     return app
 
