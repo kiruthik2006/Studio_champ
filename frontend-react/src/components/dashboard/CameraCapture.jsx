@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export const CameraCapture = ({ onFacesUploaded }) => {
   const [streamActive, setStreamActive] = useState(false);
+  const [mediaStream, setMediaStream] = useState(null);
   const [capturedImages, setCapturedImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [cameraError, setCameraError] = useState(null);
@@ -16,6 +17,16 @@ export const CameraCapture = ({ onFacesUploaded }) => {
 
   const { showToast } = useToast();
   const { refreshUserProfile } = useAuth();
+
+  // Attach stream to video element when mounted
+  useEffect(() => {
+    if (videoRef.current && mediaStream) {
+      videoRef.current.srcObject = mediaStream;
+      videoRef.current.play().catch((err) => {
+        console.warn('Video play auto-start issue:', err);
+      });
+    }
+  }, [mediaStream, streamActive]);
 
   // Start live webcam stream
   const startCamera = async () => {
@@ -30,10 +41,7 @@ export const CameraCapture = ({ onFacesUploaded }) => {
         audio: false,
       });
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
+      setMediaStream(stream);
       setStreamActive(true);
     } catch (err) {
       console.error('Camera access error:', err);
@@ -44,9 +52,11 @@ export const CameraCapture = ({ onFacesUploaded }) => {
 
   // Stop camera stream
   const stopCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const tracks = videoRef.current.srcObject.getTracks();
-      tracks.forEach((track) => track.stop());
+    if (mediaStream) {
+      mediaStream.getTracks().forEach((track) => track.stop());
+      setMediaStream(null);
+    }
+    if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
     setStreamActive(false);
@@ -55,26 +65,30 @@ export const CameraCapture = ({ onFacesUploaded }) => {
   useEffect(() => {
     return () => {
       // Cleanup on unmount
-      if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach((track) => track.stop());
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, [mediaStream]);
 
   // Capture face snapshot from video feed
   const captureFace = () => {
     if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    if (!video.videoWidth || !video.videoHeight || video.readyState < 2) {
+      showToast('Camera stream is still starting up, please wait a moment...', 'warning');
+      return;
+    }
 
     if (capturedImages.length >= 10) {
       showToast('Maximum 10 face photos allowed', 'warning');
       return;
     }
 
-    const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
