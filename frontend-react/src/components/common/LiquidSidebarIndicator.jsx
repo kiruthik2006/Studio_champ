@@ -35,14 +35,14 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
 
     // Organic teardrop contour depending on travel direction
     const teardropRadius = isMovingDown
-      ? '35% 35% 65% 65% / 25% 25% 75% 75%'
-      : '65% 65% 35% 35% / 75% 75% 25% 25%';
+      ? '30% 30% 70% 70% / 20% 20% 80% 80%'
+      : '70% 70% 30% 30% / 80% 80% 20% 20%';
 
     const pillRadius = 'var(--border-radius-md, 10px)';
 
-    // Liquid Water Drop Morphing Keyframes (Clearly Perceptible & Fluid)
+    // Liquid Water Drop Morphing Keyframes with Motion Blur & Extended Flight
     const keyframes = [
-      // 0%: Full Resting Pill at Initial Option
+      // 0%: Full Resting Pill at Initial Option (Crystal Clear)
       {
         top: `${prevTop}px`,
         height: `${targetHeight}px`,
@@ -50,32 +50,43 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         right: '0px',
         borderRadius: pillRadius,
         transform: 'scale(1, 1)',
-        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.18))',
+        filter: 'blur(0px) drop-shadow(0 2px 4px rgba(0,0,0,0.18))',
         opacity: 1,
       },
-      // 20%: Pinches & Condenses into a round liquid droplet (clearly visible)
+      // 18%: Surface tension collapse into a round liquid droplet (initiating motion blur)
       {
-        top: `${prevTop + (isMovingDown ? 6 : -6)}px`,
+        top: `${prevTop + (isMovingDown ? 8 : -8)}px`,
         height: '32px',
         left: 'calc(50% - 16px)',
         right: 'calc(50% - 16px)',
         borderRadius: '50%',
-        transform: 'scale(0.85, 1.2)',
-        filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.32))',
-        opacity: 0.98,
+        transform: 'scale(0.85, 1.25)',
+        filter: 'blur(1.5px) drop-shadow(0 6px 14px rgba(0,0,0,0.32))',
+        opacity: 0.96,
       },
-      // 55%: Mid-flight aerodynamic stretched water drop traveling along the track
+      // 45%: Mid-flight peak velocity with pronounced fluid motion blur & vertical stretch
       {
         top: `${midTop}px`,
-        height: '38px',
+        height: '40px',
         left: 'calc(50% - 14px)',
         right: 'calc(50% - 14px)',
         borderRadius: teardropRadius,
-        transform: isMovingDown ? 'scale(0.72, 1.5) translateY(4px)' : 'scale(0.72, 1.5) translateY(-4px)',
-        filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.4))',
+        transform: isMovingDown ? 'scale(0.68, 1.65) translateY(6px)' : 'scale(0.68, 1.65) translateY(-6px)',
+        filter: 'blur(4px) drop-shadow(0 10px 22px rgba(0,0,0,0.45))',
         opacity: 1,
       },
-      // 82%: Impact splash & horizontal liquid expansion on target option
+      // 78%: Approaching target, decelerating and blur resolving
+      {
+        top: `${targetTop + (isMovingDown ? -6 : 6)}px`,
+        height: '34px',
+        left: 'calc(50% - 16px)',
+        right: 'calc(50% - 16px)',
+        borderRadius: '50%',
+        transform: 'scale(0.9, 1.15)',
+        filter: 'blur(1.5px) drop-shadow(0 6px 12px rgba(0,0,0,0.25))',
+        opacity: 1,
+      },
+      // 88%: Impact splash & horizontal liquid expansion on target option
       {
         top: `${targetTop + (isMovingDown ? 2 : -2)}px`,
         height: `${targetHeight * 0.92}px`,
@@ -83,10 +94,10 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         right: '4px',
         borderRadius: '14px',
         transform: 'scale(1.03, 0.92)',
-        filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.22))',
+        filter: 'blur(0.5px) drop-shadow(0 4px 8px rgba(0,0,0,0.22))',
         opacity: 1,
       },
-      // 100%: Relaxes into full pristine capsule pill highlighting new option
+      // 100%: Relaxes into pristine capsule pill (Zero Blur)
       {
         top: `${targetTop}px`,
         height: `${targetHeight}px`,
@@ -94,13 +105,13 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         right: '0px',
         borderRadius: pillRadius,
         transform: 'scale(1, 1)',
-        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.18))',
+        filter: 'blur(0px) drop-shadow(0 2px 4px rgba(0,0,0,0.18))',
         opacity: 1,
       },
     ];
 
-    // Deliberate, clearly perceptible timing so the droplet morph is enjoyed
-    const duration = Math.min(800, Math.max(620, distance * 3.0));
+    // Extended cinematic duration for rich liquid appreciation (920ms - 1250ms)
+    const duration = Math.min(1250, Math.max(920, distance * 4.2));
 
     const anim = indicatorRef.current.animate(keyframes, {
       duration: duration,
@@ -116,6 +127,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         indicatorRef.current.style.right = '0px';
         indicatorRef.current.style.borderRadius = pillRadius;
         indicatorRef.current.style.transform = 'scale(1, 1)';
+        indicatorRef.current.style.filter = 'blur(0px) drop-shadow(0 2px 4px rgba(0,0,0,0.18))';
       }
     };
   }, [activeTab, tabRefs]);
@@ -135,7 +147,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         zIndex: 1,
         opacity: 0,
         transformOrigin: 'center center',
-        willChange: 'transform, top, left, right, border-radius',
+        willChange: 'transform, top, left, right, border-radius, filter',
       }}
     />
   );
