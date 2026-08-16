@@ -20,6 +20,18 @@ export const EventCard = ({ event, onSearch, onFindPhotos, searching, isLoading 
     }
   };
 
+  // Resolve high-resolution photography cover based on event type or name
+  const getCoverImage = () => {
+    if (event.cover_url || event.cover_image) return event.cover_url || event.cover_image;
+    const nameLower = (event.name || '').toLowerCase();
+    const typeLower = (event.event_type || '').toLowerCase();
+    if (nameLower.includes('wedding') || typeLower.includes('wedding')) return '/covers/wedding.jpg';
+    if (nameLower.includes('gala') || nameLower.includes('award') || typeLower.includes('gala')) return '/covers/gala.jpg';
+    if (nameLower.includes('family') || nameLower.includes('reunion') || typeLower.includes('family')) return '/covers/family.jpg';
+    if (nameLower.includes('summit') || nameLower.includes('conf') || nameLower.includes('tech')) return '/covers/summit.jpg';
+    return '/covers/wedding.jpg';
+  };
+
   return (
     <div
       className="glass-card"
@@ -31,11 +43,13 @@ export const EventCard = ({ event, onSearch, onFindPhotos, searching, isLoading 
         transition: 'all var(--transition-normal)',
       }}
     >
-      {/* Cover / Header */}
+      {/* Cover / Header with Real Photography & Gradient Scrim */}
       <div
         style={{
-          height: '140px',
-          background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.25) 0%, rgba(20, 20, 20, 0.9) 100%)',
+          height: '160px',
+          backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.85) 100%), url(${getCoverImage()})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           padding: '1.25rem',
           display: 'flex',
           flexDirection: 'column',
@@ -64,7 +78,7 @@ export const EventCard = ({ event, onSearch, onFindPhotos, searching, isLoading 
           </span>
         </div>
 
-        <h3 style={{ fontSize: '1.3rem', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.6)' }}>
+        <h3 style={{ fontSize: '1.3rem', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
           {event.name}
         </h3>
       </div>

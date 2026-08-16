@@ -156,6 +156,154 @@ export const LandingPage = () => {
         </div>
       </section>
 
+      {/* Visual Live Showcase Section */}
+      <section style={{
+        padding: '2rem 2rem 6rem',
+        maxWidth: 1200,
+        margin: '0 auto',
+        width: '100%',
+        position: 'relative',
+        zIndex: 1
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <span className="status-badge badge-gold" style={{ marginBottom: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <Sparkles size={13} /> Visual Discovery
+          </span>
+          <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'var(--text-main)', marginBottom: '1rem' }}>
+            Curated For <span className="gold-text">Every Moment</span>
+          </h2>
+          <p style={{ color: 'var(--text-muted)', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
+            From grand destination weddings to family portrait circles, discover your memories instantly with ArcFace 512-D neural precision and direct Google Drive auto-sync.
+          </p>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: '1.75rem',
+        }}>
+          {/* Card 1: Wedding */}
+          <div className="glass-card" style={{ overflow: 'hidden', padding: 0 }}>
+            <div style={{
+              height: '190px',
+              backgroundImage: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%), url(/covers/wedding.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              padding: '1.25rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}>
+              <span className="status-badge badge-gold" style={{ alignSelf: 'flex-start', fontSize: '0.72rem' }}>
+                Destination Wedding
+              </span>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 700, background: 'rgba(0,0,0,0.65)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                  ✓ 99.6% Cosine Match
+                </span>
+                <h3 style={{ color: '#fff', fontSize: '1.15rem', marginTop: '0.4rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  Amalfi Coast Sunset Wedding
+                </h3>
+              </div>
+            </div>
+            <div style={{ padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              <span>240 Photos Processed</span>
+              <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Drive Auto-Synced</span>
+            </div>
+          </div>
+
+          {/* Card 2: Gala */}
+          <div className="glass-card" style={{ overflow: 'hidden', padding: 0 }}>
+            <div style={{
+              height: '190px',
+              backgroundImage: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%), url(/covers/gala.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              padding: '1.25rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}>
+              <span className="status-badge badge-gold" style={{ alignSelf: 'flex-start', fontSize: '0.72rem' }}>
+                Fashion Gala
+              </span>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 700, background: 'rgba(0,0,0,0.65)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                  ✓ 99.4% Cosine Match
+                </span>
+                <h3 style={{ color: '#fff', fontSize: '1.15rem', marginTop: '0.4rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  Elite Fashion Gala Awards
+                </h3>
+              </div>
+            </div>
+            <div style={{ padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              <span>450 Photos Processed</span>
+              <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Drive Auto-Synced</span>
+            </div>
+          </div>
+
+          {/* Card 3: Family Portrait */}
+          <div className="glass-card" style={{ overflow: 'hidden', padding: 0 }}>
+            <div style={{
+              height: '190px',
+              backgroundImage: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%), url(/covers/family.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              padding: '1.25rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}>
+              <span className="status-badge badge-gold" style={{ alignSelf: 'flex-start', fontSize: '0.72rem' }}>
+                Family Circle
+              </span>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 700, background: 'rgba(0,0,0,0.65)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                  ✓ Multi-Person All Present
+                </span>
+                <h3 style={{ color: '#fff', fontSize: '1.15rem', marginTop: '0.4rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  Lavender Fields Family Portrait
+                </h3>
+              </div>
+            </div>
+            <div style={{ padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              <span>180 Photos Processed</span>
+              <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Drive Auto-Synced</span>
+            </div>
+          </div>
+
+          {/* Card 4: Summit */}
+          <div className="glass-card" style={{ overflow: 'hidden', padding: 0 }}>
+            <div style={{
+              height: '190px',
+              backgroundImage: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%), url(/covers/summit.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              padding: '1.25rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}>
+              <span className="status-badge badge-gold" style={{ alignSelf: 'flex-start', fontSize: '0.72rem' }}>
+                Keynote Summit
+              </span>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 700, background: 'rgba(0,0,0,0.65)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                  ✓ 98.9% Cosine Match
+                </span>
+                <h3 style={{ color: '#fff', fontSize: '1.15rem', marginTop: '0.4rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  Build The Future Tech Summit
+                </h3>
+              </div>
+            </div>
+            <div style={{ padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              <span>620 Photos Processed</span>
+              <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Drive Auto-Synced</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How It Works Section */}
       <section id="how-it-works" style={{
         padding: '6rem 2rem',
