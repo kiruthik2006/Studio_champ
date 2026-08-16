@@ -440,24 +440,23 @@ h1, h2, h3, h4, .font-display {
   transform: none !important;
 }
 
-/* Glass & Cards */
+/* Glass & Cards (Color/Border Highlight Only - No Size/Transform Shift) */
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-gold);
   border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
-  transition: transform var(--motion-normal) var(--ease-smooth), 
-              border-color var(--motion-normal) ease, 
-              box-shadow var(--motion-normal) var(--ease-smooth);
-  transform: translate3d(0, 0, 0);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, 
+              background-color 0.2s ease, 
+              box-shadow 0.2s ease;
 }
 
 .glass-card:hover {
-  transform: translate3d(0, -2px, 0);
-  border-color: var(--card-hover-border);
-  box-shadow: var(--shadow-lg), 0 0 20px rgba(201, 162, 39, 0.1);
+  border-color: var(--primary);
+  background-color: var(--card-bg-elevated);
+  box-shadow: var(--shadow-md), 0 0 14px rgba(201, 162, 39, 0.12);
 }
 
 .glass-card-elevated {
@@ -466,8 +465,13 @@ h1, h2, h3, h4, .font-display {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-gold);
   border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
-  transform: translate3d(0, 0, 0);
+  box-shadow: var(--shadow-md);
+  transition: border-color 0.2s ease, 
+              background-color 0.2s ease;
+}
+
+.glass-card-elevated:hover {
+  border-color: var(--primary);
 }
 
 /* Navbar */
@@ -595,11 +599,11 @@ h1, h2, h3, h4, .font-display {
 }
 
 .modal-content-entering {
-  animation: precisionModalEnterMotionBlur 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: precisionModalEnter 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .modal-content-closing {
-  animation: precisionModalExitMotionBlur 220ms cubic-bezier(0.4, 0, 0.8, 1) forwards;
+  animation: precisionModalExit 200ms cubic-bezier(0.4, 0, 0.8, 1) forwards;
   pointer-events: none;
 }
 
@@ -864,11 +868,11 @@ h1, h2, h3, h4, .font-display {
 }
 
 .toast-entering {
-  animation: toastSlideEnterBlur 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: toastSlideEnter 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .toast-closing {
-  animation: toastSlideExitBlur 200ms cubic-bezier(0.4, 0, 0.8, 1) forwards;
+  animation: toastSlideExit 200ms cubic-bezier(0.4, 0, 0.8, 1) forwards;
   pointer-events: none;
 }
 
@@ -884,20 +888,20 @@ h1, h2, h3, h4, .font-display {
   border-left: 4px solid var(--primary);
 }
 
-/* Cyclic Motion Blur Keyframes (Vivid Physical Velocity) */
+/* Cyclic Motion Keyframes (Crisp, High-Precision Decay) */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 @keyframes precisionOverlayFadeIn {
-  0% { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-  100% { opacity: 1; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 @keyframes precisionOverlayFadeOut {
-  0% { opacity: 1; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-  100% { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @keyframes scaleUp {
@@ -905,63 +909,49 @@ h1, h2, h3, h4, .font-display {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Clear, vivid, directional optical motion blur on entry */
-@keyframes precisionModalEnterMotionBlur {
+/* Clean, crisp entry without black/muddy blur artifacts */
+@keyframes precisionModalEnter {
   0% {
     opacity: 0;
-    transform: translate3d(0, 32px, 0) scale(0.93);
-    filter: blur(10px) brightness(1.12);
-  }
-  55% {
-    filter: blur(2.5px) brightness(1.03);
+    transform: translate3d(0, 18px, 0) scale(0.97);
   }
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0px) brightness(1);
   }
 }
 
-/* Symmetric reverse exit motion blur */
-@keyframes precisionModalExitMotionBlur {
+/* Symmetric reverse exit */
+@keyframes precisionModalExit {
   0% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0px) brightness(1);
-  }
-  45% {
-    filter: blur(3px) brightness(0.98);
   }
   100% {
     opacity: 0;
-    transform: translate3d(0, 28px, 0) scale(0.93);
-    filter: blur(10px) brightness(0.92);
+    transform: translate3d(0, 16px, 0) scale(0.97);
   }
 }
 
-@keyframes toastSlideEnterBlur {
+@keyframes toastSlideEnter {
   0% {
     opacity: 0;
-    transform: translate3d(40px, 0, 0) scale(0.94);
-    filter: blur(8px);
+    transform: translate3d(30px, 0, 0) scale(0.96);
   }
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0px);
   }
 }
 
-@keyframes toastSlideExitBlur {
+@keyframes toastSlideExit {
   0% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0px);
   }
   100% {
     opacity: 0;
-    transform: translate3d(40px, 0, 0) scale(0.94);
-    filter: blur(8px);
+    transform: translate3d(30px, 0, 0) scale(0.96);
   }
 }
 
