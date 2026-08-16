@@ -197,54 +197,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ===== Soft Feathered Circular Bloom View Transition (Compositor-Accelerated) ===== */
-@keyframes featheredRippleExpand {
-  0% {
-    -webkit-mask-image: radial-gradient(circle 0px at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, transparent 0%);
-    mask-image: radial-gradient(circle 0px at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, transparent 0%);
+/* ===== Smooth Circular Bloom View Transition (Pure GPU Accelerated, Zero Stutter) ===== */
+@keyframes smoothCircularExpand {
+  from {
     clip-path: circle(0px at var(--clip-x, 90vw) var(--clip-y, 35px));
   }
-  20% {
-    -webkit-mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.22) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.22 - 70px), transparent calc(var(--clip-radius, 150vmax) * 0.22));
-    mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.22) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.22 - 70px), transparent calc(var(--clip-radius, 150vmax) * 0.22));
-    clip-path: circle(calc(var(--clip-radius, 150vmax) * 0.22) at var(--clip-x, 90vw) var(--clip-y, 35px));
-  }
-  50% {
-    -webkit-mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.58) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 calc(var(--clip-radius, 150vmax) * 0.58 - 140px), rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.58 - 40px), transparent calc(var(--clip-radius, 150vmax) * 0.58));
-    mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.58) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 calc(var(--clip-radius, 150vmax) * 0.58 - 140px), rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.58 - 40px), transparent calc(var(--clip-radius, 150vmax) * 0.58));
-    clip-path: circle(calc(var(--clip-radius, 150vmax) * 0.58) at var(--clip-x, 90vw) var(--clip-y, 35px));
-  }
-  80% {
-    -webkit-mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.88) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 calc(var(--clip-radius, 150vmax) * 0.88 - 160px), rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.88 - 50px), transparent calc(var(--clip-radius, 150vmax) * 0.88));
-    mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.88) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 calc(var(--clip-radius, 150vmax) * 0.88 - 160px), rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.88 - 50px), transparent calc(var(--clip-radius, 150vmax) * 0.88));
-    clip-path: circle(calc(var(--clip-radius, 150vmax) * 0.88) at var(--clip-x, 90vw) var(--clip-y, 35px));
-  }
-  100% {
-    -webkit-mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) + 250px) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 100%, transparent 100%);
-    mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) + 250px) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 100%, transparent 100%);
-    clip-path: circle(calc(var(--clip-radius, 150vmax) + 250px) at var(--clip-x, 90vw) var(--clip-y, 35px));
+  to {
+    clip-path: circle(var(--clip-radius, 150vmax) at var(--clip-x, 90vw) var(--clip-y, 35px));
   }
 }
 
-@keyframes featheredRippleCollapse {
-  0% {
-    -webkit-mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) + 250px) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 100%, transparent 100%);
-    mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) + 250px) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 100%, transparent 100%);
-    clip-path: circle(calc(var(--clip-radius, 150vmax) + 250px) at var(--clip-x, 90vw) var(--clip-y, 35px));
+@keyframes smoothCircularCollapse {
+  from {
+    clip-path: circle(var(--clip-radius, 150vmax) at var(--clip-x, 90vw) var(--clip-y, 35px));
   }
-  30% {
-    -webkit-mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.7) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 calc(var(--clip-radius, 150vmax) * 0.7 - 150px), rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.7 - 40px), transparent calc(var(--clip-radius, 150vmax) * 0.7));
-    mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.7) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, #000 calc(var(--clip-radius, 150vmax) * 0.7 - 150px), rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.7 - 40px), transparent calc(var(--clip-radius, 150vmax) * 0.7));
-    clip-path: circle(calc(var(--clip-radius, 150vmax) * 0.7) at var(--clip-x, 90vw) var(--clip-y, 35px));
-  }
-  65% {
-    -webkit-mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.3) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.3 - 70px), transparent calc(var(--clip-radius, 150vmax) * 0.3));
-    mask-image: radial-gradient(circle calc(var(--clip-radius, 150vmax) * 0.3) at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, rgba(0,0,0,0.4) calc(var(--clip-radius, 150vmax) * 0.3 - 70px), transparent calc(var(--clip-radius, 150vmax) * 0.3));
-    clip-path: circle(calc(var(--clip-radius, 150vmax) * 0.3) at var(--clip-x, 90vw) var(--clip-y, 35px));
-  }
-  100% {
-    -webkit-mask-image: radial-gradient(circle 0px at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, transparent 0%);
-    mask-image: radial-gradient(circle 0px at var(--clip-x, 90vw) var(--clip-y, 35px), #000 0%, transparent 0%);
+  to {
     clip-path: circle(0px at var(--clip-x, 90vw) var(--clip-y, 35px));
   }
 }
@@ -255,6 +222,7 @@ body {
   mix-blend-mode: normal;
   height: 100%;
   overflow: clip;
+  will-change: clip-path;
 }
 
 /* Light -> Dark (Expanding dark circle outward) */
@@ -265,13 +233,13 @@ body {
 
 [data-theme-transition="light-to-dark"]::view-transition-new(root) {
   z-index: 999999;
-  animation: 0.65s cubic-bezier(0.33, 1, 0.68, 1) both featheredRippleExpand;
+  animation: 0.55s cubic-bezier(0.25, 1, 0.5, 1) both smoothCircularExpand;
 }
 
 /* Dark -> Light (Collapsing dark circle inward) */
 [data-theme-transition="dark-to-light"]::view-transition-old(root) {
   z-index: 999999;
-  animation: 0.65s cubic-bezier(0.33, 1, 0.68, 1) both featheredRippleCollapse;
+  animation: 0.55s cubic-bezier(0.25, 1, 0.5, 1) both smoothCircularCollapse;
 }
 
 [data-theme-transition="dark-to-light"]::view-transition-new(root) {
