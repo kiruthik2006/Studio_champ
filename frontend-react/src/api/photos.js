@@ -5,12 +5,30 @@ export const photosApi = {
     return api.post('/photos/upload-faces', formData);
   },
 
-  async getMyFaces() {
-    return api.get('/photos/my-faces');
+  async getMyFaces(memberId = null) {
+    const query = memberId ? `?member_id=${memberId}` : '';
+    return api.get(`/photos/my-faces${query}`);
   },
 
   async deleteFace(faceId) {
     return api.delete(`/photos/delete-face/${faceId}`);
+  },
+
+  // Family & Friends Circle APIs
+  async getCircleMembers() {
+    return api.get('/photos/circle/members');
+  },
+
+  async createCircleMember({ name, relationship, notes }) {
+    return api.post('/photos/circle/members', { name, relationship, notes });
+  },
+
+  async updateCircleMember(memberId, data) {
+    return api.put(`/photos/circle/members/${memberId}`, data);
+  },
+
+  async deleteCircleMember(memberId) {
+    return api.delete(`/photos/circle/members/${memberId}`);
   },
 
   async getEvents() {
@@ -24,6 +42,15 @@ export const photosApi = {
   async matchPhotos({ eventId, threshold = 0.6 }) {
     return api.post('/photos/match', {
       event_id: eventId,
+      threshold,
+    });
+  },
+
+  async matchCirclePhotos({ eventId, memberIds = [], matchMode = 'ANY', threshold = 0.50 }) {
+    return api.post('/photos/circle/match', {
+      event_id: eventId,
+      member_ids: memberIds,
+      match_mode: matchMode,
       threshold,
     });
   },

@@ -25,6 +25,9 @@ class User(db.Model):
     last_login = db.Column(db.DateTime, nullable=True)
 
     # Relationships
+    family_members = db.relationship(
+        "FamilyMember", backref="user", lazy="dynamic", cascade="all, delete-orphan"
+    )
     face_embeddings = db.relationship(
         "FaceEmbedding", backref="user", lazy="dynamic", cascade="all, delete-orphan"
     )
@@ -44,8 +47,42 @@ class User(db.Model):
             "full_name": f"{self.first_name} {self.last_name}",
             "role": self.role,
             "is_active": self.is_active,
+            "circle_members_count": self.family_members.count(),
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "last_login": self.last_login.isoformat() if self.last_login else None,
+        }
+
+
+class FamilyMember(db.Model):
+    __tablename__ = "family_members"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey("users.id"), nullable=False, index=True
+    )
+    name = db.Column(db.String(100), nullable=False)
+    relationship = db.Column(db.String(50), default="Family", nullable=False)
+    is_self = db.Column(db.Boolean, default=False, nullable=False)
+    avatar_path = db.Column(db.String(500), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    # Relationships
+    face_embeddings = db.relationship(
+        "FaceEmbedding", backref="family_member", lazy="dynamic", cascade="all, delete-orphan"
+    )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "name": self.name,
+            "relationship": self.relationship,
+            "is_self": self.is_self,
+            "avatar_path": self.avatar_path,
+            "notes": self.notes,
+            "face_count": self.face_embeddings.count(),
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
 
@@ -56,10 +93,15 @@ class FaceEmbedding(db.Model):
     user_id = db.Column(
         db.Integer, db.ForeignKey("users.id"), nullable=False, index=True
     )
+    member_id = db.Column(
+        db.Integer, db.ForeignKey("family_members.id"), nullable=True, index=True
+    )
     embedding = db.Column(
         db.JSON, nullable=False
     )  # 512-dimensional vector as JSON array
     image_path = db.Column(db.String(500), nullable=False)
+    angle_slot = db.Column(db.String(30), default="front", nullable=True)
+    quality_score = db.Column(db.Float, default=1.0, nullable=True)
     is_primary = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
@@ -73,7 +115,11 @@ class FaceEmbedding(db.Model):
         return {
             "id": self.id,
             "user_id": self.user_id,
+            "member_id": self.member_id,
+            "member_name": self.family_member.name if self.family_member else None,
             "image_path": self.image_path,
+            "angle_slot": self.angle_slot,
+            "quality_score": self.quality_score,
             "is_primary": self.is_primary,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

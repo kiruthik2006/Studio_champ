@@ -5,7 +5,7 @@ from flask_jwt_extended import (
     verify_jwt_in_request,
     get_jwt,
 )
-from models import db, User, FaceEmbedding, Event, Photo, UserEvent
+from models import db, User, FaceEmbedding, Event, Photo, UserEvent, FamilyMember
 from services.face_recognition import get_face_service
 from utils.storage import get_storage_service
 from utils.image_metadata import (
@@ -82,6 +82,30 @@ def upload_faces():
 
         print(f"[UPLOAD-FACES] Processing {len(files)} files")
 
+        # Get or resolve target Circle Member (defaults to user's 'Me' profile)
+        target_member_id = request.form.get("member_id", type=int)
+        member = None
+        if target_member_id:
+            member = FamilyMember.query.filter_by(
+                id=target_member_id, user_id=user.id
+            ).first()
+
+        if not member:
+            member = FamilyMember.query.filter_by(
+                user_id=user.id, is_self=True
+            ).first()
+            if not member:
+                member = FamilyMember(
+                    user_id=user.id,
+                    name=f"{user.first_name} (Me)",
+                    relationship="Self",
+                    is_self=True,
+                )
+                db.session.add(member)
+                db.session.flush()
+
+        angle_slot = request.form.get("angle_slot", "front")
+
         uploaded_faces = []
         errors = []
 
@@ -118,28 +142,38 @@ def upload_faces():
 
                 # Check if this should be primary (first face or user choice)
                 is_primary = request.form.get("is_primary", "false").lower() == "true"
-                if idx == 0 and user.face_embeddings.count() == 0:
+                if idx == 0 and member.face_embeddings.count() == 0:
                     is_primary = True
 
-                # If setting as primary, unset others
+                # If setting as primary, unset others for this member
                 if is_primary:
-                    FaceEmbedding.query.filter_by(user_id=user.id).update(
-                        {"is_primary": False}
-                    )
+                    FaceEmbedding.query.filter_by(
+                        user_id=user.id, member_id=member.id
+                    ).update({"is_primary": False})
 
-                # Save face embedding to database
+                # Save face embedding to database with member_id and angle_slot
                 face_embedding = FaceEmbedding(
                     user_id=user.id,
+                    member_id=member.id,
                     embedding=embedding_data["embedding"],
                     image_path=temp_path,
+                    angle_slot=angle_slot,
+                    quality_score=round(float(embedding_data.get("confidence", 1.0)), 3),
                     is_primary=is_primary,
                 )
 
                 db.session.add(face_embedding)
 
+                # Set member avatar if not already set
+                if not member.avatar_path or is_primary:
+                    member.avatar_path = temp_path
+
                 uploaded_faces.append(
                     {
                         "image_path": temp_path,
+                        "member_id": member.id,
+                        "member_name": member.name,
+                        "angle_slot": angle_slot,
                         "is_primary": is_primary,
                         "confidence": embedding_data.get("confidence", 1.0),
                     }
@@ -154,9 +188,10 @@ def upload_faces():
         return jsonify(
             {
                 "success": len(errors) == 0 or len(uploaded_faces) > 0,
-                "message": f"Successfully uploaded {len(uploaded_faces)} face(s)",
+                "message": f"Successfully uploaded {len(uploaded_faces)} face(s) for {member.name}",
                 "data": {
                     "uploaded_faces": uploaded_faces,
+                    "member": member.to_dict(),
                     "total_faces": user.face_embeddings.count(),
                     "errors": errors,
                 },
@@ -182,7 +217,7 @@ def upload_faces():
 @photos_bp.route("/my-faces", methods=["GET"])
 @jwt_required()
 def get_my_faces():
-    """Get all face embeddings for current user"""
+    """Get face embeddings for current user, optionally filtered by member_id"""
     try:
         current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
@@ -190,7 +225,13 @@ def get_my_faces():
         if not user:
             return jsonify({"success": False, "message": "User not found"}), 404
 
-        faces = user.face_embeddings.all()
+        member_id = request.args.get("member_id", type=int)
+        query = user.face_embeddings
+
+        if member_id:
+            query = query.filter_by(member_id=member_id)
+
+        faces = query.order_by(FaceEmbedding.created_at.desc()).all()
 
         return jsonify(
             {"success": True, "data": [face.to_dict() for face in faces]}
@@ -468,3 +509,330 @@ def download_photo(photo_id):
 
     except Exception as e:
         return jsonify({"success": False, "message": f"Download failed: {str(e)}"}), 500
+
+
+# =========================================================================
+# FAMILY & FRIENDS CIRCLES (MULTI-PERSON BIOMETRICS & MATCHING)
+# =========================================================================
+
+@photos_bp.route("/circle/members", methods=["GET"])
+@jwt_required()
+def get_circle_members():
+    """Get all circle members for current user, auto-creating default 'Me' profile if none exist"""
+    try:
+        current_user_id = int(get_jwt_identity())
+        user = User.query.get(current_user_id)
+
+        if not user:
+            return jsonify({"success": False, "message": "User not found"}), 404
+
+        # Ensure default 'Me' profile exists
+        self_member = user.family_members.filter_by(is_self=True).first()
+        if not self_member:
+            self_member = FamilyMember(
+                user_id=user.id,
+                name=f"{user.first_name} (Me)",
+                relationship="Self",
+                is_self=True,
+            )
+            db.session.add(self_member)
+            db.session.commit()
+
+            # Attach any unlinked user face embeddings to 'Me'
+            user.face_embeddings.filter(FaceEmbedding.member_id.is_(None)).update(
+                {"member_id": self_member.id}
+            )
+            db.session.commit()
+
+        members = user.family_members.order_by(
+            FamilyMember.is_self.desc(), FamilyMember.created_at.asc()
+        ).all()
+
+        members_data = []
+        for m in members:
+            m_dict = m.to_dict()
+            m_dict["faces"] = [f.to_dict() for f in m.face_embeddings.all()]
+            members_data.append(m_dict)
+
+        return jsonify({"success": True, "data": members_data}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(
+            {"success": False, "message": f"Failed to get circle members: {str(e)}"}
+        ), 500
+
+
+@photos_bp.route("/circle/members", methods=["POST"])
+@jwt_required()
+def create_circle_member():
+    """Create a new circle member profile"""
+    try:
+        current_user_id = int(get_jwt_identity())
+        user = User.query.get(current_user_id)
+
+        if not user:
+            return jsonify({"success": False, "message": "User not found"}), 404
+
+        data = request.get_json() or {}
+        name = (data.get("name") or "").strip()
+        relationship = (data.get("relationship") or "Family").strip()
+        notes = (data.get("notes") or "").strip()
+
+        if not name:
+            return jsonify({"success": False, "message": "Member name is required"}), 400
+
+        member = FamilyMember(
+            user_id=user.id,
+            name=name,
+            relationship=relationship,
+            is_self=False,
+            notes=notes if notes else None,
+        )
+        db.session.add(member)
+        db.session.commit()
+
+        return jsonify(
+            {
+                "success": True,
+                "message": f"Added {name} to your circle",
+                "data": member.to_dict(),
+            }
+        ), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(
+            {"success": False, "message": f"Failed to create circle member: {str(e)}"}
+        ), 500
+
+
+@photos_bp.route("/circle/members/<int:member_id>", methods=["PUT"])
+@jwt_required()
+def update_circle_member(member_id):
+    """Update a circle member profile"""
+    try:
+        current_user_id = int(get_jwt_identity())
+        member = FamilyMember.query.filter_by(
+            id=member_id, user_id=current_user_id
+        ).first()
+
+        if not member:
+            return jsonify({"success": False, "message": "Member not found"}), 404
+
+        data = request.get_json() or {}
+        if "name" in data and data["name"].strip():
+            member.name = data["name"].strip()
+        if "relationship" in data:
+            member.relationship = data["relationship"].strip()
+        if "notes" in data:
+            member.notes = data["notes"].strip()
+
+        db.session.commit()
+
+        return jsonify(
+            {
+                "success": True,
+                "message": f"Updated profile for {member.name}",
+                "data": member.to_dict(),
+            }
+        ), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(
+            {"success": False, "message": f"Failed to update member: {str(e)}"}
+        ), 500
+
+
+@photos_bp.route("/circle/members/<int:member_id>", methods=["DELETE"])
+@jwt_required()
+def delete_circle_member(member_id):
+    """Delete a circle member profile and all associated face embeddings"""
+    try:
+        current_user_id = int(get_jwt_identity())
+        member = FamilyMember.query.filter_by(
+            id=member_id, user_id=current_user_id
+        ).first()
+
+        if not member:
+            return jsonify({"success": False, "message": "Member not found"}), 404
+
+        if member.is_self:
+            return jsonify(
+                {"success": False, "message": "Cannot delete your primary 'Me' profile"}
+            ), 400
+
+        storage_service = get_storage_service()
+        # Delete image files
+        for face in member.face_embeddings:
+            storage_service.delete_file(face.image_path)
+
+        member_name = member.name
+        db.session.delete(member)
+        db.session.commit()
+
+        return jsonify(
+            {
+                "success": True,
+                "message": f"Removed {member_name} from your circle",
+            }
+        ), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(
+            {"success": False, "message": f"Failed to delete member: {str(e)}"}
+        ), 500
+
+
+@photos_bp.route("/circle/match", methods=["POST"])
+@jwt_required()
+def match_circle_faces():
+    """
+    Multi-Person Boolean Matching Engine.
+    Filters event photos containing combinations of circle members:
+    - match_mode: 'ALL' (AND - all selected members together in same photo)
+    - match_mode: 'ANY' (OR - any of the selected members)
+    - match_mode: 'SOLO' (Only that specific person)
+    """
+    try:
+        current_user_id = int(get_jwt_identity())
+        user = User.query.get(current_user_id)
+
+        if not user:
+            return jsonify({"success": False, "message": "User not found"}), 404
+
+        data = request.get_json() or {}
+        event_id = data.get("event_id")
+        member_ids = data.get("member_ids") or []
+        match_mode = data.get("match_mode", "ANY").upper()  # ALL, ANY, SOLO
+        threshold = float(data.get("threshold", 0.50))
+
+        if not event_id:
+            return jsonify({"success": False, "message": "Event ID is required"}), 400
+
+        event = Event.query.get(event_id)
+        if not event:
+            return jsonify({"success": False, "message": "Event not found"}), 404
+
+        # If no specific member_ids passed, default to all members that have embeddings
+        if not member_ids:
+            members = user.family_members.all()
+        else:
+            members = user.family_members.filter(FamilyMember.id.in_(member_ids)).all()
+
+        # Build members data with their face embeddings
+        members_data = []
+        for m in members:
+            embs = [f.get_embedding_array() for f in m.face_embeddings.all()]
+            if embs:
+                members_data.append(
+                    {
+                        "id": m.id,
+                        "name": m.name,
+                        "relationship": m.relationship,
+                        "is_self": m.is_self,
+                        "avatar_path": m.avatar_path,
+                        "embeddings": embs,
+                    }
+                )
+
+        if not members_data:
+            return jsonify(
+                {
+                    "success": False,
+                    "message": "Selected circle members do not have registered face photos yet. Please capture face photos for them first.",
+                }
+            ), 400
+
+        # Get all photos in the event
+        photos = Photo.query.filter_by(event_id=event_id).all()
+        if not photos:
+            return jsonify(
+                {
+                    "success": True,
+                    "message": "No photos found in this event",
+                    "data": {
+                        "matches": [],
+                        "total_photos": 0,
+                        "matched_photos": 0,
+                        "members": [
+                            {"id": m["id"], "name": m["name"], "relationship": m["relationship"]}
+                            for m in members_data
+                        ],
+                    },
+                }
+            ), 200
+
+        # Prepare photo embeddings list
+        photo_embeddings_list = []
+        for photo in photos:
+            if photo.face_embeddings:
+                photo_embeddings_list.append(
+                    {
+                        "photo_id": photo.id,
+                        "embeddings": photo.get_face_embeddings(),
+                        "detected_faces": photo.get_detected_faces(),
+                    }
+                )
+
+        face_service = get_face_service()
+        match_results = face_service.find_multi_person_matches(
+            members_data=members_data,
+            photo_embeddings_list=photo_embeddings_list,
+            match_mode=match_mode,
+            threshold=threshold,
+        )
+
+        # Assemble full photo payloads with detection metadata
+        matched_photos = []
+        for res in match_results:
+            photo = Photo.query.get(res["photo_id"])
+            if photo:
+                photo_dict = photo.to_dict()
+                photo_dict["match_confidence"] = round(res["confidence"] * 100, 2)
+                photo_dict["matched_members"] = res["matched_members"]
+                photo_dict["matched_member_count"] = res["matched_member_count"]
+                photo_dict["total_photo_faces"] = res["total_photo_faces"]
+                photo_dict["is_group_portrait"] = res["matched_member_count"] >= 2
+                photo_dict["ai_curation_badge"] = (
+                    "Best Shot" if (photo.overall_quality_score or 0) >= 0.85
+                    else "High Quality" if (photo.overall_quality_score or 0) >= 0.70
+                    else "Standard"
+                )
+                matched_photos.append(photo_dict)
+
+        # Auto-register user to event
+        existing_registration = UserEvent.query.filter_by(
+            user_id=current_user_id, event_id=event_id
+        ).first()
+        if not existing_registration:
+            db.session.add(UserEvent(user_id=current_user_id, event_id=event_id))
+            db.session.commit()
+
+        return jsonify(
+            {
+                "success": True,
+                "message": f"Found {len(matched_photos)} photo(s) matching your circle constraints ({match_mode})",
+                "data": {
+                    "matches": matched_photos,
+                    "total_photos": len(photos),
+                    "matched_photos": len(matched_photos),
+                    "match_mode": match_mode,
+                    "event": event.to_dict(),
+                    "queried_members": [
+                        {"id": m["id"], "name": m["name"], "relationship": m["relationship"]}
+                        for m in members_data
+                    ],
+                },
+            }
+        ), 200
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        db.session.rollback()
+        return jsonify(
+            {"success": False, "message": f"Circle matching failed: {str(e)}"}
+        ), 500

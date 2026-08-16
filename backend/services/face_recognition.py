@@ -284,6 +284,84 @@ class FaceRecognitionService:
         print(f"[FIND_MATCH] Total matches found: {len(matches)}")
         return matches
 
+    def find_multi_person_matches(
+        self, members_data, photo_embeddings_list, match_mode="ANY", threshold=None
+    ):
+        """
+        Match photos against multiple family/circle members with Boolean constraints.
+        members_data: list of dicts: [{'id': member_id, 'name': name, 'relationship': rel, 'embeddings': [emb1, emb2...]}]
+        photo_embeddings_list: list of dicts: [{'photo_id': id, 'embeddings': [emb1, emb2...], 'detected_faces': [box1, box2...]}]
+        match_mode: 'ALL' (AND - all members must be in photo), 'ANY' (OR - at least one), 'SOLO' (only this person)
+        """
+        if threshold is None:
+            threshold = self.match_threshold
+
+        matched_results = []
+
+        for photo_data in photo_embeddings_list:
+            photo_id = photo_data.get("photo_id")
+            photo_embeddings = photo_data.get("embeddings", [])
+            detected_faces = photo_data.get("detected_faces", [])
+
+            if not photo_embeddings:
+                continue
+
+            matched_members = []
+            used_face_indices = set()
+
+            for member in members_data:
+                member_id = member["id"]
+                member_name = member["name"]
+                member_rel = member.get("relationship", "Family")
+                registered_embeddings = member.get("embeddings", [])
+
+                best_member_conf = 0
+                best_face_idx = None
+
+                for reg_emb in registered_embeddings:
+                    for f_idx, photo_emb in enumerate(photo_embeddings):
+                        conf = self.compare_faces(reg_emb, photo_emb)
+                        if conf > best_member_conf:
+                            best_member_conf = conf
+                            best_face_idx = f_idx
+
+                if best_member_conf >= threshold and best_face_idx is not None:
+                    face_box = detected_faces[best_face_idx].get("box") if detected_faces and best_face_idx < len(detected_faces) else None
+                    matched_members.append({
+                        "member_id": member_id,
+                        "member_name": member_name,
+                        "relationship": member_rel,
+                        "confidence": round(float(best_member_conf), 4),
+                        "matched_face_index": best_face_idx,
+                        "face_box": face_box
+                    })
+                    used_face_indices.add(best_face_idx)
+
+            # Evaluate Match Mode Constraint
+            is_match = False
+            if match_mode == "ALL":
+                if len(matched_members) == len(members_data) and len(members_data) > 0:
+                    is_match = True
+            elif match_mode == "SOLO":
+                if len(matched_members) == 1 and len(members_data) == 1:
+                    is_match = True
+            else:  # 'ANY'
+                if len(matched_members) > 0:
+                    is_match = True
+
+            if is_match:
+                avg_confidence = sum(m["confidence"] for m in matched_members) / len(matched_members) if matched_members else 0
+                matched_results.append({
+                    "photo_id": photo_id,
+                    "confidence": avg_confidence,
+                    "matched_members": matched_members,
+                    "matched_member_count": len(matched_members),
+                    "total_photo_faces": len(photo_embeddings)
+                })
+
+        matched_results.sort(key=lambda x: (x["matched_member_count"], x["confidence"]), reverse=True)
+        return matched_results
+
     def process_photo_for_faces(self, image_path):
         """
         Process a photo to detect all faces and extract embeddings
