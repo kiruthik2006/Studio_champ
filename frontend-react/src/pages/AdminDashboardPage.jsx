@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Navbar } from '../components/common/Navbar';
@@ -29,6 +29,20 @@ export const AdminDashboardPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploadSelectedEvent, setUploadSelectedEvent] = useState(null);
+
+  const tabRefs = useRef({});
+  const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0, opacity: 0 });
+
+  useEffect(() => {
+    const el = tabRefs.current[activeTab];
+    if (el) {
+      setIndicatorStyle({
+        top: el.offsetTop,
+        height: el.offsetHeight,
+        opacity: 1,
+      });
+    }
+  }, [activeTab]);
 
   const fetchAdminData = useCallback(async () => {
     setLoading(true);
@@ -109,7 +123,18 @@ export const AdminDashboardPage = () => {
               <span>ADMINISTRATION</span>
             </div>
 
+            {/* Flowing Active Indicator Pill */}
+            <div
+              className="sidebar-active-indicator"
+              style={{
+                top: `${indicatorStyle.top}px`,
+                height: `${indicatorStyle.height}px`,
+                opacity: indicatorStyle.opacity,
+              }}
+            />
+
             <button
+              ref={(el) => (tabRefs.current['events'] = el)}
               className={`sidebar-item ${activeTab === 'events' ? 'active' : ''}`}
               onClick={() => setActiveTab('events')}
             >
@@ -118,6 +143,7 @@ export const AdminDashboardPage = () => {
             </button>
 
             <button
+              ref={(el) => (tabRefs.current['uploader'] = el)}
               className={`sidebar-item ${activeTab === 'uploader' ? 'active' : ''}`}
               onClick={() => setActiveTab('uploader')}
             >
@@ -126,6 +152,7 @@ export const AdminDashboardPage = () => {
             </button>
 
             <button
+              ref={(el) => (tabRefs.current['categories'] = el)}
               className={`sidebar-item ${activeTab === 'categories' ? 'active' : ''}`}
               onClick={() => setActiveTab('categories')}
             >
@@ -134,6 +161,7 @@ export const AdminDashboardPage = () => {
             </button>
 
             <button
+              ref={(el) => (tabRefs.current['users'] = el)}
               className={`sidebar-item ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >

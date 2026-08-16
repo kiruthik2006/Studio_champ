@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Navbar } from '../components/common/Navbar';
@@ -30,6 +30,20 @@ export const DashboardPage = () => {
 
   const [activeTab, setActiveTab] = useState('face-registration');
   const [faceRefreshKey, setFaceRefreshKey] = useState(0);
+
+  const tabRefs = useRef({});
+  const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0, opacity: 0 });
+
+  useEffect(() => {
+    const el = tabRefs.current[activeTab];
+    if (el) {
+      setIndicatorStyle({
+        top: el.offsetTop,
+        height: el.offsetHeight,
+        opacity: 1,
+      });
+    }
+  }, [activeTab]);
 
   // Events & Matching
   const [events, setEvents] = useState([]);
@@ -171,7 +185,18 @@ export const DashboardPage = () => {
         {/* Sidebar */}
         <aside className="dashboard-sidebar">
           <div className="sidebar-menu">
+            {/* Flowing Active Indicator Pill */}
+            <div
+              className="sidebar-active-indicator"
+              style={{
+                top: `${indicatorStyle.top}px`,
+                height: `${indicatorStyle.height}px`,
+                opacity: indicatorStyle.opacity,
+              }}
+            />
+
             <button
+              ref={(el) => (tabRefs.current['face-registration'] = el)}
               className={`sidebar-item ${activeTab === 'face-registration' ? 'active' : ''}`}
               onClick={() => setActiveTab('face-registration')}
             >
@@ -180,6 +205,7 @@ export const DashboardPage = () => {
             </button>
 
             <button
+              ref={(el) => (tabRefs.current['events'] = el)}
               className={`sidebar-item ${activeTab === 'events' ? 'active' : ''}`}
               onClick={() => setActiveTab('events')}
             >
@@ -188,6 +214,7 @@ export const DashboardPage = () => {
             </button>
 
             <button
+              ref={(el) => (tabRefs.current['my-photos'] = el)}
               className={`sidebar-item ${activeTab === 'my-photos' ? 'active' : ''}`}
               onClick={() => setActiveTab('my-photos')}
             >
@@ -196,6 +223,7 @@ export const DashboardPage = () => {
             </button>
 
             <button
+              ref={(el) => (tabRefs.current['settings'] = el)}
               className={`sidebar-item ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
