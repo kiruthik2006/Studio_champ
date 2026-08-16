@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTheme } from '../../context/ThemeContext';
 
 /**
  * SubtleBackground
  * Ultra-refined, hardware-accelerated ambient background with slow,
  * drifting warm gold and luxury umber auroras and breathing luminosity.
+ * Fades out smoothly to 0% during theme switching, then fades back in.
  */
 export const SubtleBackground = () => {
+  const { auroraVisible } = useTheme();
+
   return (
     <div
       className="subtle-bg-container"
@@ -16,6 +20,9 @@ export const SubtleBackground = () => {
         overflow: 'hidden',
         pointerEvents: 'none',
         zIndex: 0,
+        opacity: auroraVisible ? 1 : 0,
+        transition: auroraVisible ? 'opacity 0.45s ease-out' : 'opacity 0.2s ease-in',
+        willChange: 'opacity',
       }}
     >
       {/* Drifting Ambient Aurora 1: Warm Champagne Gold (Top Left - Center) */}
@@ -32,7 +39,7 @@ export const SubtleBackground = () => {
           borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(201, 162, 39, 0.09) 0%, rgba(223, 185, 74, 0.03) 45%, transparent 70%)',
           filter: 'blur(100px)',
-          willChange: 'transform, opacity',
+          willChange: 'transform',
         }}
       />
 
@@ -50,7 +57,7 @@ export const SubtleBackground = () => {
           borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(166, 133, 32, 0.08) 0%, rgba(139, 115, 85, 0.03) 50%, transparent 70%)',
           filter: 'blur(120px)',
-          willChange: 'transform, opacity',
+          willChange: 'transform',
         }}
       />
 
@@ -68,7 +75,7 @@ export const SubtleBackground = () => {
           borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(201, 162, 39, 0.05) 0%, rgba(26, 24, 21, 0.02) 60%, transparent 75%)',
           filter: 'blur(90px)',
-          willChange: 'transform, opacity',
+          willChange: 'transform',
         }}
       />
 

@@ -3,12 +3,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
 
 export const ThemeToggle = ({ className = '' }) => {
-  const { isLight, toggleTheme } = useTheme();
+  const { isLight, toggleTheme, isTransitioning } = useTheme();
   const isDarkOn = !isLight;
 
   return (
     <button
       type="button"
+      disabled={isTransitioning}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -24,7 +25,8 @@ export const ThemeToggle = ({ className = '' }) => {
         borderRadius: '999px',
         background: isDarkOn ? 'rgba(201, 162, 39, 0.15)' : 'rgba(0, 0, 0, 0.07)',
         border: `1px solid ${isDarkOn ? 'rgba(201, 162, 39, 0.4)' : 'rgba(0, 0, 0, 0.14)'}`,
-        cursor: 'pointer',
+        cursor: isTransitioning ? 'wait' : 'pointer',
+        opacity: isTransitioning ? 0.85 : 1,
         display: 'inline-flex',
         alignItems: 'center',
         padding: '2px',
