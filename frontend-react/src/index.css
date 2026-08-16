@@ -329,42 +329,53 @@ h1, h2, h3, h4, .font-display {
   -webkit-text-fill-color: transparent;
 }
 
-/* Timing Tokens */
+/* High-Precision Luxury Kinematics (Apple / Linear Grade - Fast, Sharp & Accurate) */
 :root {
-  --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --spring-snappy: cubic-bezier(0.18, 0.89, 0.32, 1.28);
-  --spring-soft: cubic-bezier(0.25, 1.15, 0.5, 1.1);
+  --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);       /* Ultra-fast instant deceleration with 0 wobble */
+  --ease-sharp: cubic-bezier(0.2, 0, 0, 1);         /* Quintic snap */
+  --ease-in-out-sharp: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-fast: 130ms;
+  --motion-normal: 200ms;
 }
 
-/* Buttons (Tactile Spring Physics) */
+/* Buttons (Fast, Precise & Accurate Tactile Action) */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95rem;
+  gap: 0.55rem;
+  padding: 0.72rem 1.45rem;
+  font-size: 0.93rem;
   font-weight: 600;
   border-radius: var(--border-radius-md);
-  transition: transform 0.3s var(--spring-bounce), box-shadow 0.25s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: transform var(--motion-fast) var(--ease-snap), 
+              box-shadow var(--motion-normal) var(--ease-snap), 
+              background 0.14s ease, 
+              border-color 0.14s ease, 
+              color 0.14s ease;
   text-decoration: none;
   cursor: pointer;
   border: 1px solid transparent;
   transform-origin: center center;
   user-select: none;
+  will-change: transform;
 }
 
 .btn svg {
-  transition: transform 0.35s var(--spring-bounce);
+  transition: transform var(--motion-fast) var(--ease-snap);
 }
 
 .btn:hover svg {
-  transform: scale(1.16) rotate(-4deg);
+  transform: translate3d(1px, -1px, 0);
+}
+
+.btn:hover {
+  transform: translate3d(0, -1.5px, 0);
 }
 
 .btn:active {
-  transform: translateY(1.5px) scale(0.95) !important;
-  transition-duration: 0.08s;
+  transform: translate3d(0, 0.75px, 0) scale(0.985) !important;
+  transition-duration: 60ms;
 }
 
 .btn-primary {
@@ -374,9 +385,8 @@ h1, h2, h3, h4, .font-display {
 }
 
 .btn-primary:hover {
-  transform: translateY(-3px) scale(1.025);
   background: var(--btn-primary-hover);
-  box-shadow: var(--shadow-lg), 0 0 20px rgba(201, 162, 39, 0.22);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(201, 162, 39, 0.2);
 }
 
 .btn-outline {
@@ -389,7 +399,6 @@ h1, h2, h3, h4, .font-display {
   background: rgba(201, 162, 39, 0.08);
   border-color: var(--primary);
   color: var(--primary);
-  transform: translateY(-3px) scale(1.025);
   box-shadow: var(--shadow-sm);
 }
 
@@ -401,7 +410,6 @@ h1, h2, h3, h4, .font-display {
 
 .btn-danger:hover {
   background: rgba(196, 92, 92, 0.28);
-  transform: translateY(-3px) scale(1.025);
   box-shadow: 0 4px 14px rgba(196, 92, 92, 0.25);
 }
 
@@ -413,26 +421,25 @@ h1, h2, h3, h4, .font-display {
 
 .btn-success:hover {
   background: rgba(74, 157, 107, 0.3);
-  transform: translateY(-3px) scale(1.025);
   box-shadow: 0 4px 14px rgba(74, 157, 107, 0.25);
 }
 
 .btn-sm {
-  padding: 0.45rem 0.9rem;
-  font-size: 0.85rem;
+  padding: 0.42rem 0.85rem;
+  font-size: 0.84rem;
 }
 
 .btn-sm:hover {
-  transform: translateY(-2px) scale(1.04);
+  transform: translate3d(0, -1px, 0);
 }
 
 .btn-lg {
-  padding: 0.9rem 2rem;
-  font-size: 1.1rem;
+  padding: 0.85rem 1.85rem;
+  font-size: 1.05rem;
 }
 
 .btn-lg:hover {
-  transform: translateY(-4px) scale(1.03);
+  transform: translate3d(0, -2px, 0);
 }
 
 .btn:disabled {
@@ -441,7 +448,7 @@ h1, h2, h3, h4, .font-display {
   transform: none !important;
 }
 
-/* Glass & Cards (Optimized Compositing & Spring Lift) */
+/* Glass & Cards (Sharp Precision Lift) */
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
@@ -449,14 +456,16 @@ h1, h2, h3, h4, .font-display {
   border: 1px solid var(--border-gold);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
-  transition: transform 0.4s var(--spring-soft), border-color 0.3s ease, box-shadow 0.35s ease;
-  transform: translateZ(0);
+  transition: transform var(--motion-normal) var(--ease-snap), 
+              border-color var(--motion-normal) ease, 
+              box-shadow var(--motion-normal) var(--ease-snap);
+  transform: translate3d(0, 0, 0);
 }
 
 .glass-card:hover {
-  transform: translateY(-4px) scale(1.006);
+  transform: translate3d(0, -2.5px, 0);
   border-color: var(--card-hover-border);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  box-shadow: var(--shadow-lg), 0 0 24px rgba(201, 162, 39, 0.12);
 }
 
 .glass-card-elevated {
@@ -466,7 +475,7 @@ h1, h2, h3, h4, .font-display {
   border: 1px solid var(--border-gold);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Navbar */
@@ -553,7 +562,7 @@ h1, h2, h3, h4, .font-display {
   }
 }
 
-/* Modals (Bouncy Pop Entrance) */
+/* Modals (Kinematic Optical Velocity Entrance) */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -567,7 +576,7 @@ h1, h2, h3, h4, .font-display {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  animation: fadeIn 0.2s ease-out;
+  animation: precisionOverlayFade 140ms ease-out;
 }
 
 .modal-content {
@@ -579,9 +588,10 @@ h1, h2, h3, h4, .font-display {
   max-width: 480px;
   position: relative;
   box-shadow: var(--shadow-xl), var(--shadow-glow);
-  animation: modalSpringPop 0.38s var(--spring-bounce) forwards;
+  animation: precisionModalSnap 180ms var(--ease-snap) forwards;
   color: var(--text-main);
   transform-origin: center center;
+  will-change: transform, filter, opacity;
 }
 
 .modal-close-btn {
@@ -590,7 +600,7 @@ h1, h2, h3, h4, .font-display {
   right: 1.25rem;
   color: var(--text-muted);
   font-size: 1.2rem;
-  transition: transform 0.35s var(--spring-bounce), color 0.2s ease;
+  transition: transform var(--motion-fast) var(--ease-snap), color 0.14s ease, background-color 0.14s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -601,15 +611,16 @@ h1, h2, h3, h4, .font-display {
 
 .modal-close-btn:hover {
   color: var(--primary);
-  transform: scale(1.22) rotate(90deg);
+  transform: rotate(90deg);
   background: rgba(201, 162, 39, 0.1);
 }
 
 .modal-close-btn:active {
-  transform: scale(0.9);
+  transform: rotate(90deg) scale(0.92);
+  transition-duration: 60ms;
 }
 
-/* Forms (Tactile Spring Focus) */
+/* Forms (Sharp Precision Ring Focus) */
 .form-group {
   margin-bottom: 1.25rem;
 }
@@ -620,7 +631,7 @@ h1, h2, h3, h4, .font-display {
   font-weight: 500;
   margin-bottom: 0.45rem;
   color: var(--text-main);
-  transition: color 0.2s ease;
+  transition: color 0.14s ease;
 }
 
 .form-control {
@@ -632,15 +643,18 @@ h1, h2, h3, h4, .font-display {
   color: var(--text-main);
   font-size: 0.95rem;
   font-family: inherit;
-  transition: transform 0.3s var(--spring-bounce), border-color 0.2s ease, box-shadow 0.3s ease, background-color 0.2s ease;
+  transition: border-color var(--motion-fast) ease, 
+              box-shadow var(--motion-normal) var(--ease-snap), 
+              background-color var(--motion-fast) ease,
+              transform var(--motion-fast) var(--ease-snap);
 }
 
 .form-control:focus {
   outline: none;
   border-color: var(--primary);
   background: var(--input-bg);
-  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2), var(--shadow-sm);
-  transform: translateY(-2px) scale(1.006);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18), var(--shadow-sm);
+  transform: translate3d(0, -1px, 0);
 }
 
 .form-row {
@@ -649,7 +663,7 @@ h1, h2, h3, h4, .font-display {
   gap: 1rem;
 }
 
-/* Badges (Spring Hover) */
+/* Badges (Fast Precise Hover) */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -660,12 +674,13 @@ h1, h2, h3, h4, .font-display {
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  transition: transform 0.3s var(--spring-bounce), box-shadow 0.2s ease;
+  transition: transform var(--motion-fast) var(--ease-snap), box-shadow 0.14s ease;
   user-select: none;
 }
 
 .status-badge:hover {
-  transform: scale(1.08) translateY(-1px);
+  transform: translate3d(0, -1px, 0);
+  box-shadow: var(--shadow-sm);
 }
 
 .badge-active, .badge-success {
@@ -725,28 +740,33 @@ h1, h2, h3, h4, .font-display {
   border-radius: var(--border-radius-md);
   font-size: 0.95rem;
   font-weight: 500;
-  transition: transform 0.3s var(--spring-bounce), background-color 0.2s ease, color 0.2s ease, box-shadow 0.3s ease;
+  transition: transform var(--motion-fast) var(--ease-snap), 
+              background-color 0.14s ease, 
+              color 0.14s ease, 
+              box-shadow 0.14s ease;
   width: 100%;
   text-align: left;
   transform-origin: left center;
+  will-change: transform;
 }
 
 .sidebar-item svg {
-  transition: transform 0.35s var(--spring-bounce);
+  transition: transform var(--motion-fast) var(--ease-snap);
 }
 
 .sidebar-item:hover {
   background: rgba(201, 162, 39, 0.08);
   color: var(--primary);
-  transform: translateX(6px) scale(1.02);
+  transform: translate3d(3px, 0, 0);
 }
 
 .sidebar-item:hover svg {
-  transform: scale(1.22) rotate(-6deg);
+  transform: translate3d(1px, 0, 0);
 }
 
 .sidebar-item:active {
-  transform: translateX(3px) scale(0.96) !important;
+  transform: translate3d(1px, 0, 0) scale(0.99) !important;
+  transition-duration: 60ms;
 }
 
 .sidebar-item.active {
@@ -855,42 +875,45 @@ h1, h2, h3, h4, .font-display {
   border-left: 4px solid var(--primary);
 }
 
-/* Keyframes (Tactile Spring Physics) */
+/* Kinematic Optical Deceleration Keyframes */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
+@keyframes precisionOverlayFade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 @keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.97); }
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes modalSpringPop {
+@keyframes precisionModalSnap {
   0% {
     opacity: 0;
-    transform: scale(0.85) translateY(24px);
-  }
-  65% {
-    transform: scale(1.025) translateY(-3px);
+    transform: translate3d(0, 14px, 0) scale(0.98);
+    filter: blur(3px);
   }
   100% {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0px);
   }
 }
 
 @keyframes slideInRight {
   0% {
     opacity: 0;
-    transform: translateX(45px) scale(0.92);
-  }
-  70% {
-    transform: translateX(-4px) scale(1.02);
+    transform: translate3d(32px, 0, 0) scale(0.97);
+    filter: blur(2.5px);
   }
   100% {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0px);
   }
 }
 
