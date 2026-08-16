@@ -9,10 +9,10 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
 
   // 4 progressive temporal ghost layers for authentic motion blur sampling
   const TRAILS = [
-    { opacity: 0.32, insetX: 4 },
-    { opacity: 0.20, insetX: 8 },
-    { opacity: 0.12, insetX: 12 },
-    { opacity: 0.05, insetX: 16 },
+    { opacity: 0.32, width: 44 },
+    { opacity: 0.20, width: 40 },
+    { opacity: 0.12, width: 36 },
+    { opacity: 0.05, width: 32 },
   ];
 
   useEffect(() => {
@@ -23,6 +23,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
     const targetHeight = el.offsetHeight;
 
     const pillRadius = 'var(--border-radius-md, 10px)';
+    const chicletRadius = '8px';
 
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -49,9 +50,9 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
     const distance = Math.abs(targetTop - prevTop);
     const midTop = (prevTop + targetTop) / 2;
 
-    // Keyframe trajectory for the primary head (Rounded-Corner Rectangle throughout)
+    // Keyframe trajectory for the primary head (Little Compact Rounded Rectangle during flight)
     const headKeyframes = [
-      // 0%: Full resting rounded rectangle at origin
+      // 0%: Full resting pill at origin
       {
         top: `${prevTop}px`,
         height: `${targetHeight}px`,
@@ -61,37 +62,37 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         transform: 'scale(1, 1)',
         opacity: 1,
       },
-      // 18%: Contracts horizontally into a sleek rounded rectangle
+      // 18%: Contracts into a little compact rounded rectangle
       {
         top: `${prevTop + (isMovingDown ? 8 : -8)}px`,
-        height: `${targetHeight * 0.9}px`,
-        left: '12px',
-        right: '12px',
-        borderRadius: pillRadius,
-        transform: 'scale(1, 1.15)',
+        height: '32px',
+        left: 'calc(50% - 24px)',
+        right: 'calc(50% - 24px)',
+        borderRadius: chicletRadius,
+        transform: 'scale(0.9, 1.15)',
         opacity: 1,
       },
-      // 50%: Mid-flight peak velocity with aerodynamic stretch along movement vector
+      // 50%: Mid-flight peak velocity with little chiclet aerodynamic stretch
       {
         top: `${midTop}px`,
-        height: `${targetHeight * 0.95}px`,
-        left: '18px',
-        right: '18px',
-        borderRadius: pillRadius,
-        transform: isMovingDown ? 'scale(1, 1.45) translateY(4px)' : 'scale(1, 1.45) translateY(-4px)',
+        height: '36px',
+        left: 'calc(50% - 22px)',
+        right: 'calc(50% - 22px)',
+        borderRadius: chicletRadius,
+        transform: isMovingDown ? 'scale(0.85, 1.45) translateY(4px)' : 'scale(0.85, 1.45) translateY(-4px)',
         opacity: 1,
       },
-      // 82%: Impact & horizontal expansion on target tab
+      // 82%: Approaching target & horizontal expansion
       {
         top: `${targetTop + (isMovingDown ? 2 : -2)}px`,
-        height: `${targetHeight * 0.94}px`,
-        left: '4px',
-        right: '4px',
+        height: `${targetHeight * 0.92}px`,
+        left: '6px',
+        right: '6px',
         borderRadius: pillRadius,
-        transform: 'scale(1.02, 0.95)',
+        transform: 'scale(1.02, 0.94)',
         opacity: 1,
       },
-      // 100%: Relaxes into full rounded rectangle at destination
+      // 100%: Relaxes into full destination pill
       {
         top: `${targetTop}px`,
         height: `${targetHeight}px`,
@@ -103,10 +104,10 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
       },
     ];
 
-    const duration = Math.min(1050, Math.max(750, distance * 3.6));
+    const duration = Math.min(1000, Math.max(720, distance * 3.4));
     const easing = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-    // Animate the main rounded rectangle head
+    // Animate the main head
     const headAnim = headRef.current.animate(headKeyframes, {
       duration,
       easing,
@@ -125,13 +126,14 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
       }
     };
 
-    // Animate the 4 progressive temporal ghost copies (Rounded-Corner Rectangle trails)
+    // Animate the 4 progressive temporal ghost copies (Compact Little Rounded Rectangles)
     trailRefs.current.forEach((trailNode, idx) => {
       if (!trailNode) return;
       const trailConfig = TRAILS[idx];
+      const halfWidth = trailConfig.width / 2;
 
       const trailKeyframes = [
-        // 0%: Hidden inside origin rounded rectangle
+        // 0%: Hidden inside origin pill
         {
           top: `${prevTop}px`,
           height: `${targetHeight}px`,
@@ -141,39 +143,39 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
           transform: 'scale(1, 1)',
           opacity: 0,
         },
-        // 22%: Emanating trailing rounded rectangle ghost
+        // 22%: Emanating little trailing ghost
         {
           top: `${prevTop + (isMovingDown ? 2 : -2)}px`,
-          height: `${targetHeight * 0.85}px`,
-          left: `${14 + trailConfig.insetX}px`,
-          right: `${14 + trailConfig.insetX}px`,
-          borderRadius: pillRadius,
-          transform: 'scale(1, 1.05)',
+          height: '28px',
+          left: `calc(50% - ${halfWidth}px)`,
+          right: `calc(50% - ${halfWidth}px)`,
+          borderRadius: chicletRadius,
+          transform: 'scale(0.85, 1.05)',
           opacity: trailConfig.opacity * 0.85,
         },
         // 52%: Trailing behind the head in full temporal smear
         {
           top: `${midTop - (isMovingDown ? (idx + 1) * 14 : -(idx + 1) * 14)}px`,
-          height: `${targetHeight * 0.88}px`,
-          left: `${18 + trailConfig.insetX}px`,
-          right: `${18 + trailConfig.insetX}px`,
-          borderRadius: pillRadius,
+          height: '32px',
+          left: `calc(50% - ${halfWidth}px)`,
+          right: `calc(50% - ${halfWidth}px)`,
+          borderRadius: chicletRadius,
           transform: isMovingDown
-            ? 'scale(1, 1.35) translateY(2px)'
-            : 'scale(1, 1.35) translateY(-2px)',
+            ? 'scale(0.8, 1.35) translateY(2px)'
+            : 'scale(0.8, 1.35) translateY(-2px)',
           opacity: trailConfig.opacity,
         },
-        // 80%: Collapsing into target impact zone
+        // 80%: Collapsing into impact zone
         {
           top: `${targetTop - (isMovingDown ? (idx + 1) * 8 : -(idx + 1) * 8)}px`,
-          height: `${targetHeight * 0.9}px`,
-          left: `${10 + trailConfig.insetX}px`,
-          right: `${10 + trailConfig.insetX}px`,
-          borderRadius: pillRadius,
-          transform: 'scale(1, 0.98)',
+          height: '28px',
+          left: `calc(50% - ${halfWidth + 4}px)`,
+          right: `calc(50% - ${halfWidth + 4}px)`,
+          borderRadius: chicletRadius,
+          transform: 'scale(0.9, 0.98)',
           opacity: trailConfig.opacity * 0.5,
         },
-        // 100%: Absorbed seamlessly into target rounded rectangle
+        // 100%: Absorbed seamlessly into target pill
         {
           top: `${targetTop}px`,
           height: `${targetHeight}px`,
@@ -218,7 +220,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         zIndex: 1,
       }}
     >
-      {/* 4 Directional Temporal Ghost Trails (Rounded Rectangles) */}
+      {/* 4 Directional Temporal Ghost Trails (Little Rounded Rectangles) */}
       {TRAILS.map((_, idx) => (
         <div
           key={idx}
@@ -239,7 +241,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         />
       ))}
 
-      {/* Primary Rounded Rectangle Head */}
+      {/* Primary Little Rounded Rectangle Head */}
       <div
         ref={headRef}
         className="sidebar-active-indicator"
