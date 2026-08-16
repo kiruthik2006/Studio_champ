@@ -197,6 +197,55 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ===== Circular Ripple View Transition (Compositor-Accelerated) ===== */
+@keyframes circularExpand {
+  0% {
+    clip-path: circle(0px at var(--clip-x, 90vw) var(--clip-y, 35px));
+  }
+  100% {
+    clip-path: circle(var(--clip-radius, 150vmax) at var(--clip-x, 90vw) var(--clip-y, 35px));
+  }
+}
+
+@keyframes circularCollapse {
+  0% {
+    clip-path: circle(var(--clip-radius, 150vmax) at var(--clip-x, 90vw) var(--clip-y, 35px));
+  }
+  100% {
+    clip-path: circle(0px at var(--clip-x, 90vw) var(--clip-y, 35px));
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  height: 100%;
+  overflow: clip;
+}
+
+/* Light -> Dark (Expanding dark circle outward) */
+[data-theme-transition="light-to-dark"]::view-transition-old(root) {
+  z-index: 1;
+  animation: none;
+}
+
+[data-theme-transition="light-to-dark"]::view-transition-new(root) {
+  z-index: 999999;
+  animation: 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both circularExpand;
+}
+
+/* Dark -> Light (Collapsing dark circle inward) */
+[data-theme-transition="dark-to-light"]::view-transition-old(root) {
+  z-index: 999999;
+  animation: 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both circularCollapse;
+}
+
+[data-theme-transition="dark-to-light"]::view-transition-new(root) {
+  z-index: 1;
+  animation: none;
+}
+
 /* Smooth Global Theme Transitions */
 html, body {
   transition: background-color 0.25s ease, color 0.25s ease;

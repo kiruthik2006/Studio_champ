@@ -29,30 +29,65 @@ export const ThemeProvider = ({ children }) => {
     isLockedRef.current = true;
     setIsTransitioning(true);
 
-    // 1. Subtly lower aurora opacity all the way to 0%
+    const isCurrentlyDark = theme === 'dark';
+    const nextTheme = isCurrentlyDark ? 'light' : 'dark';
+
+    // 1. Subtly fade out aurora to 0%
     setAuroraVisible(false);
 
-    // 2. After aurora is completely faded out (220ms), switch theme
+    // 2. Once aurora is 0% (200ms), execute the circular ripple view transition
     setTimeout(() => {
-      setTheme((prevTheme) => {
-        const nextTheme = prevTheme === 'dark' ? 'light' : 'dark';
+      if (document.startViewTransition) {
+        const x = e?.clientX ?? window.innerWidth - 60;
+        const y = e?.clientY ?? 35;
+        const endRadius = Math.hypot(
+          Math.max(x, window.innerWidth - x),
+          Math.max(y, window.innerHeight - y)
+        ) + 30;
+
+        const transitionType = isCurrentlyDark ? 'dark-to-light' : 'light-to-dark';
+        document.documentElement.style.setProperty('--clip-x', `${x}px`);
+        document.documentElement.style.setProperty('--clip-y', `${y}px`);
+        document.documentElement.style.setProperty('--clip-radius', `${endRadius}px`);
+        document.documentElement.setAttribute('data-theme-transition', transitionType);
+
+        const transition = document.startViewTransition(() => {
+          document.documentElement.setAttribute('data-theme', nextTheme);
+          localStorage.setItem('app_theme', nextTheme);
+          setTheme(nextTheme);
+        });
+
+        transition.finished.finally(() => {
+          requestAnimationFrame(() => {
+            document.documentElement.removeAttribute('data-theme-transition');
+
+            // 3. Slowly bring the aurora back in on the new theme
+            setTimeout(() => {
+              setAuroraVisible(true);
+
+              // 4. Release cooldown after aurora fade-in completes
+              setTimeout(() => {
+                isLockedRef.current = false;
+                setIsTransitioning(false);
+              }, 400);
+            }, 60);
+          });
+        });
+      } else {
         document.documentElement.setAttribute('data-theme', nextTheme);
         localStorage.setItem('app_theme', nextTheme);
-        return nextTheme;
-      });
+        setTheme(nextTheme);
 
-      // 3. After switch completes (70ms), slowly bring the aurora back in
-      setTimeout(() => {
-        setAuroraVisible(true);
-
-        // 4. End cooldown after aurora fade-in completes (450ms)
         setTimeout(() => {
-          isLockedRef.current = false;
-          setIsTransitioning(false);
-        }, 450);
-      }, 70);
-    }, 220);
-  }, []);
+          setAuroraVisible(true);
+          setTimeout(() => {
+            isLockedRef.current = false;
+            setIsTransitioning(false);
+          }, 400);
+        }, 60);
+      }
+    }, 200);
+  }, [theme]);
 
   const isLight = theme === 'light';
 
