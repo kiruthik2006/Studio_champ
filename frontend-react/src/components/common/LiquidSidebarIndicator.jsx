@@ -40,7 +40,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
 
     const pillRadius = 'var(--border-radius-md, 10px)';
 
-    // Liquid Water Drop Morphing Keyframes
+    // Liquid Water Drop Morphing Keyframes (Clearly Perceptible & Fluid)
     const keyframes = [
       // 0%: Full Resting Pill at Initial Option
       {
@@ -53,36 +53,36 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.18))',
         opacity: 1,
       },
-      // 18%: Surface tension collapse into a round liquid droplet
+      // 20%: Pinches & Condenses into a round liquid droplet (clearly visible)
       {
-        top: `${prevTop + (isMovingDown ? 8 : -8)}px`,
+        top: `${prevTop + (isMovingDown ? 6 : -6)}px`,
         height: '32px',
         left: 'calc(50% - 16px)',
         right: 'calc(50% - 16px)',
         borderRadius: '50%',
-        transform: 'scale(0.85, 1.25)',
-        filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.3))',
-        opacity: 0.96,
+        transform: 'scale(0.85, 1.2)',
+        filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.32))',
+        opacity: 0.98,
       },
-      // 52%: Mid-flight aerodynamic stretched water drop traveling fast
+      // 55%: Mid-flight aerodynamic stretched water drop traveling along the track
       {
         top: `${midTop}px`,
         height: '38px',
         left: 'calc(50% - 14px)',
         right: 'calc(50% - 14px)',
         borderRadius: teardropRadius,
-        transform: isMovingDown ? 'scale(0.7, 1.55) translateY(4px)' : 'scale(0.7, 1.55) translateY(-4px)',
-        filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.38))',
+        transform: isMovingDown ? 'scale(0.72, 1.5) translateY(4px)' : 'scale(0.72, 1.5) translateY(-4px)',
+        filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.4))',
         opacity: 1,
       },
-      // 80%: Impact splash & horizontal liquid expansion on target option
+      // 82%: Impact splash & horizontal liquid expansion on target option
       {
-        top: `${targetTop + (isMovingDown ? 3 : -3)}px`,
+        top: `${targetTop + (isMovingDown ? 2 : -2)}px`,
         height: `${targetHeight * 0.92}px`,
-        left: '3px',
-        right: '3px',
+        left: '4px',
+        right: '4px',
         borderRadius: '14px',
-        transform: 'scale(1.03, 0.9)',
+        transform: 'scale(1.03, 0.92)',
         filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.22))',
         opacity: 1,
       },
@@ -99,11 +99,12 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
       },
     ];
 
-    const duration = Math.min(460, Math.max(320, distance * 1.6));
+    // Deliberate, clearly perceptible timing so the droplet morph is enjoyed
+    const duration = Math.min(800, Math.max(620, distance * 3.0));
 
     const anim = indicatorRef.current.animate(keyframes, {
       duration: duration,
-      easing: 'cubic-bezier(0.25, 1.15, 0.45, 1)',
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
       fill: 'forwards',
     });
 
