@@ -1085,77 +1085,112 @@ h1, h2, h3, h4, .font-display {
   }
 }
 
-/* ===== Subtle Ambient Background Animations ===== */
-@keyframes ambientDrift1 {
+/* ===== Upgraded Liquid Morphing Aurora Keyframes ===== */
+@keyframes liquidMorph1 {
   0% {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
     opacity: 0.85;
   }
   33% {
-    transform: translate3d(5vw, 6vh, 0) scale(1.08);
+    transform: translate3d(6vw, 5vh, 0) rotate(18deg) scale(1.08);
+    border-radius: 40% 60% 70% 30% / 40% 40% 60% 60%;
     opacity: 1;
   }
   66% {
-    transform: translate3d(-4vw, 10vh, 0) scale(0.95);
-    opacity: 0.75;
+    transform: translate3d(-4vw, 8vh, 0) rotate(-12deg) scale(0.96);
+    border-radius: 70% 30% 50% 50% / 30% 60% 40% 70%;
+    opacity: 0.8;
   }
   100% {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
     opacity: 0.85;
   }
 }
 
-@keyframes ambientDrift2 {
+@keyframes liquidMorph2 {
   0% {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    border-radius: 50% 50% 70% 30% / 50% 30% 70% 50%;
     opacity: 0.75;
   }
   40% {
-    transform: translate3d(-6vw, -8vh, 0) scale(1.12);
+    transform: translate3d(-8vw, -6vh, 0) rotate(-22deg) scale(1.12);
+    border-radius: 70% 30% 40% 60% / 60% 70% 30% 40%;
     opacity: 0.95;
   }
   75% {
-    transform: translate3d(4vw, -4vh, 0) scale(0.92);
+    transform: translate3d(5vw, -4vh, 0) rotate(14deg) scale(0.94);
+    border-radius: 30% 70% 60% 40% / 40% 50% 50% 60%;
     opacity: 0.7;
   }
   100% {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    border-radius: 50% 50% 70% 30% / 50% 30% 70% 50%;
     opacity: 0.75;
   }
 }
 
-@keyframes ambientDrift3 {
+@keyframes liquidMorph3 {
   0% {
-    transform: translate3d(0, 0, 0) scale(0.95);
+    transform: translate3d(0, 0, 0) scale(0.96);
+    border-radius: 60% 40% 60% 40% / 40% 60% 40% 60%;
+    opacity: 0.65;
+  }
+  50% {
+    transform: translate3d(-5vw, 6vh, 0) scale(1.09);
+    border-radius: 40% 60% 30% 70% / 60% 30% 70% 40%;
+    opacity: 0.92;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.96);
+    border-radius: 60% 40% 60% 40% / 40% 60% 40% 60%;
+    opacity: 0.65;
+  }
+}
+
+@keyframes liquidMorph4 {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    border-radius: 45% 55% 70% 30% / 35% 65% 35% 65%;
     opacity: 0.6;
   }
   50% {
-    transform: translate3d(-4vw, 6vh, 0) scale(1.06);
-    opacity: 0.9;
+    transform: translate3d(7vw, -5vh, 0) rotate(16deg) scale(1.06);
+    border-radius: 65% 35% 40% 60% / 55% 45% 55% 45%;
+    opacity: 0.85;
   }
   100% {
-    transform: translate3d(0, 0, 0) scale(0.95);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    border-radius: 45% 55% 70% 30% / 35% 65% 35% 65%;
     opacity: 0.6;
   }
 }
 
-.subtle-bg-orb-1 {
-  animation: ambientDrift1 24s ease-in-out infinite;
+.subtle-aurora-emitter-1 {
+  animation: liquidMorph1 26s ease-in-out infinite;
 }
 
-.subtle-bg-orb-2 {
-  animation: ambientDrift2 30s ease-in-out infinite;
+.subtle-aurora-emitter-2 {
+  animation: liquidMorph2 34s ease-in-out infinite;
 }
 
-.subtle-bg-orb-3 {
-  animation: ambientDrift3 20s ease-in-out infinite;
+.subtle-aurora-emitter-3 {
+  animation: liquidMorph3 21s ease-in-out infinite;
+}
+
+.subtle-aurora-emitter-4 {
+  animation: liquidMorph4 38s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .subtle-bg-orb-1,
-  .subtle-bg-orb-2,
-  .subtle-bg-orb-3 {
+  .subtle-aurora-emitter-1,
+  .subtle-aurora-emitter-2,
+  .subtle-aurora-emitter-3,
+  .subtle-aurora-emitter-4 {
     animation: none !important;
   }
 }
+
 
