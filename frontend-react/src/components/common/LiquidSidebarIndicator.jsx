@@ -9,10 +9,10 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
 
   // 4 progressive temporal ghost layers for authentic motion blur sampling
   const TRAILS = [
-    { delay: 25, opacity: 0.30, scaleX: 0.88 },
-    { delay: 55, opacity: 0.20, scaleX: 0.76 },
-    { delay: 90, opacity: 0.12, scaleX: 0.64 },
-    { delay: 130, opacity: 0.05, scaleX: 0.52 },
+    { opacity: 0.32, insetX: 4 },
+    { opacity: 0.20, insetX: 8 },
+    { opacity: 0.12, insetX: 12 },
+    { opacity: 0.05, insetX: 16 },
   ];
 
   useEffect(() => {
@@ -22,6 +22,8 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
     const targetTop = el.offsetTop;
     const targetHeight = el.offsetHeight;
 
+    const pillRadius = 'var(--border-radius-md, 10px)';
+
     if (isFirstRender.current) {
       isFirstRender.current = false;
       [headRef.current, ...trailRefs.current].forEach((node) => {
@@ -30,6 +32,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         node.style.height = `${targetHeight}px`;
         node.style.left = '0px';
         node.style.right = '0px';
+        node.style.borderRadius = pillRadius;
         node.style.opacity = node === headRef.current ? '1' : '0';
       });
       prevTabRef.current = activeTab;
@@ -46,16 +49,9 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
     const distance = Math.abs(targetTop - prevTop);
     const midTop = (prevTop + targetTop) / 2;
 
-    // Organic teardrop contour depending on travel vector
-    const teardropRadius = isMovingDown
-      ? '30% 30% 70% 70% / 20% 20% 80% 80%'
-      : '70% 70% 30% 30% / 80% 80% 20% 20%';
-
-    const pillRadius = 'var(--border-radius-md, 10px)';
-
-    // Keyframe trajectory for the primary head droplet
+    // Keyframe trajectory for the primary head (Rounded-Corner Rectangle throughout)
     const headKeyframes = [
-      // 0%: Full resting pill at origin
+      // 0%: Full resting rounded rectangle at origin
       {
         top: `${prevTop}px`,
         height: `${targetHeight}px`,
@@ -65,37 +61,37 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         transform: 'scale(1, 1)',
         opacity: 1,
       },
-      // 18%: Pinches into liquid droplet
+      // 18%: Contracts horizontally into a sleek rounded rectangle
       {
         top: `${prevTop + (isMovingDown ? 8 : -8)}px`,
-        height: '32px',
-        left: 'calc(50% - 16px)',
-        right: 'calc(50% - 16px)',
-        borderRadius: '50%',
-        transform: 'scale(0.85, 1.25)',
+        height: `${targetHeight * 0.9}px`,
+        left: '12px',
+        right: '12px',
+        borderRadius: pillRadius,
+        transform: 'scale(1, 1.15)',
         opacity: 1,
       },
-      // 50%: Mid-flight peak velocity with aerodynamic stretch
+      // 50%: Mid-flight peak velocity with aerodynamic stretch along movement vector
       {
         top: `${midTop}px`,
-        height: '42px',
-        left: 'calc(50% - 14px)',
-        right: 'calc(50% - 14px)',
-        borderRadius: teardropRadius,
-        transform: isMovingDown ? 'scale(0.7, 1.65) translateY(6px)' : 'scale(0.7, 1.65) translateY(-6px)',
+        height: `${targetHeight * 0.95}px`,
+        left: '18px',
+        right: '18px',
+        borderRadius: pillRadius,
+        transform: isMovingDown ? 'scale(1, 1.45) translateY(4px)' : 'scale(1, 1.45) translateY(-4px)',
         opacity: 1,
       },
-      // 82%: Impact splash on target tab
+      // 82%: Impact & horizontal expansion on target tab
       {
         top: `${targetTop + (isMovingDown ? 2 : -2)}px`,
-        height: `${targetHeight * 0.92}px`,
-        left: '3px',
-        right: '3px',
-        borderRadius: '14px',
-        transform: 'scale(1.04, 0.92)',
+        height: `${targetHeight * 0.94}px`,
+        left: '4px',
+        right: '4px',
+        borderRadius: pillRadius,
+        transform: 'scale(1.02, 0.95)',
         opacity: 1,
       },
-      // 100%: Relaxes into destination pill
+      // 100%: Relaxes into full rounded rectangle at destination
       {
         top: `${targetTop}px`,
         height: `${targetHeight}px`,
@@ -107,10 +103,10 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
       },
     ];
 
-    const duration = Math.min(1100, Math.max(800, distance * 3.8));
+    const duration = Math.min(1050, Math.max(750, distance * 3.6));
     const easing = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-    // Animate the main head
+    // Animate the main rounded rectangle head
     const headAnim = headRef.current.animate(headKeyframes, {
       duration,
       easing,
@@ -129,14 +125,13 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
       }
     };
 
-    // Animate the 4 progressive temporal ghost copies (Directional Temporal Motion Blur)
+    // Animate the 4 progressive temporal ghost copies (Rounded-Corner Rectangle trails)
     trailRefs.current.forEach((trailNode, idx) => {
       if (!trailNode) return;
       const trailConfig = TRAILS[idx];
 
-      // Temporal copy trajectory with positional lag behind the head
       const trailKeyframes = [
-        // 0%: Hidden inside origin pill
+        // 0%: Hidden inside origin rounded rectangle
         {
           top: `${prevTop}px`,
           height: `${targetHeight}px`,
@@ -146,39 +141,39 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
           transform: 'scale(1, 1)',
           opacity: 0,
         },
-        // 22%: Emanates out of the contracting pill as a trailing ghost
+        // 22%: Emanating trailing rounded rectangle ghost
         {
           top: `${prevTop + (isMovingDown ? 2 : -2)}px`,
-          height: '28px',
-          left: 'calc(50% - 14px)',
-          right: 'calc(50% - 14px)',
-          borderRadius: '50%',
-          transform: `scale(${0.8 * trailConfig.scaleX}, 1.1)`,
-          opacity: trailConfig.opacity * 0.8,
+          height: `${targetHeight * 0.85}px`,
+          left: `${14 + trailConfig.insetX}px`,
+          right: `${14 + trailConfig.insetX}px`,
+          borderRadius: pillRadius,
+          transform: 'scale(1, 1.05)',
+          opacity: trailConfig.opacity * 0.85,
         },
         // 52%: Trailing behind the head in full temporal smear
         {
           top: `${midTop - (isMovingDown ? (idx + 1) * 14 : -(idx + 1) * 14)}px`,
-          height: '36px',
-          left: 'calc(50% - 13px)',
-          right: 'calc(50% - 13px)',
-          borderRadius: teardropRadius,
+          height: `${targetHeight * 0.88}px`,
+          left: `${18 + trailConfig.insetX}px`,
+          right: `${18 + trailConfig.insetX}px`,
+          borderRadius: pillRadius,
           transform: isMovingDown
-            ? `scale(${0.65 * trailConfig.scaleX}, 1.5) translateY(2px)`
-            : `scale(${0.65 * trailConfig.scaleX}, 1.5) translateY(-2px)`,
+            ? 'scale(1, 1.35) translateY(2px)'
+            : 'scale(1, 1.35) translateY(-2px)',
           opacity: trailConfig.opacity,
         },
-        // 80%: Collapsing into the impact zone behind the head
+        // 80%: Collapsing into target impact zone
         {
           top: `${targetTop - (isMovingDown ? (idx + 1) * 8 : -(idx + 1) * 8)}px`,
-          height: '30px',
-          left: 'calc(50% - 15px)',
-          right: 'calc(50% - 15px)',
-          borderRadius: '50%',
-          transform: `scale(${0.9 * trailConfig.scaleX}, 1.0)`,
+          height: `${targetHeight * 0.9}px`,
+          left: `${10 + trailConfig.insetX}px`,
+          right: `${10 + trailConfig.insetX}px`,
+          borderRadius: pillRadius,
+          transform: 'scale(1, 0.98)',
           opacity: trailConfig.opacity * 0.5,
         },
-        // 100%: Absorbed seamlessly into target pill
+        // 100%: Absorbed seamlessly into target rounded rectangle
         {
           top: `${targetTop}px`,
           height: `${targetHeight}px`,
@@ -223,7 +218,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
         zIndex: 1,
       }}
     >
-      {/* 4 Directional Temporal Ghost Trails */}
+      {/* 4 Directional Temporal Ghost Trails (Rounded Rectangles) */}
       {TRAILS.map((_, idx) => (
         <div
           key={idx}
@@ -239,15 +234,15 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
             pointerEvents: 'none',
             opacity: 0,
             transformOrigin: 'center center',
-            willChange: 'transform, top, left, right, border-radius, opacity',
+            willChange: 'transform, top, left, right, opacity',
           }}
         />
       ))}
 
-      {/* Primary Liquid Droplet Head */}
+      {/* Primary Rounded Rectangle Head */}
       <div
         ref={headRef}
-        className="sidebar-active-indicator liquid-head"
+        className="sidebar-active-indicator"
         style={{
           position: 'absolute',
           left: 0,
@@ -258,7 +253,7 @@ export const LiquidSidebarIndicator = ({ activeTab, tabRefs }) => {
           pointerEvents: 'none',
           opacity: 0,
           transformOrigin: 'center center',
-          willChange: 'transform, top, left, right, border-radius',
+          willChange: 'transform, top, left, right',
         }}
       />
     </div>
