@@ -8,6 +8,7 @@ import { EventManager } from '../components/admin/EventManager';
 import { BatchPhotoUploader } from '../components/admin/BatchPhotoUploader';
 import { EventTypeManager } from '../components/admin/EventTypeManager';
 import { UserManager } from '../components/admin/UserManager';
+import { LiquidSidebarIndicator } from '../components/common/LiquidSidebarIndicator';
 import { adminApi } from '../api/admin';
 import {
   Shield,
@@ -31,18 +32,6 @@ export const AdminDashboardPage = () => {
   const [uploadSelectedEvent, setUploadSelectedEvent] = useState(null);
 
   const tabRefs = useRef({});
-  const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0, opacity: 0 });
-
-  useEffect(() => {
-    const el = tabRefs.current[activeTab];
-    if (el) {
-      setIndicatorStyle({
-        top: el.offsetTop,
-        height: el.offsetHeight,
-        opacity: 1,
-      });
-    }
-  }, [activeTab]);
 
   const fetchAdminData = useCallback(async () => {
     setLoading(true);
@@ -123,15 +112,8 @@ export const AdminDashboardPage = () => {
               <span>ADMINISTRATION</span>
             </div>
 
-            {/* Flowing Active Indicator Pill */}
-            <div
-              className="sidebar-active-indicator"
-              style={{
-                top: `${indicatorStyle.top}px`,
-                height: `${indicatorStyle.height}px`,
-                opacity: indicatorStyle.opacity,
-              }}
-            />
+            {/* Liquid Water Drop Morphing Indicator */}
+            <LiquidSidebarIndicator activeTab={activeTab} tabRefs={tabRefs} />
 
             <button
               ref={(el) => (tabRefs.current['events'] = el)}

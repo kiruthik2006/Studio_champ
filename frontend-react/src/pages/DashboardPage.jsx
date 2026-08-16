@@ -9,6 +9,7 @@ import { EventCard } from '../components/dashboard/EventCard';
 import { PhotoGallery } from '../components/dashboard/PhotoGallery';
 import { photosApi } from '../api/photos';
 import { authApi } from '../api/auth';
+import { LiquidSidebarIndicator } from '../components/common/LiquidSidebarIndicator';
 import {
   UserPlus,
   Calendar,
@@ -32,18 +33,6 @@ export const DashboardPage = () => {
   const [faceRefreshKey, setFaceRefreshKey] = useState(0);
 
   const tabRefs = useRef({});
-  const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0, opacity: 0 });
-
-  useEffect(() => {
-    const el = tabRefs.current[activeTab];
-    if (el) {
-      setIndicatorStyle({
-        top: el.offsetTop,
-        height: el.offsetHeight,
-        opacity: 1,
-      });
-    }
-  }, [activeTab]);
 
   // Events & Matching
   const [events, setEvents] = useState([]);
@@ -185,15 +174,8 @@ export const DashboardPage = () => {
         {/* Sidebar */}
         <aside className="dashboard-sidebar">
           <div className="sidebar-menu">
-            {/* Flowing Active Indicator Pill */}
-            <div
-              className="sidebar-active-indicator"
-              style={{
-                top: `${indicatorStyle.top}px`,
-                height: `${indicatorStyle.height}px`,
-                opacity: indicatorStyle.opacity,
-              }}
-            />
+            {/* Liquid Water Drop Morphing Indicator */}
+            <LiquidSidebarIndicator activeTab={activeTab} tabRefs={tabRefs} />
 
             <button
               ref={(el) => (tabRefs.current['face-registration'] = el)}
