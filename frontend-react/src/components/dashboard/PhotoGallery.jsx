@@ -2,18 +2,13 @@ import React, { useState } from 'react';
 import { PhotoLightboxModal } from './PhotoLightboxModal';
 import { Sparkles, Download, Eye, Image as ImageIcon, Sliders } from 'lucide-react';
 import { photosApi } from '../../api/photos';
+import { formatImageUrl } from '../../utils/imageUrl';
 
 export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessage }) => {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [minConfidence, setMinConfidence] = useState(50);
 
   const safePhotos = Array.isArray(photos) ? photos : [];
-
-  const formatImageUrl = (path) => {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return path.startsWith('/') ? path : `/${path}`;
-  };
 
   const filteredPhotos = safePhotos.filter((p) => {
     const score = p.similarity_score || p.confidence || 0;

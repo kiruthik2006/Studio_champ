@@ -2,17 +2,12 @@ import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { Download, CheckCircle, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { photosApi } from '../../api/photos';
+import { formatImageUrl } from '../../utils/imageUrl';
 
 export const PhotoLightboxModal = ({ photo, isOpen, onClose }) => {
   const [showBoundingBoxes, setShowBoundingBoxes] = useState(true);
 
   if (!photo) return null;
-
-  const formatImageUrl = (path) => {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return path.startsWith('/') ? path : `/${path}`;
-  };
 
   const imageUrl = formatImageUrl(
     showBoundingBoxes && photo.annotated_image_path

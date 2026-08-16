@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { photosApi } from '../../api/photos';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
-import { UserCheck, Trash2, Calendar, ShieldCheck, RefreshCw } from 'lucide-react';
+import { formatImageUrl } from '../../utils/imageUrl';
+import { UserCheck, Trash2, Calendar, ShieldCheck, RefreshCw, User } from 'lucide-react';
 
 export const RegisteredFaces = ({ refreshTrigger }) => {
   const [faces, setFaces] = useState([]);
@@ -46,12 +47,6 @@ export const RegisteredFaces = ({ refreshTrigger }) => {
     } finally {
       setDeletingId(null);
     }
-  };
-
-  const formatImageUrl = (path) => {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return path.startsWith('/') ? path : `/${path}`;
   };
 
   return (
@@ -108,13 +103,16 @@ export const RegisteredFaces = ({ refreshTrigger }) => {
                 transition: 'transform var(--transition-fast)'
               }}
             >
-              <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#000' }}>
+              <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#18181b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img
                   src={formatImageUrl(face.image_path)}
                   alt="Registered face"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=60';
+                    e.target.style.display = 'none';
+                    if (e.target.parentElement) {
+                      e.target.parentElement.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:0.8rem;">Image unavailable</div>';
+                    }
                   }}
                 />
               </div>
