@@ -6,11 +6,14 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { SubtleBackground } from './components/common/SubtleBackground';
 
 export function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
+    <>
+      <SubtleBackground />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
       <Route
         path="/dashboard"
         element={
@@ -38,6 +41,7 @@ export function App() {
       <Route path="/404" element={<NotFoundPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
+    </>
   );
 }
 

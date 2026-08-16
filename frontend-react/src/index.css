@@ -1074,3 +1074,78 @@ h1, h2, h3, h4, .font-display {
     background: var(--card-bg-elevated) !important;
   }
 }
+
+/* ===== Subtle Ambient Background Animations ===== */
+@keyframes ambientDrift1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+  33% {
+    transform: translate3d(5vw, 6vh, 0) scale(1.08);
+    opacity: 1;
+  }
+  66% {
+    transform: translate3d(-4vw, 10vh, 0) scale(0.95);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+}
+
+@keyframes ambientDrift2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  40% {
+    transform: translate3d(-6vw, -8vh, 0) scale(1.12);
+    opacity: 0.95;
+  }
+  75% {
+    transform: translate3d(4vw, -4vh, 0) scale(0.92);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+}
+
+@keyframes ambientDrift3 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.95);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate3d(-4vw, 6vh, 0) scale(1.06);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.95);
+    opacity: 0.6;
+  }
+}
+
+.subtle-bg-orb-1 {
+  animation: ambientDrift1 24s ease-in-out infinite;
+}
+
+.subtle-bg-orb-2 {
+  animation: ambientDrift2 30s ease-in-out infinite;
+}
+
+.subtle-bg-orb-3 {
+  animation: ambientDrift3 20s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subtle-bg-orb-1,
+  .subtle-bg-orb-2,
+  .subtle-bg-orb-3 {
+    animation: none !important;
+  }
+}
+
