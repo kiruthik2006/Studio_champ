@@ -11,6 +11,7 @@ import { CircleMemberBar } from '../components/dashboard/CircleMemberBar';
 import { MultiPersonFilterBar } from '../components/dashboard/MultiPersonFilterBar';
 import { VectorHealthReport } from '../components/dashboard/VectorHealthReport';
 import { GuidedCaptureJourneyModal } from '../components/dashboard/GuidedCaptureJourneyModal';
+import { DashboardSidebar } from '../components/dashboard/DashboardSidebar';
 import { photosApi } from '../api/photos';
 import { authApi } from '../api/auth';
 import { LiquidSidebarIndicator } from '../components/common/LiquidSidebarIndicator';
@@ -302,53 +303,19 @@ export const DashboardPage = () => {
       <Navbar />
 
       <div className="dashboard-layout">
-        {/* Sidebar */}
-        <aside className="dashboard-sidebar">
-          <div className="sidebar-menu">
-            {/* Liquid Water Drop Morphing Indicator */}
-            <LiquidSidebarIndicator activeTab={activeTab} tabRefs={tabRefs} />
-
-            <button
-              ref={(el) => (tabRefs.current['face-registration'] = el)}
-              className={`sidebar-item ${activeTab === 'face-registration' ? 'active' : ''}`}
-              onClick={() => setActiveTab('face-registration')}
-            >
-              <UserPlus size={18} />
-              <span>Face & Family Circle</span>
-            </button>
-
-            <button
-              ref={(el) => (tabRefs.current['events'] = el)}
-              className={`sidebar-item ${activeTab === 'events' ? 'active' : ''}`}
-              onClick={() => setActiveTab('events')}
-            >
-              <Calendar size={18} />
-              <span>Browse Events</span>
-            </button>
-
-            <button
-              ref={(el) => (tabRefs.current['my-photos'] = el)}
-              className={`sidebar-item ${activeTab === 'my-photos' ? 'active' : ''}`}
-              onClick={() => setActiveTab('my-photos')}
-            >
-              <Images size={18} />
-              <span>My Matched Photos</span>
-            </button>
-
-            <button
-              ref={(el) => (tabRefs.current['settings'] = el)}
-              className={`sidebar-item ${activeTab === 'settings' ? 'active' : ''}`}
-              onClick={() => setActiveTab('settings')}
-            >
-              <Settings size={18} />
-              <span>Account Settings</span>
-            </button>
-          </div>
-
-          <div style={{ padding: '1rem', borderTop: '1px solid var(--border-subtle)', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            FaceRec Events v2.0 • Family Circles
-          </div>
-        </aside>
+        {/* Rich Informative Sidebar */}
+        <DashboardSidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          tabRefs={tabRefs}
+          circleMembers={circleMembers}
+          events={events}
+          matchedPhotosCount={matchedPhotos.length}
+          onStartJourney={() => {
+            setActiveTab('face-registration');
+            setIsJourneyModalOpen(true);
+          }}
+        />
 
         {/* Main Content Area */}
         <main className="dashboard-main">
