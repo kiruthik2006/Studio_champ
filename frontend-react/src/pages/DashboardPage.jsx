@@ -9,6 +9,8 @@ import { EventCard } from '../components/dashboard/EventCard';
 import { PhotoGallery } from '../components/dashboard/PhotoGallery';
 import { CircleMemberBar } from '../components/dashboard/CircleMemberBar';
 import { MultiPersonFilterBar } from '../components/dashboard/MultiPersonFilterBar';
+import { VectorHealthReport } from '../components/dashboard/VectorHealthReport';
+import { GuidedCaptureJourneyModal } from '../components/dashboard/GuidedCaptureJourneyModal';
 import { photosApi } from '../api/photos';
 import { authApi } from '../api/auth';
 import { LiquidSidebarIndicator } from '../components/common/LiquidSidebarIndicator';
@@ -34,6 +36,8 @@ export const DashboardPage = () => {
 
   const [activeTab, setActiveTab] = useState('face-registration');
   const [faceRefreshKey, setFaceRefreshKey] = useState(0);
+  const [isJourneyModalOpen, setIsJourneyModalOpen] = useState(false);
+  const fileInputRef = useRef(null);
 
   const tabRefs = useRef({});
 
@@ -152,6 +156,39 @@ export const DashboardPage = () => {
       await loadCircleMembers();
     } catch (err) {
       showToast(err.message || 'Failed to delete circle member', 'error');
+    }
+  };
+
+  // Direct File Upload handler with automatic angle assignment
+  const handleDirectFileUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const validFiles = files.filter((f) => f.type.startsWith('image/'));
+    if (validFiles.length === 0) {
+      showToast('Please select valid image files (JPG, PNG)', 'warning');
+      return;
+    }
+
+    const formData = new FormData();
+    if (selectedMemberId) {
+      formData.append('member_id', selectedMemberId);
+    }
+    const slots = ['front', 'left', 'right', 'smile'];
+    validFiles.forEach((file, idx) => {
+      formData.append('faces', file);
+      formData.append('angle_slot', slots[idx % slots.length]);
+    });
+
+    try {
+      showToast(`Uploading ${validFiles.length} photo(s)...`, 'info');
+      const res = await photosApi.uploadFaces(formData);
+      showToast(res.message || 'Photos uploaded and analyzed!', 'success');
+      setFaceRefreshKey((k) => k + 1);
+    } catch (err) {
+      showToast(err.message || 'Failed to upload photos', 'error');
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -325,7 +362,7 @@ export const DashboardPage = () => {
                       Face Biometrics & Family Circle
                     </h1>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                      Register face photos for yourself and family members to unlock multi-person group matching.
+                      Audit vector health and enroll biometric profiles via hands-free 4-step guided journeys.
                     </p>
                   </div>
 
@@ -338,10 +375,35 @@ export const DashboardPage = () => {
                     onDeleteMember={handleDeleteMember}
                   />
 
-                  {/* Guided 4-Angle Camera Capture for Selected Member */}
-                  <CameraCapture
+                  {/* Biometric Vector Health & AI Diagnostic Report */}
+                  <VectorHealthReport
                     member={currentSelectedMember}
-                    onFacesUploaded={() => setFaceRefreshKey((k) => k + 1)}
+                    members={circleMembers}
+                    faces={currentSelectedMember?.faces || []}
+                    onStartJourney={() => setIsJourneyModalOpen(true)}
+                    onOpenUpload={() => fileInputRef.current?.click()}
+                    onSelectMember={(id) => setSelectedMemberId(id)}
+                  />
+
+                  {/* Hidden File Input for Direct Upload */}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleDirectFileUpload}
+                    multiple
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                  />
+
+                  {/* Guided 4-Step Capture Journey Modal */}
+                  <GuidedCaptureJourneyModal
+                    isOpen={isJourneyModalOpen}
+                    onClose={() => setIsJourneyModalOpen(false)}
+                    member={currentSelectedMember}
+                    onComplete={() => {
+                      setFaceRefreshKey((k) => k + 1);
+                      setIsJourneyModalOpen(false);
+                    }}
                   />
 
                   {/* Registered Faces List for Selected Member */}
