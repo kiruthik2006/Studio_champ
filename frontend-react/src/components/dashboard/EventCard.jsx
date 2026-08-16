@@ -1,7 +1,7 @@
 import React from 'react';
-import { Calendar, MapPin, Image as ImageIcon, Search, Sparkles } from 'lucide-react';
+import { Calendar, MapPin, Image as ImageIcon, Sparkles } from 'lucide-react';
 
-export const EventCard = ({ event, onSearch, searching }) => {
+export const EventCard = ({ event, onSearch, onFindPhotos, searching, isLoading }) => {
   const formattedDate = event.event_date
     ? new Date(event.event_date).toLocaleDateString('en-US', {
         month: 'short',
@@ -9,6 +9,16 @@ export const EventCard = ({ event, onSearch, searching }) => {
         year: 'numeric',
       })
     : 'Date TBA';
+
+  const isSearching = searching || isLoading;
+
+  const handleClick = () => {
+    if (typeof onFindPhotos === 'function') {
+      onFindPhotos(event);
+    } else if (typeof onSearch === 'function') {
+      onSearch(event.id);
+    }
+  };
 
   return (
     <div
@@ -83,12 +93,12 @@ export const EventCard = ({ event, onSearch, searching }) => {
         </div>
 
         <button
-          onClick={() => onSearch(event.id)}
-          disabled={searching || (event.photo_count === 0)}
+          onClick={handleClick}
+          disabled={isSearching || (event.photo_count === 0)}
           className="btn btn-primary"
           style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.88rem', padding: '0.65rem' }}
         >
-          {searching ? (
+          {isSearching ? (
             'Searching Faces...'
           ) : (
             <>
