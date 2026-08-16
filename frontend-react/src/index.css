@@ -232,13 +232,13 @@ body {
 
 [data-theme-transition="light-to-dark"]::view-transition-new(root) {
   z-index: 999999;
-  animation: 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both circularExpand;
+  animation: 0.32s cubic-bezier(0.16, 1, 0.3, 1) both circularExpand;
 }
 
 /* Dark -> Light (Collapsing dark circle inward) */
 [data-theme-transition="dark-to-light"]::view-transition-old(root) {
   z-index: 999999;
-  animation: 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both circularCollapse;
+  animation: 0.32s cubic-bezier(0.16, 1, 0.3, 1) both circularCollapse;
 }
 
 [data-theme-transition="dark-to-light"]::view-transition-new(root) {

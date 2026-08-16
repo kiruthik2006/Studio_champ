@@ -21,7 +21,7 @@ export const SubtleBackground = () => {
         pointerEvents: 'none',
         zIndex: 0,
         opacity: auroraVisible ? 1 : 0,
-        transition: auroraVisible ? 'opacity 0.45s ease-out' : 'opacity 0.2s ease-in',
+        transition: auroraVisible ? 'opacity 0.28s ease-out' : 'opacity 0.1s ease-in',
         willChange: 'opacity',
       }}
     >

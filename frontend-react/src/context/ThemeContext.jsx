@@ -32,10 +32,10 @@ export const ThemeProvider = ({ children }) => {
     const isCurrentlyDark = theme === 'dark';
     const nextTheme = isCurrentlyDark ? 'light' : 'dark';
 
-    // 1. Subtly fade out aurora to 0%
+    // 1. Snappy fade out of aurora (100ms)
     setAuroraVisible(false);
 
-    // 2. Once aurora is 0% (200ms), execute the circular ripple view transition
+    // 2. Execute circular ripple view transition
     setTimeout(() => {
       if (document.startViewTransition) {
         const x = e?.clientX ?? window.innerWidth - 60;
@@ -61,16 +61,16 @@ export const ThemeProvider = ({ children }) => {
           requestAnimationFrame(() => {
             document.documentElement.removeAttribute('data-theme-transition');
 
-            // 3. Slowly bring the aurora back in on the new theme
+            // 3. Bring the aurora back in on the new theme
             setTimeout(() => {
               setAuroraVisible(true);
 
-              // 4. Release cooldown after aurora fade-in completes
+              // 4. Release cooldown promptly (160ms)
               setTimeout(() => {
                 isLockedRef.current = false;
                 setIsTransitioning(false);
-              }, 400);
-            }, 60);
+              }, 160);
+            }, 15);
           });
         });
       } else {
@@ -83,10 +83,10 @@ export const ThemeProvider = ({ children }) => {
           setTimeout(() => {
             isLockedRef.current = false;
             setIsTransitioning(false);
-          }, 400);
-        }, 60);
+          }, 160);
+        }, 15);
       }
-    }, 200);
+    }, 100);
   }, [theme]);
 
   const isLight = theme === 'light';
