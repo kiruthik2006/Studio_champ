@@ -55,8 +55,8 @@ class StorageService:
         # Save file
         file_obj.save(filepath)
 
-        # Return a path that is relative to the upload folder so that get_full_path works
-        return os.path.relpath(filepath, self.upload_folder)
+        # Return a path that is relative to the upload folder with normalized forward slashes
+        return os.path.relpath(filepath, self.upload_folder).replace("\\", "/")
 
     def save_event_photo(self, file_obj, event_id):
         """
@@ -78,8 +78,8 @@ class StorageService:
         # Save file
         file_obj.save(filepath)
 
-        # Return a path relative to the upload folder so get_full_path works
-        return os.path.relpath(filepath, self.upload_folder)
+        # Return a path relative to the upload folder with normalized forward slashes
+        return os.path.relpath(filepath, self.upload_folder).replace("\\", "/")
 
     def save_annotated_photo(self, source_path, filename):
         """
@@ -91,11 +91,14 @@ class StorageService:
 
         safe_name = secure_filename(filename)
         filepath = os.path.join(self.annotated_folder, safe_name)
-        return os.path.relpath(filepath, self.upload_folder)
+        return os.path.relpath(filepath, self.upload_folder).replace("\\", "/")
 
     def get_full_path(self, relative_path):
-        """Convert relative path to full path"""
-        return os.path.join(self.upload_folder, relative_path)
+        """Convert relative path to full path, normalized for the host OS"""
+        if not relative_path:
+            return ""
+        norm_path = os.path.normpath(relative_path.replace("/", os.sep).replace("\\", os.sep))
+        return os.path.join(self.upload_folder, norm_path)
 
     def get_file_size(self, relative_path):
         """Get file size in bytes"""
