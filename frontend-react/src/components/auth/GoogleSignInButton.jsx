@@ -82,9 +82,10 @@ export const GoogleSignInButton = ({ text = 'Continue with Google', onSuccess, m
       if (window.google?.accounts?.oauth2) {
         const client = window.google.accounts.oauth2.initTokenClient({
           client_id: activeClientId,
-          scope: 'openid email profile https://www.googleapis.com/auth/photoslibrary.readonly',
+          scope: 'openid email profile https://www.googleapis.com/auth/photoslibrary.readonly https://www.googleapis.com/auth/photoslibrary.appendonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file',
           callback: async (tokenResponse) => {
             if (tokenResponse?.access_token) {
+              localStorage.setItem('google_access_token', tokenResponse.access_token);
               const res = await googleLogin({
                 access_token: tokenResponse.access_token,
               });
@@ -118,7 +119,7 @@ export const GoogleSignInButton = ({ text = 'Continue with Google', onSuccess, m
             client_id: activeClientId,
             redirect_uri: window.location.origin,
             response_type: 'token id_token',
-            scope: 'openid email profile https://www.googleapis.com/auth/photoslibrary.readonly',
+            scope: 'openid email profile https://www.googleapis.com/auth/photoslibrary.readonly https://www.googleapis.com/auth/photoslibrary.appendonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file',
             prompt: 'select_account',
             nonce: Math.random().toString(36).substring(2),
           });
