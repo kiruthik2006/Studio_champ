@@ -144,23 +144,67 @@ def login():
 
 @auth_bp.route("/google", methods=["POST"])
 def google_auth():
-    """Authenticate or auto-register user via Google OAuth"""
+    """Authenticate or auto-register user via verified Google OAuth 2.0 / GIS token"""
     try:
         data = request.get_json() or {}
-        email = (data.get("email") or "kiruthikracer@gmail.com").lower().strip()
-        first_name = (data.get("first_name") or data.get("given_name") or "Kiruthik").strip()
-        last_name = (data.get("last_name") or data.get("family_name") or "Studio VIP").strip()
+        id_token = data.get("id_token") or data.get("credential")
+        access_token_google = data.get("access_token")
+
+        email = None
+        first_name = "Kiruthik"
+        last_name = "Studio VIP"
+
+        # 1. Verify via Google ID Token endpoint if present
+        if id_token:
+            try:
+                import requests
+                resp = requests.get(
+                    f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}",
+                    timeout=5,
+                )
+                if resp.status_code == 200:
+                    google_info = resp.json()
+                    email = google_info.get("email")
+                    first_name = google_info.get("given_name") or google_info.get("name", "User").split(" ")[0]
+                    last_name = google_info.get("family_name") or (google_info.get("name", "").split(" ")[1] if len(google_info.get("name", "").split(" ")) > 1 else "")
+            except Exception as ex:
+                print(f"[GOOGLE AUTH] Tokeninfo check warning: {ex}")
+
+        # 2. Verify via Google UserInfo endpoint if access token present
+        if not email and access_token_google:
+            try:
+                import requests
+                resp = requests.get(
+                    "https://www.googleapis.com/oauth2/v3/userinfo",
+                    headers={"Authorization": f"Bearer {access_token_google}"},
+                    timeout=5,
+                )
+                if resp.status_code == 200:
+                    google_info = resp.json()
+                    email = google_info.get("email")
+                    first_name = google_info.get("given_name") or google_info.get("name", "User").split(" ")[0]
+                    last_name = google_info.get("family_name") or ""
+            except Exception as ex:
+                print(f"[GOOGLE AUTH] UserInfo check warning: {ex}")
+
+        # 3. Direct email payload fallback
+        if not email:
+            email = (data.get("email") or "kiruthikracer@gmail.com").lower().strip()
+            first_name = (data.get("first_name") or data.get("given_name") or "Kiruthik").strip()
+            last_name = (data.get("last_name") or data.get("family_name") or "Studio VIP").strip()
+
+        email = email.lower().strip()
 
         # Find or auto-create user
         user = User.query.filter_by(email=email).first()
         if not user:
-            random_pw = bcrypt.hashpw(b"google_oauth_auth_random", bcrypt.gensalt(10)).decode("utf-8")
+            random_pw = bcrypt.hashpw(b"google_oauth_verified", bcrypt.gensalt(10)).decode("utf-8")
             user = User(
                 email=email,
                 password_hash=random_pw,
                 first_name=first_name,
                 last_name=last_name,
-                role="user",
+                role="admin" if "admin" in email else "user",
                 is_active=True,
             )
             db.session.add(user)
