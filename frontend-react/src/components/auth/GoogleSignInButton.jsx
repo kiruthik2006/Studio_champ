@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
-import { useNavigate } from 'react-router-dom';
+import { GoogleOAuthModal } from './GoogleOAuthModal';
 
 /**
  * GoogleIcon
  * Official 4-color Google 'G' brand vector
  */
 export const GoogleIcon = ({ size = 18 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
     <path
       d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
       fill="#4285F4"
@@ -30,67 +28,49 @@ export const GoogleIcon = ({ size = 18 }) => (
 
 /**
  * GoogleSignInButton
- * Single Sign-On button for Google Authentication with support for
- * both Google Identity Services OAuth and simulated instant onboarding.
+ * Single Sign-On button for Google Authentication.
+ * Opens the interactive Google Account Chooser & Permissions dialog.
  */
 export const GoogleSignInButton = ({ text = 'Continue with Google', onSuccess, mode = 'login' }) => {
-  const [loading, setLoading] = useState(false);
-  const { googleLogin } = useAuth();
-  const { showToast } = useToast();
-  const navigate = useNavigate();
-
-  const handleGoogleAuth = async () => {
-    setLoading(true);
-    try {
-      // Authenticate and set user session
-      const res = await googleLogin({
-        email: 'kiruthikracer@gmail.com',
-        first_name: 'Kiruthik',
-        last_name: 'VIP Member',
-      });
-      
-      showToast('Successfully signed in with Google!', 'success');
-      if (onSuccess) onSuccess();
-      
-      // Navigate to dashboard or admin
-      if (res?.data?.user?.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
-    } catch (err) {
-      showToast('Google authentication failed. Please try again.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isOAuthOpen, setIsOAuthOpen] = useState(false);
 
   return (
-    <button
-      type="button"
-      onClick={handleGoogleAuth}
-      disabled={loading}
-      className="btn"
-      style={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '0.65rem',
-        background: 'var(--card-bg-elevated)',
-        border: '1px solid var(--border-subtle)',
-        color: 'var(--text-main)',
-        fontWeight: 600,
-        fontSize: '0.9rem',
-        padding: '0.65rem 1rem',
-        borderRadius: 'var(--border-radius-md)',
-        transition: 'all 0.2s ease',
-        cursor: 'pointer',
-        boxShadow: 'var(--shadow-sm)',
-      }}
-    >
-      <GoogleIcon size={18} />
-      <span>{loading ? 'Connecting Google Account...' : text}</span>
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={() => setIsOAuthOpen(true)}
+        className="btn"
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.65rem',
+          background: 'var(--card-bg-elevated)',
+          border: '1px solid var(--border-subtle)',
+          color: 'var(--text-main)',
+          fontWeight: 600,
+          fontSize: '0.9rem',
+          padding: '0.65rem 1rem',
+          borderRadius: 'var(--border-radius-md)',
+          transition: 'all 0.2s ease',
+          cursor: 'pointer',
+          boxShadow: 'var(--shadow-sm)',
+        }}
+      >
+        <GoogleIcon size={18} />
+        <span>{text}</span>
+      </button>
+
+      {/* Google Account Chooser Dialog */}
+      <GoogleOAuthModal
+        isOpen={isOAuthOpen}
+        onClose={() => {
+          setIsOAuthOpen(false);
+          if (onSuccess) onSuccess();
+        }}
+        mode={mode}
+      />
+    </>
   );
 };
