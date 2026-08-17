@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Eye, EyeOff, Lock, Mail, User, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [firstName, setFirstName] = useState('');
@@ -141,6 +142,25 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             </>
           )}
         </button>
+
+        {/* Google Authentication Divider */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            margin: '1.25rem 0',
+            color: 'var(--text-muted)',
+            fontSize: '0.78rem',
+          }}
+        >
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-subtle)' }} />
+          <span>OR</span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-subtle)' }} />
+        </div>
+
+        {/* 1-Click Google Register */}
+        <GoogleSignInButton text="Sign up with Google" onSuccess={onClose} mode="register" />
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
           Already have an account?{' '}

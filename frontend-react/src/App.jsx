@@ -5,6 +5,7 @@ import { LandingPage } from './pages/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { CloudPhotosIngestionPage } from './pages/CloudPhotosIngestionPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { SubtleBackground } from './components/common/SubtleBackground';
 
@@ -35,6 +36,14 @@ export function App() {
         element={
           <AdminRoute>
             <AdminDashboardPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/cloud-ingestion"
+        element={
+          <AdminRoute>
+            <CloudPhotosIngestionPage />
           </AdminRoute>
         }
       />

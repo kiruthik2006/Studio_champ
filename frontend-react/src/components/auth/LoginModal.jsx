@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Eye, EyeOff, Lock, Mail, User, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
@@ -105,6 +106,25 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             </>
           )}
         </button>
+
+        {/* Google Authentication Divider */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            margin: '1.25rem 0',
+            color: 'var(--text-muted)',
+            fontSize: '0.78rem',
+          }}
+        >
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-subtle)' }} />
+          <span>OR</span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-subtle)' }} />
+        </div>
+
+        {/* 1-Click Google Sign-In */}
+        <GoogleSignInButton text="Continue with Google" onSuccess={onClose} mode="login" />
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
           Don't have an account?{' '}

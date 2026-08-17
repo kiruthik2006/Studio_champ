@@ -150,6 +150,27 @@ export const AdminDashboardPage = () => {
               <Users size={18} />
               <span>User Directory</span>
             </button>
+
+            {/* Google Photos Cloud Ingestion Direct Link */}
+            <a
+              href="/admin/cloud-ingestion"
+              className="sidebar-item"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.85rem',
+                color: 'var(--primary)',
+                fontWeight: 600,
+                marginTop: '0.5rem',
+                border: '1px dashed var(--border-gold)',
+                borderRadius: 'var(--border-radius-md)',
+                padding: '0.65rem 0.85rem',
+                textDecoration: 'none',
+              }}
+            >
+              <Cloud size={18} />
+              <span>Cloud Photos Vault</span>
+            </a>
           </div>
 
           <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: '0.8rem', color: 'var(--gray)' }}>
