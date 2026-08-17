@@ -1,4 +1,11 @@
 import os
+import gc
+
+# Optimize TensorFlow memory usage to prevent RAM bloat on macOS / Windows
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+os.environ["PYTHONHASHSEED"] = "0"
+
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
