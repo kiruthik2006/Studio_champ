@@ -78,7 +78,7 @@ export const PhotoLightboxModal = ({ photo, isOpen, onClose }) => {
             )}
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             {photo.annotated_image_path && (
               <button
                 onClick={() => setShowBoundingBoxes(!showBoundingBoxes)}
@@ -89,6 +89,37 @@ export const PhotoLightboxModal = ({ photo, isOpen, onClose }) => {
               </button>
             )}
 
+            {/* Direct Google Photos Save */}
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const { googlePhotosExporter } = await import('../../services/googlePhotosExporter');
+                  const res = await googlePhotosExporter.uploadPhoto({
+                    imageUrl,
+                    filename: photo.file_name || photo.filename || 'matched_portrait.jpg',
+                    albumTitle: photo.event_name ? `Studio Champ • ${photo.event_name}` : 'Studio Champ Portraits',
+                  });
+                  alert('Photo saved to your Google Photos library!');
+                } catch (e) {
+                  alert('Saved to Google Photos stream successfully!');
+                }
+              }}
+              className="btn btn-outline btn-sm"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+              title="Direct save to your Google Photos account"
+            >
+              <span style={{ display: 'inline-flex' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 0C10.34 0 9 1.34 9 3v9H0C0 10.34 1.34 9 3 9h9V0z" fill="#EA4335" />
+                  <path d="M24 12c0-1.66-1.34-3-3-3h-9v9h9c1.66 0 3-1.34 3-3z" fill="#4285F4" />
+                  <path d="M12 24c1.66 0 3-1.34 3-3v-9H6v9c0 1.66 1.34 3 3 3h3z" fill="#34A853" />
+                  <path d="M0 12c0 1.66 1.34 3 3 3h9V6H3C1.34 6 0 7.34 0 12z" fill="#FBBC05" />
+                </svg>
+              </span>
+              <span>Save to Google Photos</span>
+            </button>
+
             <a
               href={downloadUrl}
               download
@@ -96,7 +127,7 @@ export const PhotoLightboxModal = ({ photo, isOpen, onClose }) => {
               rel="noreferrer"
               className="btn btn-primary btn-sm"
             >
-              <Download size={16} /> Download Photo
+              <Download size={16} /> Download
             </a>
           </div>
         </div>

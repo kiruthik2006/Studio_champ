@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { PhotoLightboxModal } from './PhotoLightboxModal';
-import { Sparkles, Download, Eye, Image as ImageIcon, Sliders, Users, Award, Shield } from 'lucide-react';
+import { GooglePhotosSyncModal } from './GooglePhotosSyncModal';
+import { GooglePhotosIcon } from './GoogleDriveStorageWidget';
+import { Sparkles, Download, Eye, Image as ImageIcon, Sliders, Users, Award, Shield, UploadCloud } from 'lucide-react';
 import { photosApi } from '../../api/photos';
 import { formatImageUrl } from '../../utils/imageUrl';
 
 export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessage }) => {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [minConfidence, setMinConfidence] = useState(50);
+  const [showGooglePhotosModal, setShowGooglePhotosModal] = useState(false);
 
   const safePhotos = Array.isArray(photos) ? photos : [];
 
@@ -34,21 +37,44 @@ export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessa
           </p>
         </div>
 
-        {/* Confidence Filter Slider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'var(--input-bg)', padding: '0.4rem 0.8rem', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--border-subtle)' }}>
-          <Sliders size={14} color="var(--primary)" />
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', minWidth: '100px' }}>
-            Min Match: <strong style={{ color: 'var(--primary)' }}>{minConfidence}%</strong>
-          </span>
-          <input
-            type="range"
-            min="30"
-            max="95"
-            step="5"
-            value={minConfidence}
-            onChange={(e) => setMinConfidence(Number(e.target.value))}
-            style={{ width: '100px', accentColor: 'var(--primary)' }}
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {/* Export to Google Photos Album */}
+          {filteredPhotos.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowGooglePhotosModal(true)}
+              className="btn btn-outline"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontSize: '0.82rem',
+                padding: '0.45rem 0.85rem',
+                border: '1px solid var(--border-gold)',
+                color: 'var(--text-main)',
+              }}
+            >
+              <GooglePhotosIcon size={16} />
+              <span>Export to Google Photos ({filteredPhotos.length})</span>
+            </button>
+          )}
+
+          {/* Confidence Filter Slider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'var(--input-bg)', padding: '0.4rem 0.8rem', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--border-subtle)' }}>
+            <Sliders size={14} color="var(--primary)" />
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', minWidth: '100px' }}>
+              Min Match: <strong style={{ color: 'var(--primary)' }}>{minConfidence}%</strong>
+            </span>
+            <input
+              type="range"
+              min="30"
+              max="95"
+              step="5"
+              value={minConfidence}
+              onChange={(e) => setMinConfidence(Number(e.target.value))}
+              style={{ width: '100px', accentColor: 'var(--primary)' }}
+            />
+          </div>
         </div>
       </div>
 
@@ -252,6 +278,14 @@ export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessa
           onClose={() => setSelectedPhoto(null)}
         />
       )}
+
+      {/* Google Photos Dedicated Album Exporter Modal */}
+      <GooglePhotosSyncModal
+        isOpen={showGooglePhotosModal}
+        onClose={() => setShowGooglePhotosModal(false)}
+        photos={filteredPhotos}
+        defaultAlbumTitle={`Studio Champ • ${title} (${new Date().getFullYear()})`}
+      />
     </div>
   );
 };
