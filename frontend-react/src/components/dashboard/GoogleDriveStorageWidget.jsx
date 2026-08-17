@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Folder, ExternalLink, RefreshCw, CheckCircle2, Cloud, UploadCloud } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Folder, ExternalLink, RefreshCw, CheckCircle2, Cloud, UploadCloud, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { photosApi } from '../../api/photos';
@@ -53,57 +53,110 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const { showToast } = useToast();
   const [syncing, setSyncing] = useState(false);
   const [syncedCount, setSyncedCount] = useState(0);
+  const [loadingLiveQuota, setLoadingLiveQuota] = useState(false);
 
-  // Live storage metrics (defaults to 15.0 GB baseline Google tier)
-  const [quota, setQuota] = useState({
-    usedGB: 4.8,
-    totalGB: 15.0,
-    freeGB: 10.2,
-    percent: 32,
-    isRealGoogleData: false,
+  // Live storage metrics
+  const [quota, setQuota] = useState(() => {
+    const saved = localStorage.getItem('google_real_quota');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {}
+    }
+    return {
+      usedGB: 0.0,
+      totalGB: 15.0,
+      freeGB: 15.0,
+      percent: 0,
+      isRealGoogleData: false,
+    };
   });
 
+  const activeClientId =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+    localStorage.getItem('studio_google_client_id') ||
+    '891854780153-ihlecsi9micu1qbp6791pp4uv1nilm2q.apps.googleusercontent.com';
+
   // Fetch real Google Storage Quota from Google Drive API
-  useEffect(() => {
-    const fetchRealGoogleStorage = async () => {
-      const accessToken = localStorage.getItem('google_access_token');
-      if (!accessToken) return;
+  const fetchRealGoogleStorage = useCallback(async (tokenToUse) => {
+    const token = tokenToUse || localStorage.getItem('google_access_token');
+    if (!token) return;
 
-      try {
-        const res = await fetch(
-          'https://www.googleapis.com/drive/v3/about?fields=storageQuota,user',
-          {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }
-        );
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.storageQuota) {
-            const usageBytes = parseInt(data.storageQuota.usage || '0', 10);
-            const limitBytes = parseInt(data.storageQuota.limit || '16106127360', 10); // default 15GB
-
-            const used = parseFloat((usageBytes / 1024 ** 3).toFixed(1));
-            const total = parseFloat((limitBytes / 1024 ** 3).toFixed(1));
-            const free = parseFloat(Math.max(0, total - used).toFixed(1));
-            const percent = Math.min(100, Math.round((usageBytes / limitBytes) * 100));
-
-            setQuota({
-              usedGB: used,
-              totalGB: total,
-              freeGB: free,
-              percent,
-              isRealGoogleData: true,
-            });
-          }
+    setLoadingLiveQuota(true);
+    try {
+      const res = await fetch(
+        'https://www.googleapis.com/drive/v3/about?fields=storageQuota,user',
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
-      } catch (err) {
-        console.warn('Could not query live Google Drive quota:', err);
-      }
-    };
+      );
 
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.storageQuota) {
+          const usageBytes = parseInt(data.storageQuota.usage || '0', 10);
+          const limitBytes = parseInt(data.storageQuota.limit || '16106127360', 10);
+
+          const used = parseFloat((usageBytes / 1024 ** 3).toFixed(2));
+          const total = parseFloat((limitBytes / 1024 ** 3).toFixed(1));
+          const free = parseFloat(Math.max(0, total - used).toFixed(2));
+          const percent = Math.min(100, Math.round((usageBytes / limitBytes) * 100));
+
+          const realData = {
+            usedGB: used,
+            totalGB: total,
+            freeGB: free,
+            percent,
+            isRealGoogleData: true,
+          };
+
+          setQuota(realData);
+          localStorage.setItem('google_real_quota', JSON.stringify(realData));
+        }
+      }
+    } catch (err) {
+      console.warn('Could not query live Google Drive quota:', err);
+    } finally {
+      setLoadingLiveQuota(false);
+    }
+  }, []);
+
+  // Request OAuth access token directly from Google if needed
+  const requestGoogleTokenAndFetch = () => {
+    if (!window.google?.accounts?.oauth2) {
+      showToast('Google Identity Services loading...', 'info');
+      return;
+    }
+
+    setSyncing(true);
+    try {
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: activeClientId,
+        scope:
+          'openid email profile https://www.googleapis.com/auth/photoslibrary.readonly https://www.googleapis.com/auth/photoslibrary.appendonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file',
+        callback: async (tokenResponse) => {
+          if (tokenResponse?.access_token) {
+            localStorage.setItem('google_access_token', tokenResponse.access_token);
+            await fetchRealGoogleStorage(tokenResponse.access_token);
+            showToast('Live Google Drive quota loaded successfully!', 'success');
+          }
+          setSyncing(false);
+        },
+        error_callback: (error) => {
+          console.error(error);
+          showToast('Google authorization closed', 'warning');
+          setSyncing(false);
+        },
+      });
+      client.requestAccessToken({ prompt: '' });
+    } catch (e) {
+      setSyncing(false);
+    }
+  };
+
+  useEffect(() => {
     fetchRealGoogleStorage();
-  }, [user]);
+  }, [fetchRealGoogleStorage, user]);
 
   // Fetch real user photo count from backend
   useEffect(() => {
@@ -114,8 +167,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
           setSyncedCount(res.data.length);
         }
       } catch {
-        // Fallback to initial detected count
-        setSyncedCount(16);
+        setSyncedCount(0);
       }
     };
     fetchUserPhotoCount();
@@ -128,11 +180,15 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
 
   const handleInstantSync = async (e) => {
     e.stopPropagation();
+    if (!localStorage.getItem('google_access_token')) {
+      requestGoogleTokenAndFetch();
+      return;
+    }
+
     setSyncing(true);
     try {
-      await new Promise((r) => setTimeout(r, 1600));
-      setSyncedCount((prev) => prev + 1);
-      showToast(`Delivered matched portraits directly to ${user?.email || 'Google Photos'}!`, 'success');
+      await fetchRealGoogleStorage();
+      showToast(`Live Google Cloud Quota synchronized with ${user?.email || 'Google'}!`, 'success');
     } catch (err) {
       showToast('Cloud sync failed: ' + err.message, 'error');
     } finally {
@@ -164,7 +220,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
           <GooglePhotosIcon size={18} />
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
-              Google Photos & Drive
+              Google Cloud
             </span>
             <span
               style={{
@@ -184,21 +240,31 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
 
         {/* Live Auto-Sync Active Badge */}
         <span
+          onClick={requestGoogleTokenAndFetch}
           style={{
             fontSize: '0.65rem',
             fontWeight: 700,
             padding: '0.15rem 0.45rem',
             borderRadius: '999px',
-            background: 'rgba(16, 185, 129, 0.12)',
-            color: '#10b981',
+            background: quota.isRealGoogleData ? 'rgba(16, 185, 129, 0.12)' : 'rgba(234, 179, 8, 0.12)',
+            color: quota.isRealGoogleData ? '#10b981' : '#eab308',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.25rem',
             flexShrink: 0,
+            cursor: 'pointer',
           }}
+          title="Click to refresh live Google token"
         >
-          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
-          Connected
+          <span
+            style={{
+              width: '5px',
+              height: '5px',
+              borderRadius: '50%',
+              background: quota.isRealGoogleData ? '#10b981' : '#eab308',
+            }}
+          />
+          {quota.isRealGoogleData ? 'Live API' : 'Connect'}
         </span>
       </div>
 
@@ -220,7 +286,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Left: Radial Storage Gauge */}
           <div
-            onClick={onOpenSyncModal}
+            onClick={quota.isRealGoogleData ? onOpenSyncModal : requestGoogleTokenAndFetch}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -228,7 +294,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
               cursor: 'pointer',
               minWidth: 0,
             }}
-            title="Click to configure cloud storage sync"
+            title={quota.isRealGoogleData ? 'Click to configure cloud storage' : 'Click to fetch live quota from Google'}
           >
             <div style={{ position: 'relative', width: '44px', height: '44px', flexShrink: 0 }}>
               <svg width="44" height="44" viewBox="0 0 50 50" style={{ transform: 'rotate(-90deg)' }}>
@@ -279,7 +345,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
 
             <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
               <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
-                Google Quota
+                Live Quota
               </span>
               <span style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap' }}>
                 {quota.freeGB} GB Free
@@ -290,11 +356,11 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
             </div>
           </div>
 
-          {/* Right: Instant Sync Trigger Button */}
+          {/* Right: Sync / Refresh Live Quota Button */}
           <button
             type="button"
             onClick={handleInstantSync}
-            disabled={syncing}
+            disabled={syncing || loadingLiveQuota}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -309,10 +375,10 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
               cursor: 'pointer',
               transition: 'all 0.2s ease',
             }}
-            title="Sync all matched portraits to Google Photos now"
+            title="Fetch and sync live Google Storage quota"
           >
-            <RefreshCw size={12} className={syncing ? 'spin' : ''} />
-            <span>{syncing ? 'Syncing...' : 'Sync Now'}</span>
+            <RefreshCw size={12} className={syncing || loadingLiveQuota ? 'spin' : ''} />
+            <span>{syncing || loadingLiveQuota ? 'Fetching...' : 'Sync Now'}</span>
           </button>
         </div>
 
