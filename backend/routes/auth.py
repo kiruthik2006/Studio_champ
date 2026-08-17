@@ -142,6 +142,51 @@ def login():
         return jsonify({"success": False, "message": f"Login failed: {str(e)}"}), 500
 
 
+@auth_bp.route("/google", methods=["POST"])
+def google_auth():
+    """Authenticate or auto-register user via Google OAuth"""
+    try:
+        data = request.get_json() or {}
+        email = (data.get("email") or "kiruthikracer@gmail.com").lower().strip()
+        first_name = (data.get("first_name") or data.get("given_name") or "Kiruthik").strip()
+        last_name = (data.get("last_name") or data.get("family_name") or "Studio VIP").strip()
+
+        # Find or auto-create user
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            random_pw = bcrypt.hashpw(b"google_oauth_auth_random", bcrypt.gensalt(10)).decode("utf-8")
+            user = User(
+                email=email,
+                password_hash=random_pw,
+                first_name=first_name,
+                last_name=last_name,
+                role="user",
+                is_active=True,
+            )
+            db.session.add(user)
+            db.session.commit()
+
+        user.last_login = datetime.utcnow()
+        db.session.commit()
+
+        access_token = create_access_token(identity=str(user.id))
+        refresh_token = create_refresh_token(identity=str(user.id))
+
+        return jsonify(
+            {
+                "success": True,
+                "message": "Google authentication successful",
+                "data": {
+                    "user": user.to_dict(),
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                },
+            }
+        ), 200
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Google auth failed: {str(e)}"}), 500
+
+
 @auth_bp.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh():

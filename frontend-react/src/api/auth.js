@@ -14,6 +14,10 @@ export const authApi = {
     return api.post('/auth/login', { email, password });
   },
 
+  async googleAuth(googleData) {
+    return api.post('/auth/google', googleData || {});
+  },
+
   async getProfile() {
     return api.get('/auth/profile');
   },

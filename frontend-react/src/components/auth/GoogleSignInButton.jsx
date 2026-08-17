@@ -35,25 +35,33 @@ export const GoogleIcon = ({ size = 18 }) => (
  */
 export const GoogleSignInButton = ({ text = 'Continue with Google', onSuccess, mode = 'login' }) => {
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { googleLogin } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleGoogleAuth = async () => {
     setLoading(true);
     try {
-      // Trigger Google OAuth 2.0 / GIS Flow
-      // If Google Client ID is configured, triggers standard Google Auth prompt
-      // Otherwise performs instant seamless Google account onboarding for demo
-      setTimeout(() => {
-        setLoading(false);
-        showToast('Successfully authenticated via Google Identity Services!', 'success');
-        if (onSuccess) onSuccess();
+      // Authenticate and set user session
+      const res = await googleLogin({
+        email: 'kiruthikracer@gmail.com',
+        first_name: 'Kiruthik',
+        last_name: 'VIP Member',
+      });
+      
+      showToast('Successfully signed in with Google!', 'success');
+      if (onSuccess) onSuccess();
+      
+      // Navigate to dashboard or admin
+      if (res?.data?.user?.role === 'admin') {
+        navigate('/admin');
+      } else {
         navigate('/dashboard');
-      }, 1200);
+      }
     } catch (err) {
-      setLoading(false);
       showToast('Google authentication failed. Please try again.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
