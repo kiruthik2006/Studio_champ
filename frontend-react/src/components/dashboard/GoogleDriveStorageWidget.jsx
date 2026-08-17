@@ -1,11 +1,30 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Folder, ExternalLink, RefreshCw, CheckCircle2, Cloud, UploadCloud } from 'lucide-react';
+import { ExternalLink, RefreshCw, CheckCircle2, Cloud } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../api/client';
 
 /**
- * Official Google Drive 2020 SVG Vector Icon (from Wikimedia Commons)
+ * Official Google Photos Pinwheel SVG Icon
+ */
+export const GooglePhotosIcon = ({ size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 192 192"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ flexShrink: 0 }}
+  >
+    <path d="M96 96V36a36 36 0 10-36 36h36z" fill="#EA4335" />
+    <path d="M96 96h60a36 36 0 10-36-36v36z" fill="#FBBC05" />
+    <path d="M96 96v60a36 36 0 1036-36H96z" fill="#34A853" />
+    <path d="M96 96H36a36 36 0 1036 36V96z" fill="#4285F4" />
+  </svg>
+);
+
+/**
+ * Official Google Drive 2020 SVG Vector Icon
  */
 export const GoogleDriveIcon = ({ size = 20 }) => (
   <svg
@@ -25,34 +44,15 @@ export const GoogleDriveIcon = ({ size = 20 }) => (
 );
 
 /**
- * Official Google Photos Pinwheel SVG Icon
- */
-export const GooglePhotosIcon = ({ size = 16 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 192 192"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    style={{ flexShrink: 0 }}
-  >
-    <path d="M96 96V36a36 36 0 10-36 36h36z" fill="#EA4335" />
-    <path d="M96 96h60a36 36 0 10-36-36v36z" fill="#FBBC05" />
-    <path d="M96 96v60a36 36 0 1036-36H96z" fill="#34A853" />
-    <path d="M96 96H36a36 36 0 1036 36V96z" fill="#4285F4" />
-  </svg>
-);
-
-/**
  * GoogleDriveStorageWidget
- * Real Google Cloud Storage & Auto-Sync Widget.
- * Fetches live Google storage telemetry, dynamic photo counts, and executes real cloud sync.
+ * Sleek, modern, and spacious Google Cloud Storage & Auto-Sync Widget.
+ * Perfectly styled for sidebar widths without clumsy overlapping.
  */
 export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [syncing, setSyncing] = useState(false);
-  const [syncedCount, setSyncedCount] = useState(24);
+  const [syncedCount, setSyncedCount] = useState(25);
 
   // Live storage metrics
   const [quota, setQuota] = useState({
@@ -103,7 +103,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
     setSyncing(true);
     try {
       await fetchStorageQuota();
-      await new Promise((r) => setTimeout(r, 1200));
+      await new Promise((r) => setTimeout(r, 1000));
       setSyncedCount((prev) => prev + 1);
       showToast(`Cloud storage synchronized with ${user?.email || 'Google Photos'}!`, 'success');
     } catch (err) {
@@ -117,36 +117,35 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
     <div
       className="google-drive-widget"
       style={{
-        padding: '0.85rem',
+        padding: '0.9rem',
         background: 'var(--card-bg)',
         border: '1px solid var(--border-subtle)',
         borderRadius: 'var(--border-radius-md)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.65rem',
+        gap: '0.75rem',
         boxShadow: 'var(--shadow-sm)',
-        overflow: 'hidden',
         boxSizing: 'border-box',
         width: '100%',
         transition: 'background-color 0.25s ease, border-color 0.25s ease',
       }}
     >
-      {/* Header with Google Pinwheel, User Account & Connected Badge */}
+      {/* 1. Header: Google Cloud + User Email + Connected Badge */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', minWidth: 0 }}>
-          <GooglePhotosIcon size={18} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+          <GooglePhotosIcon size={19} />
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
               Google Cloud
             </span>
             <span
               style={{
-                fontSize: '0.65rem',
+                fontSize: '0.68rem',
                 color: 'var(--text-muted)',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
-                maxWidth: '120px',
+                maxWidth: '125px',
               }}
               title={user?.email || 'kiruthikk911@gmail.com'}
             >
@@ -155,180 +154,169 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
           </div>
         </div>
 
-        {/* Live Auto-Sync Active Badge */}
+        {/* Steady Emerald Connected Badge */}
         <span
           style={{
-            fontSize: '0.65rem',
+            fontSize: '0.68rem',
             fontWeight: 700,
-            padding: '0.15rem 0.45rem',
+            padding: '0.18rem 0.5rem',
             borderRadius: '999px',
             background: 'rgba(16, 185, 129, 0.12)',
             color: '#10b981',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.25rem',
+            gap: '0.3rem',
             flexShrink: 0,
           }}
         >
-          <span
-            style={{
-              width: '5px',
-              height: '5px',
-              borderRadius: '50%',
-              background: '#10b981',
-            }}
-          />
+          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
           Connected
         </span>
       </div>
 
-      {/* Main Meter & Live Storage Telemetry */}
+      {/* 2. Storage Telemetry Card (Spacious 2-column layout) */}
       <div
+        onClick={onOpenSyncModal}
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.5rem',
-          padding: '0.6rem 0.65rem',
+          padding: '0.75rem 0.85rem',
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-subtle)',
           borderRadius: 'var(--border-radius-sm)',
-          boxSizing: 'border-box',
-          width: '100%',
-          overflow: 'hidden',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.85rem',
+          transition: 'border-color 0.2s ease, background 0.2s ease',
         }}
+        title="Click to configure cloud storage"
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Left: Radial Storage Gauge */}
+        {/* Left: Circular Radial Meter */}
+        <div style={{ position: 'relative', width: '48px', height: '48px', flexShrink: 0 }}>
+          <svg width="48" height="48" viewBox="0 0 50 50" style={{ transform: 'rotate(-90deg)' }}>
+            <circle
+              cx="25"
+              cy="25"
+              r={radius}
+              fill="transparent"
+              stroke="var(--border-subtle)"
+              strokeWidth="3.5"
+            />
+            <circle
+              cx="25"
+              cy="25"
+              r={radius}
+              fill="transparent"
+              stroke="#2684FC"
+              strokeWidth="3.5"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              style={{
+                transition: 'stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+            />
+          </svg>
+
+          {/* Inner Text */}
           <div
-            onClick={onOpenSyncModal}
             style={{
+              position: 'absolute',
+              inset: 0,
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '0.5rem',
-              cursor: 'pointer',
-              minWidth: 0,
+              justifyContent: 'center',
+              pointerEvents: 'none',
             }}
-            title="Click to configure cloud storage"
           >
-            <div style={{ position: 'relative', width: '44px', height: '44px', flexShrink: 0 }}>
-              <svg width="44" height="44" viewBox="0 0 50 50" style={{ transform: 'rotate(-90deg)' }}>
-                <circle
-                  cx="25"
-                  cy="25"
-                  r={radius}
-                  fill="transparent"
-                  stroke="var(--border-subtle)"
-                  strokeWidth="3.5"
-                />
-                <circle
-                  cx="25"
-                  cy="25"
-                  r={radius}
-                  fill="transparent"
-                  stroke="#2684FC"
-                  strokeWidth="3.5"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                  style={{
-                    transition: 'stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                  }}
-                />
-              </svg>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1 }}>
+              {quota.usedGB}
+            </span>
+            <span style={{ fontSize: '0.45rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+              GB
+            </span>
+          </div>
+        </div>
 
-              {/* Inner text */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  pointerEvents: 'none',
-                }}
-              >
-                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1 }}>
-                  {quota.usedGB}
-                </span>
-                <span style={{ fontSize: '0.45rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-                  GB
-                </span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
-                Live Quota
-              </span>
-              <span style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap' }}>
-                {quota.freeGB} GB Free
-              </span>
-              <span style={{ fontSize: '0.58rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                of {quota.totalGB} GB
-              </span>
-            </div>
+        {/* Right: Storage Stats & Progress Bar */}
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, gap: '0.2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
+              Storage Quota
+            </span>
+            <span style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 700 }}>
+              {quota.freeGB} GB Free
+            </span>
           </div>
 
-          {/* Right: Sync / Refresh Live Quota Button */}
-          <button
-            type="button"
-            onClick={handleInstantSync}
-            disabled={syncing}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.35rem 0.65rem',
-              borderRadius: '6px',
-              background: 'rgba(66, 133, 244, 0.12)',
-              border: '1px solid rgba(66, 133, 244, 0.3)',
-              color: '#4285F4',
-              fontSize: '0.72rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            title="Fetch and sync live Google Storage quota"
-          >
-            <RefreshCw size={12} className={syncing ? 'spin' : ''} />
-            <span>{syncing ? 'Syncing...' : 'Sync Now'}</span>
-          </button>
-        </div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+            {quota.usedGB} GB of {quota.totalGB} GB ({quota.percent}%)
+          </div>
 
-        {/* Clean Footer Row: Synced Count & Open Photos Link */}
-        <div
+          {/* Slim Visual Progress Bar */}
+          <div style={{ width: '100%', height: '4px', background: 'var(--card-bg)', borderRadius: '999px', overflow: 'hidden', marginTop: '2px' }}>
+            <div
+              style={{
+                height: '100%',
+                width: `${quota.percent}%`,
+                background: 'var(--gradient-gold)',
+                transition: 'width 0.4s ease',
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Action Buttons (Clean 2-Button Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+        {/* Button 1: Sync Now */}
+        <button
+          type="button"
+          onClick={handleInstantSync}
+          disabled={syncing}
+          className="btn btn-primary"
           style={{
+            padding: '0.42rem 0.5rem',
+            fontSize: '0.74rem',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: '0.4rem',
-            borderTop: '1px solid var(--border-subtle)',
-            fontSize: '0.65rem',
+            justifyContent: 'center',
+            gap: '0.35rem',
+            borderRadius: '6px',
           }}
+          title="Synchronize matched portraits with Google Cloud"
         >
-          <span style={{ color: 'var(--text-muted)' }}>
-            <strong style={{ color: 'var(--text-main)' }}>{syncedCount}</strong> photos indexed
-          </span>
+          <RefreshCw size={12} className={syncing ? 'spin' : ''} />
+          <span>{syncing ? 'Syncing...' : 'Sync Now'}</span>
+        </button>
 
-          <a
-            href="https://photos.google.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.2rem',
-              color: 'var(--primary)',
-              textDecoration: 'none',
-              fontWeight: 600,
-            }}
-            title="Open your Google Photos library in browser"
-          >
-            <span>Open Photos</span>
-            <ExternalLink size={10} />
-          </a>
-        </div>
+        {/* Button 2: Open Google Photos */}
+        <a
+          href="https://photos.google.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-outline"
+          style={{
+            padding: '0.42rem 0.5rem',
+            fontSize: '0.74rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.3rem',
+            borderRadius: '6px',
+            textDecoration: 'none',
+            color: 'var(--text-main)',
+          }}
+          title="Open your Google Photos library"
+        >
+          <span>Open Photos</span>
+          <ExternalLink size={11} />
+        </a>
+      </div>
+
+      {/* 4. Subtitle Count */}
+      <div style={{ textAlign: 'center', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+        <strong style={{ color: 'var(--primary)' }}>{syncedCount}</strong> event portraits indexed
       </div>
     </div>
   );
