@@ -12,7 +12,7 @@ export const BrandLogo = ({ size = 'normal', textSuffix = '' }) => {
   const isSmall = size === 'small';
   const isLarge = size === 'large';
 
-  const logoHeight = isSmall ? 38 : isLarge ? 64 : 48;
+  const logoHeight = isSmall ? 22 : isLarge ? 36 : 28;
   const logoSrc = isLight ? '/logo_visible_dark.png' : '/logo_visible_white.png';
 
   return (
