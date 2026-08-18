@@ -226,90 +226,69 @@ export const VectorHealthReport = ({
               maxWidth: '380px',
               aspectRatio: '1 / 1',
               borderRadius: '24px',
-              background: 'linear-gradient(145deg, rgba(201, 162, 39, 0.09) 0%, rgba(20, 20, 20, 0.95) 100%)',
               border: '1px solid var(--border-gold)',
-              boxShadow: 'var(--shadow-xl), 0 0 45px rgba(201, 162, 39, 0.15)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
+              boxShadow: 'var(--shadow-xl), 0 0 50px rgba(201, 162, 39, 0.22)',
               position: 'relative',
               cursor: 'pointer',
               overflow: 'hidden',
-              transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+              transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#0a0a0c',
             }}
+            className="hero-lens-card"
             title="Click to start 30-second camera scan"
           >
-            {/* Outer Concentric Biometric Pulse Rings */}
-            <div
+            {/* 3D Biometric Lens Artwork */}
+            <img
+              src="/biometric_lens_hero.jpg"
+              alt="AI Biometric Face Lens"
               style={{
-                position: 'absolute',
-                width: '240px',
-                height: '240px',
-                borderRadius: '50%',
-                border: '1px dashed rgba(201, 162, 39, 0.35)',
-                animation: 'spin 24s linear infinite',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                width: '180px',
-                height: '180px',
-                borderRadius: '50%',
-                border: '1px solid rgba(201, 162, 39, 0.25)',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                width: '120px',
-                height: '120px',
-                borderRadius: '50%',
-                border: '1px dashed rgba(201, 162, 39, 0.2)',
-                animation: 'spin 16s linear infinite reverse',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                display: 'block',
+                transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
             />
 
-            {/* Glowing Center Camera Lens */}
+            {/* Subtle Gradient Shadow Vignette */}
             <div
               style={{
-                width: '84px',
-                height: '84px',
-                borderRadius: '50%',
-                background: 'var(--gradient-gold)',
-                color: '#0d0d0d',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 0 35px rgba(201, 162, 39, 0.55)',
-                zIndex: 2,
+                position: 'absolute',
+                inset: 0,
+                background: 'radial-gradient(circle, transparent 45%, rgba(10, 10, 12, 0.7) 100%)',
+                pointerEvents: 'none',
               }}
-            >
-              <Camera size={38} strokeWidth={2.2} />
-            </div>
+            />
 
-            {/* Bottom Interactive Pill */}
-            <span
+            {/* Bottom Interactive Glass Action Pill */}
+            <div
               style={{
-                marginTop: '1.75rem',
-                fontSize: '0.95rem',
-                fontWeight: 700,
-                color: 'var(--text-main)',
-                zIndex: 2,
+                position: 'absolute',
+                bottom: '1.4rem',
+                zIndex: 3,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.45rem',
-                padding: '0.4rem 1rem',
+                padding: '0.45rem 1.1rem',
                 borderRadius: '999px',
-                background: 'rgba(0, 0, 0, 0.4)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(8px)',
+                background: 'rgba(18, 17, 16, 0.75)',
+                border: '1px solid rgba(223, 185, 74, 0.45)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(201, 162, 39, 0.25)',
+                color: '#ffffff',
+                fontSize: '0.88rem',
+                fontWeight: 700,
+                transition: 'all 0.2s ease',
               }}
             >
+              <Camera size={15} color="var(--primary)" />
               <span>{isEnrolled ? 'Open Face Scanner' : 'Tap to Start Scan'}</span>
-              <ArrowRight size={15} color="var(--primary)" />
-            </span>
+              <ArrowRight size={14} color="var(--primary)" />
+            </div>
           </div>
         </div>
       </div>
