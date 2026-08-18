@@ -6,7 +6,7 @@ import { Footer } from '../components/common/Footer';
 import { NeuralCanvas } from '../components/common/NeuralCanvas';
 import { LoginModal } from '../components/auth/LoginModal';
 import { RegisterModal } from '../components/auth/RegisterModal';
-import { HumanHero } from '../components/landing/HumanHero';
+import { CinematicHero } from '../components/landing/CinematicHero';
 import { BeforeAfterShowcase } from '../components/landing/BeforeAfterShowcase';
 import { LifestyleGallery } from '../components/landing/LifestyleGallery';
 import { ValuePropositionCards } from '../components/landing/ValuePropositionCards';
@@ -42,8 +42,8 @@ export const LandingPage = () => {
       <Navbar onOpenLogin={handleOpenLogin} onOpenRegister={handleOpenRegister} />
       <NeuralCanvas />
 
-      {/* 1. Emotive Human Hero */}
-      <HumanHero
+      {/* 1. Cinematic Editorial Centered Hero with Dynamic Floating Memory Mosaic */}
+      <CinematicHero
         onStart={handleCTA}
         onLogin={handleOpenLogin}
         isAuthenticated={isAuthenticated}
