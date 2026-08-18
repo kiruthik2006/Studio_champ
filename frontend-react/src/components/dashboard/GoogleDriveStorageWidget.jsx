@@ -8,7 +8,7 @@ import api from '../../api/client';
 /**
  * Official Google Photos Pinwheel SVG Icon
  */
-export const GooglePhotosIcon = ({ size = 18 }) => (
+export const GooglePhotosIcon = ({ size = 16 }) => (
   <svg
     width={size}
     height={size}
@@ -27,7 +27,7 @@ export const GooglePhotosIcon = ({ size = 18 }) => (
 /**
  * Official Google Drive 2020 SVG Vector Icon
  */
-export const GoogleDriveIcon = ({ size = 20 }) => (
+export const GoogleDriveIcon = ({ size = 18 }) => (
   <svg
     width={size}
     height={size}
@@ -44,9 +44,6 @@ export const GoogleDriveIcon = ({ size = 20 }) => (
   </svg>
 );
 
-/**
- * Format raw bytes into human-readable unit objects
- */
 const formatRawBytes = (bytes) => {
   const tb = bytes / (1024 ** 4);
   const gb = bytes / (1024 ** 3);
@@ -65,14 +62,13 @@ const formatRawBytes = (bytes) => {
 
 /**
  * GoogleDriveStorageWidget
- * Honest, 100% Real-Time Google Cloud Storage & Auto-Sync Widget.
- * Queries Google's live `/v3/about` API when authorized, with ZERO hardcoded placeholder fallbacks.
+ * Sleek, clean, production-grade Google Cloud storage status widget.
+ * Minimalist, polished layout tailored for clean navigation.
  */
 export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [syncing, setSyncing] = useState(false);
-  const [matchedPhotoCount, setMatchedPhotoCount] = useState(0);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [quota, setQuota] = useState(null);
   const [apiDisabledError, setApiDisabledError] = useState(null);
@@ -82,24 +78,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
     localStorage.getItem('studio_google_client_id') ||
     '891854780153-ihlecsi9micu1qbp6791pp4uv1nilm2q.apps.googleusercontent.com';
 
-  const userEmail = user?.email || 'kiruthikk911@gmail.com';
-
-  // Fetch real count of matched photos for this user from SQLite database
-  useEffect(() => {
-    const loadRealPhotoCount = async () => {
-      try {
-        const res = await photosApi.getMyPhotos();
-        if (res?.data && Array.isArray(res.data)) {
-          setMatchedPhotoCount(res.data.length);
-        } else {
-          setMatchedPhotoCount(0);
-        }
-      } catch {
-        setMatchedPhotoCount(0);
-      }
-    };
-    loadRealPhotoCount();
-  }, [user]);
+  const userEmail = user?.email || 'user@gmail.com';
 
   // Query Google Drive about API directly with token
   const queryGoogleDriveDirectly = useCallback(async (token) => {
@@ -120,21 +99,14 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
 
         const used = formatRawBytes(usageBytes);
         const total = limitBytes > 0 ? formatRawBytes(limitBytes) : { val: '∞', unit: '', text: 'Unlimited' };
-        const freeBytes = Math.max(0, limitBytes - usageBytes);
-        const free = limitBytes > 0 ? formatRawBytes(freeBytes) : { val: '∞', unit: '', text: 'Unlimited' };
         const pct =
           limitBytes > 0
             ? Math.min(100, Math.round((usageBytes / limitBytes) * 1000) / 10)
             : 0;
 
         setQuota({
-          usedVal: used.val,
-          usedUnit: used.unit,
           usedText: used.text,
-          totalVal: total.val,
-          totalUnit: total.unit,
           totalText: total.text,
-          freeText: limitBytes > 0 ? `${free.text} Free` : 'Unlimited',
           percent: pct,
           accountEmail: gData?.user?.emailAddress || userEmail,
         });
@@ -151,7 +123,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         }
       }
     } catch (err) {
-      console.warn('Direct Google Drive API query error:', err);
+      console.warn('Google API query error:', err);
     }
     return false;
   }, [userEmail]);
@@ -159,7 +131,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   // Request fresh token via Google Identity Services Token Client
   const authorizeLiveGoogleToken = () => {
     if (!window.google?.accounts?.oauth2) {
-      showToast('Google Identity Services SDK loading. Please refresh.', 'warning');
+      showToast('Google Identity Services SDK loading...', 'warning');
       return;
     }
 
@@ -173,28 +145,22 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         callback: async (tokenResponse) => {
           if (tokenResponse?.access_token) {
             localStorage.setItem('google_access_token', tokenResponse.access_token);
-            const success = await queryGoogleDriveDirectly(tokenResponse.access_token);
-            if (success) {
-              showToast('Live Google Drive storage loaded from Google API!', 'success');
-            }
+            await queryGoogleDriveDirectly(tokenResponse.access_token);
+            showToast('Google Cloud storage synchronized!', 'success');
           }
           setSyncing(false);
         },
-        error_callback: (error) => {
-          console.error('Google token error:', error);
-          showToast('Google authorization closed', 'warning');
+        error_callback: () => {
           setSyncing(false);
         },
       });
 
       client.requestAccessToken({ prompt: 'select_account' });
-    } catch (e) {
+    } catch {
       setSyncing(false);
-      showToast('OAuth trigger error: ' + e.message, 'error');
     }
   };
 
-  // Fetch real Storage Quota on load
   const fetchStorageQuota = useCallback(async () => {
     const token = localStorage.getItem('google_access_token');
     if (token) {
@@ -202,33 +168,24 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
       if (success) return;
     }
 
-    // Backend query
     try {
       const res = await api.post('/auth/google/quota', {
         access_token: token || null,
       });
 
-      if (res?.data?.data) {
+      if (res?.data?.data && res.data.data.is_live_google) {
         const d = res.data.data;
-        if (d.is_live_google) {
-          setQuota({
-            usedVal: d.used_val,
-            usedUnit: d.used_unit,
-            usedText: d.used_text,
-            totalVal: d.total_val,
-            totalUnit: d.total_unit,
-            totalText: d.total_text,
-            freeText: d.free_text,
-            percent: d.percent,
-            accountEmail: userEmail,
-          });
-          setIsAuthorized(true);
-        } else {
-          setIsAuthorized(false);
-        }
+        setQuota({
+          usedText: d.used_text,
+          totalText: d.total_text,
+          percent: d.percent,
+          accountEmail: userEmail,
+        });
+        setIsAuthorized(true);
+      } else {
+        setIsAuthorized(false);
       }
-    } catch (err) {
-      console.warn('Could not query quota from backend:', err);
+    } catch {
       setIsAuthorized(false);
     }
   }, [queryGoogleDriveDirectly, userEmail]);
@@ -236,12 +193,6 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   useEffect(() => {
     fetchStorageQuota();
   }, [fetchStorageQuota, user]);
-
-  // Circular gauge math
-  const radius = 20;
-  const circumference = 2 * Math.PI * radius;
-  const visualPercent = quota ? Math.max(3.5, quota.percent) : 0;
-  const strokeDashoffset = circumference - (visualPercent / 100) * circumference;
 
   const handleSyncClick = async (e) => {
     e.stopPropagation();
@@ -253,292 +204,167 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
     setSyncing(true);
     try {
       await fetchStorageQuota();
-      await new Promise((r) => setTimeout(r, 800));
-      showToast(`Cloud storage synchronized with ${quota?.accountEmail || userEmail}!`, 'success');
+      await new Promise((r) => setTimeout(r, 600));
+      showToast('Cloud storage synchronized!', 'success');
     } catch (err) {
-      showToast('Cloud sync error: ' + err.message, 'error');
+      showToast('Sync error: ' + err.message, 'error');
     } finally {
       setSyncing(false);
     }
   };
 
+  const visualPercent = quota ? Math.max(3, quota.percent) : 0;
+
   return (
     <div
-      className="google-drive-widget"
       style={{
-        padding: '0.9rem',
+        padding: '0.75rem',
         background: 'var(--card-bg)',
         border: '1px solid var(--border-subtle)',
         borderRadius: 'var(--border-radius-md)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.75rem',
-        boxShadow: 'var(--shadow-sm)',
+        gap: '0.55rem',
         boxSizing: 'border-box',
         width: '100%',
-        transition: 'background-color 0.25s ease, border-color 0.25s ease',
       }}
     >
-      {/* 1. Header: Google Cloud + User Email + Status Badge */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
-          <GooglePhotosIcon size={19} />
-          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.1 }}>
-              Google Cloud
-            </span>
-            <span
-              style={{
-                fontSize: '0.68rem',
-                color: 'var(--text-muted)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                maxWidth: '125px',
-              }}
-              title={userEmail}
-            >
-              {userEmail}
-            </span>
-          </div>
+      {/* Header: Service + Status Pill */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <GooglePhotosIcon size={16} />
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)' }}>
+            Google Cloud
+          </span>
         </div>
 
-        {/* Status Badge */}
-        <span
+        <button
+          type="button"
           onClick={authorizeLiveGoogleToken}
           style={{
-            fontSize: '0.68rem',
-            fontWeight: 700,
-            padding: '0.18rem 0.5rem',
-            borderRadius: '999px',
             background: isAuthorized ? 'rgba(16, 185, 129, 0.12)' : 'rgba(38, 132, 252, 0.12)',
-            color: isAuthorized ? '#10b981' : '#2684FC',
+            color: isAuthorized ? '#10b981' : '#2684fc',
+            border: 'none',
+            borderRadius: '999px',
+            padding: '0.15rem 0.45rem',
+            fontSize: '0.64rem',
+            fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.3rem',
-            flexShrink: 0,
+            gap: '0.25rem',
             cursor: 'pointer',
           }}
-          title={isAuthorized ? 'Live Google API Connected' : 'Click to authorize live Google data'}
         >
           <span
             style={{
-              width: '5px',
-              height: '5px',
+              width: '4px',
+              height: '4px',
               borderRadius: '50%',
-              background: isAuthorized ? '#10b981' : '#2684FC',
+              background: isAuthorized ? '#10b981' : '#2684fc',
             }}
           />
-          {isAuthorized ? 'Live API' : 'Authorize'}
-        </span>
+          <span>{isAuthorized ? 'Live' : 'Connect'}</span>
+        </button>
       </div>
 
-      {/* 2. Storage Telemetry Card or GCP Enable Alert */}
+      {/* Storage Progress Bar or Alert */}
       {apiDisabledError ? (
-        <div
+        <a
+          href={apiDisabledError}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
-            padding: '0.75rem',
+            padding: '0.4rem 0.6rem',
             background: 'rgba(239, 68, 68, 0.08)',
-            border: '1px solid rgba(239, 68, 68, 0.25)',
-            borderRadius: 'var(--border-radius-sm)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.45rem',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#ef4444', fontSize: '0.75rem', fontWeight: 700 }}>
-            <AlertTriangle size={15} />
-            <span>Enable Drive API in GCP</span>
-          </div>
-          <span style={{ fontSize: '0.64rem', color: 'var(--text-muted)', lineHeight: 1.3 }}>
-            Google requires the <strong>Google Drive API</strong> to be enabled in Google Cloud Console for project <code>891854780153</code> to read storage quotas.
-          </span>
-          <a
-            href={apiDisabledError}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary"
-            style={{
-              fontSize: '0.7rem',
-              padding: '0.35rem 0.6rem',
-              textAlign: 'center',
-              textDecoration: 'none',
-              marginTop: '0.2rem',
-            }}
-          >
-            <span>1-Click: Enable Drive API</span>
-            <ExternalLink size={11} />
-          </a>
-        </div>
-      ) : isAuthorized && quota ? (
-        <div
-          onClick={onOpenSyncModal}
-          style={{
-            padding: '0.75rem 0.85rem',
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--border-radius-sm)',
-            cursor: 'pointer',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: '6px',
+            color: '#ef4444',
+            fontSize: '0.68rem',
+            fontWeight: 600,
+            textDecoration: 'none',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.85rem',
-            transition: 'border-color 0.2s ease, background 0.2s ease',
+            justifyContent: 'space-between',
           }}
-          title="Click to configure cloud storage"
         >
-          {/* Left: Circular Radial Meter */}
-          <div style={{ position: 'relative', width: '48px', height: '48px', flexShrink: 0 }}>
-            <svg width="48" height="48" viewBox="0 0 50 50" style={{ transform: 'rotate(-90deg)' }}>
-              <circle
-                cx="25"
-                cy="25"
-                r={radius}
-                fill="transparent"
-                stroke="var(--border-subtle)"
-                strokeWidth="3.5"
-              />
-              <circle
-                cx="25"
-                cy="25"
-                r={radius}
-                fill="transparent"
-                stroke="#2684FC"
-                strokeWidth="3.5"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                style={{
-                  transition: 'stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
-              />
-            </svg>
-
-            {/* Inner Text */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                pointerEvents: 'none',
-              }}
-            >
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1 }}>
-                {quota.usedVal}
-              </span>
-              <span style={{ fontSize: '0.45rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                {quota.usedUnit}
-              </span>
-            </div>
+          <span>Enable Drive API in GCP</span>
+          <ExternalLink size={10} />
+        </a>
+      ) : isAuthorized && quota ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+            <span>{quota.usedText} of {quota.totalText} used</span>
+            <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{quota.percent}%</span>
           </div>
 
-          {/* Right: Storage Stats & Progress Bar */}
-          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, gap: '0.2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                Storage Quota
-              </span>
-              <span style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 700 }}>
-                {quota.freeText}
-              </span>
-            </div>
-
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-              {quota.usedText} of {quota.totalText} used
-            </div>
-
-            {/* Slim Visual Progress Bar */}
-            <div style={{ width: '100%', height: '4px', background: 'var(--card-bg)', borderRadius: '999px', overflow: 'hidden', marginTop: '2px' }}>
-              <div
-                style={{
-                  height: '100%',
-                  width: `${visualPercent}%`,
-                  background: 'var(--gradient-gold)',
-                  transition: 'width 0.4s ease',
-                }}
-              />
-            </div>
+          <div style={{ width: '100%', height: '4px', background: 'var(--border-subtle)', borderRadius: '999px', overflow: 'hidden' }}>
+            <div
+              style={{
+                height: '100%',
+                width: `${visualPercent}%`,
+                background: 'var(--gradient-gold)',
+                transition: 'width 0.3s ease',
+              }}
+            />
           </div>
         </div>
       ) : (
         <div
           onClick={authorizeLiveGoogleToken}
           style={{
-            padding: '0.75rem 0.85rem',
-            background: 'var(--bg-surface)',
-            border: '1px dashed var(--border-subtle)',
-            borderRadius: 'var(--border-radius-sm)',
+            fontSize: '0.68rem',
+            color: 'var(--text-muted)',
             cursor: 'pointer',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center',
-            gap: '0.35rem',
+            padding: '0.2rem 0',
           }}
-          title="Click to authorize Google Drive & Photos storage"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--primary)' }}>
-            <Cloud size={16} />
-            <span style={{ fontSize: '0.76rem', fontWeight: 700 }}>Authorize Live Quota</span>
-          </div>
-          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', lineHeight: 1.2 }}>
-            Click to query real Drive & Photos storage for <strong>{userEmail}</strong>
-          </span>
+          Click to connect Google Photos & Drive storage
         </div>
       )}
 
-      {/* 3. Action Buttons (Clean 2-Button Grid) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-        {/* Button 1: Sync Now / Authorize */}
+      {/* Quick Action Links */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', paddingTop: '0.1rem' }}>
         <button
           type="button"
           onClick={handleSyncClick}
           disabled={syncing}
           className="btn btn-primary"
           style={{
-            padding: '0.42rem 0.5rem',
-            fontSize: '0.74rem',
+            flex: 1,
+            padding: '0.32rem 0.5rem',
+            fontSize: '0.72rem',
+            borderRadius: '6px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '0.35rem',
-            borderRadius: '6px',
+            gap: '0.3rem',
           }}
-          title={isAuthorized ? 'Synchronize with live Google Cloud' : 'Authorize Google Drive API'}
         >
-          <RefreshCw size={12} className={syncing ? 'spin' : ''} />
-          <span>{syncing ? 'Connecting...' : isAuthorized ? 'Sync Now' : 'Authorize'}</span>
+          <RefreshCw size={11} className={syncing ? 'spin' : ''} />
+          <span>{syncing ? 'Syncing...' : isAuthorized ? 'Sync' : 'Connect'}</span>
         </button>
 
-        {/* Button 2: Open Google Photos */}
         <a
           href="https://photos.google.com"
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-outline"
           style={{
-            padding: '0.42rem 0.5rem',
-            fontSize: '0.74rem',
+            flex: 1,
+            padding: '0.32rem 0.5rem',
+            fontSize: '0.72rem',
+            borderRadius: '6px',
+            textDecoration: 'none',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '0.3rem',
-            borderRadius: '6px',
-            textDecoration: 'none',
+            gap: '0.25rem',
             color: 'var(--text-main)',
           }}
-          title="Open your Google Photos library"
         >
-          <span>Open Photos</span>
-          <ExternalLink size={11} />
+          <span>Photos</span>
+          <ExternalLink size={10} />
         </a>
-      </div>
-
-      {/* 4. Real Database Matched Photo Count */}
-      <div style={{ textAlign: 'center', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-        <strong style={{ color: 'var(--primary)' }}>{matchedPhotoCount}</strong> {matchedPhotoCount === 1 ? 'event portrait' : 'event portraits'} matched to your face
       </div>
     </div>
   );
