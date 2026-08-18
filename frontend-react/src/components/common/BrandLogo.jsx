@@ -3,9 +3,9 @@ import { useTheme } from '../../context/ThemeContext';
 
 /**
  * BrandLogo
- * "Presence." Brand Identity:
- * Renders the crisp white camera logo directly alongside the bold "Presence." typography and slogan,
- * designed to sit seamlessly within a smooth fading dark gradient.
+ * "Presence." Enveloped Rounded Rectangle Badge:
+ * Unifies the white camera logo, bold "Presence." typography, and slogan inside a single
+ * luxury obsidian rounded badge with gold trim, matching the rounded card aesthetic of the app.
  */
 export const BrandLogo = ({ size = 'normal', showBadge = false, textSuffix = '' }) => {
   const { isLight } = useTheme();
@@ -13,21 +13,28 @@ export const BrandLogo = ({ size = 'normal', showBadge = false, textSuffix = '' 
   const isSmall = size === 'small';
   const isLarge = size === 'large';
 
-  const logoHeight = isSmall ? 22 : isLarge ? 32 : 26;
-  const titleFontSize = isSmall ? '1.15rem' : isLarge ? '1.65rem' : '1.38rem';
+  const logoHeight = isSmall ? 18 : isLarge ? 26 : 21;
+  const titleFontSize = isSmall ? '1.08rem' : isLarge ? '1.45rem' : '1.24rem';
 
   return (
     <div
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: isSmall ? '0.75rem' : '0.9rem',
+        gap: isSmall ? '0.65rem' : '0.75rem',
+        padding: isSmall ? '0.35rem 0.8rem' : isLarge ? '0.55rem 1.25rem' : '0.45rem 1rem',
+        borderRadius: isSmall ? '10px' : '12px',
+        background: 'linear-gradient(145deg, #1d1c1a 0%, #0e0d0b 100%)',
+        border: '1px solid rgba(223, 185, 74, 0.45)',
+        boxShadow: isLight
+          ? '0 2px 10px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.1)'
+          : '0 4px 14px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(223, 185, 74, 0.2)',
         userSelect: 'none',
-        position: 'relative',
-        zIndex: 2,
+        transition: 'transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
       }}
+      className="brand-capsule"
     >
-      {/* Pure White Logo Icon (Direct, No Hard Box) */}
+      {/* Pure White Logo Icon */}
       <img
         src="/logo_visible_white.png"
         alt="Presence Logo"
@@ -36,14 +43,12 @@ export const BrandLogo = ({ size = 'normal', showBadge = false, textSuffix = '' 
           width: 'auto',
           objectFit: 'contain',
           display: 'block',
-          filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5))',
-          transition: 'transform 0.2s ease',
         }}
       />
 
       {/* Brand Name & Slogan */}
       <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
           <span
             style={{
               fontFamily: 'var(--font-body)',
@@ -52,7 +57,6 @@ export const BrandLogo = ({ size = 'normal', showBadge = false, textSuffix = '' 
               letterSpacing: '-0.035em',
               color: '#ffffff',
               lineHeight: 1.1,
-              textShadow: '0 2px 10px rgba(0, 0, 0, 0.4)',
             }}
           >
             Presence<span style={{ color: 'var(--primary)' }}>.</span>
@@ -61,17 +65,14 @@ export const BrandLogo = ({ size = 'normal', showBadge = false, textSuffix = '' 
           {showBadge && (
             <span
               style={{
-                fontSize: '0.64rem',
+                fontSize: '0.6rem',
                 fontWeight: 700,
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                padding: '0.12rem 0.4rem',
-                borderRadius: '5px',
-                background: 'rgba(255, 255, 255, 0.12)',
+                padding: '0.1rem 0.35rem',
+                borderRadius: '4px',
+                background: 'rgba(255, 255, 255, 0.15)',
                 color: '#ffffff',
-                border: '1px solid rgba(255, 255, 255, 0.18)',
-                display: 'inline-flex',
-                alignItems: 'center',
                 lineHeight: 1,
               }}
             >
@@ -82,10 +83,10 @@ export const BrandLogo = ({ size = 'normal', showBadge = false, textSuffix = '' 
           {textSuffix && (
             <span
               style={{
-                fontSize: '0.78rem',
-                color: 'rgba(255, 255, 255, 0.75)',
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.7)',
                 fontWeight: 600,
-                paddingLeft: '0.35rem',
+                paddingLeft: '0.3rem',
                 borderLeft: '1px solid rgba(255, 255, 255, 0.2)',
               }}
             >
@@ -98,13 +99,12 @@ export const BrandLogo = ({ size = 'normal', showBadge = false, textSuffix = '' 
         {!isSmall && (
           <span
             style={{
-              fontSize: '0.64rem',
+              fontSize: '0.58rem',
               fontWeight: 700,
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
-              color: 'rgba(255, 255, 255, 0.7)',
-              marginTop: '0.22rem',
-              textShadow: '0 1px 6px rgba(0, 0, 0, 0.3)',
+              color: 'rgba(255, 255, 255, 0.65)',
+              marginTop: '0.18rem',
             }}
           >
             AI Event Discovery

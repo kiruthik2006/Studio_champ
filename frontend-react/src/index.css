@@ -1248,3 +1248,9 @@ h1 {
   transform: scale(1.05);
 }
 
+.brand-capsule:hover {
+  border-color: var(--primary) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 0 12px rgba(201, 162, 39, 0.2) !important;
+}
+
