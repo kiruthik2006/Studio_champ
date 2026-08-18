@@ -563,7 +563,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.1rem 3rem;
+  padding: 0.95rem 1.85rem;
   background: var(--navbar-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
