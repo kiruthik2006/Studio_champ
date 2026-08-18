@@ -238,43 +238,68 @@ def get_google_quota():
         data = request.get_json(silent=True) or {}
         access_token = data.get("access_token") or request.headers.get("X-Google-Access-Token")
 
-        # 5 TB Google One Tier baseline (5 * 1024^4 bytes)
-        total_bytes = 5 * (1024 ** 4)
-        used_bytes = 14 * (1024 ** 3)
+        if not access_token:
+            return jsonify({
+                "success": True,
+                "data": {
+                    "is_live_google": False,
+                    "requires_auth": True,
+                    "message": "Authorization required to fetch live Google Drive quota."
+                }
+            }), 200
+
+        used_bytes = 0
+        total_bytes = 0
         is_live = False
 
-        if access_token:
-            try:
-                import requests
-                resp = requests.get(
-                    "https://www.googleapis.com/drive/v3/about?fields=storageQuota,user",
-                    headers={"Authorization": f"Bearer {access_token}"},
-                    timeout=5,
-                )
-                if resp.status_code == 200:
-                    quota_data = resp.json().get("storageQuota", {})
-                    if quota_data.get("usage"):
-                        used_bytes = int(quota_data.get("usage"))
-                    if quota_data.get("limit"):
-                        total_bytes = int(quota_data.get("limit"))
-                    is_live = True
-            except Exception as e:
-                print(f"[GOOGLE QUOTA] Drive API live query note: {e}")
+        try:
+            import requests
+            resp = requests.get(
+                "https://www.googleapis.com/drive/v3/about?fields=storageQuota,user",
+                headers={"Authorization": f"Bearer {access_token}"},
+                timeout=5,
+            )
+            if resp.status_code == 200:
+                quota_data = resp.json().get("storageQuota", {})
+                user_info = resp.json().get("user", {})
+                if quota_data.get("usage") is not None:
+                    used_bytes = int(quota_data.get("usage"))
+                if quota_data.get("limit") is not None:
+                    total_bytes = int(quota_data.get("limit"))
+                is_live = True
+            else:
+                return jsonify({
+                    "success": True,
+                    "data": {
+                        "is_live_google": False,
+                        "requires_auth": True,
+                        "error": resp.json() if resp.status_code != 500 else "Google API query failed"
+                    }
+                }), 200
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "message": f"Error connecting to Google API: {str(e)}"
+            }), 500
 
-        # Compute accurate display strings and units
+        # Compute accurate display strings and units from real Google bytes
         def format_bytes(b):
             tb = b / (1024 ** 4)
             gb = b / (1024 ** 3)
+            mb = b / (1024 ** 2)
             if tb >= 1.0:
                 val = round(tb, 2) if tb % 1 != 0 else int(tb)
                 return f"{val} TB", "TB", val
-            val = round(gb, 1) if gb % 1 != 0 else int(gb)
-            return f"{val} GB", "GB", val
+            if gb >= 1.0:
+                val = round(gb, 1) if gb % 1 != 0 else int(gb)
+                return f"{val} GB", "GB", val
+            val = round(mb, 0)
+            return f"{val} MB", "MB", val
 
         used_str, used_unit, used_val = format_bytes(used_bytes)
-        total_str, total_unit, total_val = format_bytes(total_bytes)
-        free_bytes = max(0, total_bytes - used_bytes)
-        free_str, free_unit, free_val = format_bytes(free_bytes)
+        total_str, total_unit, total_val = format_bytes(total_bytes) if total_bytes > 0 else ("Unlimited", "", 0)
+        free_bytes = max(0, total_bytes - used_bytes) if total_bytes > 0 else 0
+        free_str, free_unit, free_val = format_bytes(free_bytes) if total_bytes > 0 else ("Unlimited", "", 0)
 
         percent = round((used_bytes / total_bytes) * 100, 2) if total_bytes > 0 else 0
 
@@ -284,7 +309,7 @@ def get_google_quota():
                 "data": {
                     "used_text": used_str,
                     "total_text": total_str,
-                    "free_text": f"{free_str} Free",
+                    "free_text": f"{free_str} Free" if total_bytes > 0 else "Unlimited",
                     "used_val": used_val,
                     "used_unit": used_unit,
                     "total_val": total_val,
