@@ -21,7 +21,7 @@ export const CinematicHero = ({ onStart, onLogin, isAuthenticated }) => {
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
-        padding: '7rem 1.5rem 4rem',
+        padding: '3rem 1.5rem 4rem',
         maxWidth: 1200,
         margin: '0 auto',
         width: '100%',

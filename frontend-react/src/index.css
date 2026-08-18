@@ -552,9 +552,9 @@ h1 {
   border-color: var(--primary);
 }
 
-/* Navbar - Seamless Atmospheric Top-to-Bottom Opacity Fade */
+/* Navbar - Sticky Atmospheric Top-to-Bottom Opacity Fade */
 .navbar {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
@@ -562,7 +562,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.05rem 1.85rem 2rem;
+  padding: 1rem 1.85rem 1.75rem;
   background: var(--navbar-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -800,8 +800,7 @@ h1 {
 /* Dashboard Shell Layout */
 .dashboard-layout {
   display: flex;
-  min-height: calc(100vh - 70px);
-  padding-top: 70px;
+  min-height: calc(100vh - 65px);
 }
 
 .dashboard-sidebar {
@@ -814,8 +813,8 @@ h1 {
   justify-content: space-between;
   padding: 1.25rem 0.9rem;
   position: sticky;
-  top: 70px;
-  height: calc(100vh - 70px);
+  top: 0;
+  height: 100vh;
   z-index: 100;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.06);
   transition: background-color 0.3s ease;
