@@ -67,7 +67,7 @@ export const RegisteredFaces = ({ memberId = null, memberName = 'All Profiles', 
             <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>({faces.length})</span>
           </h3>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
-            Stored 512-D neural biometric vectors used across event search queries.
+            Reference photos used by AI to find and match your photos in event albums.
           </p>
         </div>
 

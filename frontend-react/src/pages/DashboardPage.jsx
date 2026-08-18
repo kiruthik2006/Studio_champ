@@ -325,11 +325,11 @@ export const DashboardPage = () => {
               {activeTab === 'face-registration' && (
                 <div>
                   <div style={{ marginBottom: '1.75rem' }}>
-                    <h1 style={{ fontSize: '2rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                      Face Biometrics & Family Circle
+                    <h1 style={{ fontSize: '2rem', color: 'var(--text-main)', marginBottom: '0.4rem', fontWeight: 800 }}>
+                      Face & Circle Profiles
                     </h1>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                      Audit vector health and enroll biometric profiles via hands-free 4-step guided journeys.
+                      Set up your face and add friends or family to easily find all your event photos.
                     </p>
                   </div>
 
