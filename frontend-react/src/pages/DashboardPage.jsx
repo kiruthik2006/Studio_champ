@@ -691,8 +691,6 @@ export const DashboardPage = () => {
           </div>
         </main>
       </div>
-
-      <Footer />
     </div>
   );
 };

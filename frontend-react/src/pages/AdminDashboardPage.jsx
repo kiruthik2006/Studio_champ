@@ -238,8 +238,6 @@ export const AdminDashboardPage = () => {
               )}
             </div>
           </div>
-
-          <Footer />
         </main>
       </div>
     </div>
