@@ -99,22 +99,19 @@ export const DashboardSidebar = ({
               fontWeight: 700,
               fontSize: '0.95rem',
               flexShrink: 0,
+              overflow: 'hidden',
             }}
           >
-            {getInitials(userName)}
-            <span
-              style={{
-                position: 'absolute',
-                bottom: '1px',
-                right: '1px',
-                width: '10px',
-                height: '10px',
-                borderRadius: '50%',
-                background: '#10b981',
-                border: '2px solid var(--card-bg)',
-              }}
-              title="Biometrics Engine Active"
-            />
+            {user?.avatar_url || user?.picture ? (
+              <img
+                src={user.avatar_url || user.picture}
+                alt={userName}
+                referrerPolicy="no-referrer"
+                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+              />
+            ) : (
+              getInitials(userName)
+            )}
           </div>
 
           <div style={{ minWidth: 0, flex: 1 }}>

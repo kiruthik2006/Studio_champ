@@ -18,6 +18,7 @@ class User(db.Model):
         db.Enum("admin", "user", name="user_role"), default="user", nullable=False
     )
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    avatar_url = db.Column(db.String(512), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
@@ -45,6 +46,7 @@ class User(db.Model):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "full_name": f"{self.first_name} {self.last_name}",
+            "avatar_url": self.avatar_url,
             "role": self.role,
             "is_active": self.is_active,
             "circle_members_count": self.family_members.count(),

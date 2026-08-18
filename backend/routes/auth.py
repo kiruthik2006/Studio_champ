@@ -152,7 +152,7 @@ def google_auth():
 
         email = None
         first_name = "Kiruthik"
-        last_name = "Studio VIP"
+        avatar_url = None
 
         # 1. Verify via Google ID Token endpoint if present
         if id_token:
@@ -167,6 +167,7 @@ def google_auth():
                     email = google_info.get("email")
                     first_name = google_info.get("given_name") or google_info.get("name", "User").split(" ")[0]
                     last_name = google_info.get("family_name") or (google_info.get("name", "").split(" ")[1] if len(google_info.get("name", "").split(" ")) > 1 else "")
+                    avatar_url = google_info.get("picture")
             except Exception as ex:
                 print(f"[GOOGLE AUTH] Tokeninfo check warning: {ex}")
 
@@ -184,6 +185,7 @@ def google_auth():
                     email = google_info.get("email")
                     first_name = google_info.get("given_name") or google_info.get("name", "User").split(" ")[0]
                     last_name = google_info.get("family_name") or ""
+                    avatar_url = google_info.get("picture")
             except Exception as ex:
                 print(f"[GOOGLE AUTH] UserInfo check warning: {ex}")
 
@@ -192,6 +194,7 @@ def google_auth():
             email = (data.get("email") or "kiruthikracer@gmail.com").lower().strip()
             first_name = (data.get("first_name") or data.get("given_name") or "Kiruthik").strip()
             last_name = (data.get("last_name") or data.get("family_name") or "Studio VIP").strip()
+            avatar_url = data.get("picture") or data.get("avatar_url")
 
         email = email.lower().strip()
 
@@ -204,11 +207,15 @@ def google_auth():
                 password_hash=random_pw,
                 first_name=first_name,
                 last_name=last_name,
+                avatar_url=avatar_url,
                 role="admin" if "admin" in email else "user",
                 is_active=True,
             )
             db.session.add(user)
             db.session.commit()
+        else:
+            if avatar_url:
+                user.avatar_url = avatar_url
 
         user.last_login = datetime.utcnow()
         db.session.commit()

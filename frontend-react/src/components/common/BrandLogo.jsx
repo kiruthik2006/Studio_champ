@@ -121,11 +121,9 @@ export const BrandLogo = ({ size = 'normal', showBadge = true, textSuffix = '' }
                 border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.12)'}`,
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.2rem',
                 lineHeight: 1,
               }}
             >
-              <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#10b981' }} />
               AI
             </span>
           )}

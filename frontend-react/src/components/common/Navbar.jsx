@@ -297,8 +297,18 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
                   justifyContent: 'center',
                   fontSize: '0.78rem',
                   fontWeight: 800,
+                  overflow: 'hidden',
                 }}>
-                  {user?.first_name ? user.first_name[0].toUpperCase() : 'U'}
+                  {user?.avatar_url || user?.picture ? (
+                    <img
+                      src={user.avatar_url || user.picture}
+                      alt={user?.first_name || 'User'}
+                      referrerPolicy="no-referrer"
+                      style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    user?.first_name ? user.first_name[0].toUpperCase() : 'U'
+                  )}
                 </div>
                 <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>
                   {user?.first_name || 'Account'}

@@ -102,9 +102,19 @@ export const ProfilePage = () => {
             justifyContent: 'center',
             fontSize: '1.8rem',
             fontWeight: 800,
-            boxShadow: 'var(--shadow-md)'
+            boxShadow: 'var(--shadow-md)',
+            overflow: 'hidden',
           }}>
-            {user?.first_name ? user.first_name[0].toUpperCase() : 'U'}
+            {user?.avatar_url || user?.picture ? (
+              <img
+                src={user.avatar_url || user.picture}
+                alt={user?.first_name || 'User'}
+                referrerPolicy="no-referrer"
+                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+              />
+            ) : (
+              user?.first_name ? user.first_name[0].toUpperCase() : 'U'
+            )}
           </div>
 
           <div>
