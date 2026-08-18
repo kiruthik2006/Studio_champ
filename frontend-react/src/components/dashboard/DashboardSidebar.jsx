@@ -131,14 +131,13 @@ export const DashboardSidebar = ({
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.3rem',
-                fontSize: '0.75rem',
-                color: 'var(--primary)',
-                fontWeight: 600,
+                gap: '0.25rem',
+                fontSize: '0.72rem',
+                color: 'var(--text-muted)',
+                fontWeight: 500,
               }}
             >
-              <ShieldCheck size={12} />
-              <span>{userRole}</span>
+              <span>Google Account</span>
             </div>
           </div>
         </div>
