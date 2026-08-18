@@ -24,11 +24,17 @@ export const BrandLogo = ({ size = 'normal', showBadge = false, textSuffix = '' 
         gap: isSmall ? '0.65rem' : '0.75rem',
         padding: isSmall ? '0.35rem 0.8rem' : isLarge ? '0.55rem 1.25rem' : '0.45rem 1rem',
         borderRadius: isSmall ? '10px' : '12px',
-        background: 'linear-gradient(145deg, #1d1c1a 0%, #0e0d0b 100%)',
-        border: '1px solid rgba(223, 185, 74, 0.45)',
+        background: isLight
+          ? 'linear-gradient(145deg, rgba(26, 24, 22, 0.74) 0%, rgba(12, 11, 9, 0.82) 100%)'
+          : 'linear-gradient(145deg, rgba(32, 30, 26, 0.45) 0%, rgba(14, 13, 11, 0.6) 100%)',
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
+        border: isLight
+          ? '1px solid rgba(201, 162, 39, 0.38)'
+          : '1px solid rgba(223, 185, 74, 0.45)',
         boxShadow: isLight
-          ? '0 2px 10px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.1)'
-          : '0 4px 14px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(223, 185, 74, 0.2)',
+          ? '0 2px 10px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.1)'
+          : '0 4px 14px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(223, 185, 74, 0.15)',
         userSelect: 'none',
         transition: 'transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
       }}
