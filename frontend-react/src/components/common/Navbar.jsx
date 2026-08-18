@@ -105,9 +105,23 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} style={{ overflow: 'hidden' }}>
+        {/* Atmospheric Left-to-Right Fading Dark Gradient */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: '420px',
+            background: 'linear-gradient(90deg, rgba(14, 13, 11, 0.97) 0%, rgba(18, 17, 15, 0.88) 180px, rgba(20, 19, 17, 0.45) 300px, transparent 100%)',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        />
+
         {/* Left: Brand Identity */}
-        <Link to="/" className="nav-brand" style={{ textDecoration: 'none' }}>
+        <Link to="/" className="nav-brand" style={{ textDecoration: 'none', position: 'relative', zIndex: 2 }}>
           <BrandLogo size="normal" showBadge={false} />
         </Link>
 
