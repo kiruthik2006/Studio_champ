@@ -14,16 +14,16 @@ export const BrandLogo = ({ size = 'normal', showBadge = true, textSuffix = '' }
   const isLarge = size === 'large';
 
   // Box dimensions
-  const boxDimension = isSmall ? 32 : isLarge ? 44 : 36;
-  const logoHeight = isSmall ? 16 : isLarge ? 24 : 19;
-  const titleFontSize = isSmall ? '1.1rem' : isLarge ? '1.55rem' : '1.3rem';
+  const boxDimension = isSmall ? 35 : isLarge ? 48 : 40;
+  const logoHeight = isSmall ? 18 : isLarge ? 26 : 21;
+  const titleFontSize = isSmall ? '1.18rem' : isLarge ? '1.65rem' : '1.38rem';
 
   return (
     <div
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: isSmall ? '0.6rem' : '0.75rem',
+        gap: isSmall ? '0.7rem' : '0.85rem',
         userSelect: 'none',
       }}
     >
@@ -32,7 +32,7 @@ export const BrandLogo = ({ size = 'normal', showBadge = true, textSuffix = '' }
         style={{
           width: `${boxDimension}px`,
           height: `${boxDimension}px`,
-          borderRadius: isSmall ? '8px' : '10px',
+          borderRadius: isSmall ? '9px' : '11px',
           background: 'linear-gradient(145deg, #1f1e1b 0%, #0d0c0a 100%)',
           border: '1px solid rgba(223, 185, 74, 0.5)',
           boxShadow: isLight
@@ -52,7 +52,7 @@ export const BrandLogo = ({ size = 'normal', showBadge = true, textSuffix = '' }
           style={{
             height: `${logoHeight}px`,
             width: 'auto',
-            maxWidth: `${boxDimension - 8}px`,
+            maxWidth: `${boxDimension - 6}px`,
             objectFit: 'contain',
             display: 'block',
           }}
@@ -72,13 +72,13 @@ export const BrandLogo = ({ size = 'normal', showBadge = true, textSuffix = '' }
               lineHeight: 1.1,
             }}
           >
-            Presence
+            Presence<span style={{ color: 'var(--primary)' }}>.</span>
           </span>
 
           {showBadge && (
             <span
               style={{
-                fontSize: '0.62rem',
+                fontSize: '0.64rem',
                 fontWeight: 700,
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
@@ -115,12 +115,12 @@ export const BrandLogo = ({ size = 'normal', showBadge = true, textSuffix = '' }
         {!isSmall && (
           <span
             style={{
-              fontSize: '0.6rem',
+              fontSize: '0.64rem',
               fontWeight: 700,
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
               color: 'var(--text-muted)',
-              marginTop: '0.2rem',
+              marginTop: '0.22rem',
             }}
           >
             AI Event Discovery
