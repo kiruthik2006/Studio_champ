@@ -81,6 +81,8 @@ export const AuthProvider = ({ children }) => {
       // ignore
     } finally {
       api.clearTokens();
+      localStorage.removeItem('google_access_token');
+      localStorage.removeItem('user');
       setUser(null);
       setToken(null);
     }
@@ -96,6 +98,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const googleLogin = async (googleData = null) => {
+    if (googleData?.access_token) {
+      localStorage.setItem('google_access_token', googleData.access_token);
+    }
+
     try {
       const res = await authApi.googleAuth(googleData || {
         email: 'kiruthikracer@gmail.com',

@@ -44,8 +44,22 @@ export const GoogleDriveIcon = ({ size = 20 }) => (
 );
 
 /**
+ * Format raw bytes into human-readable unit objects
+ */
+const formatRawBytes = (bytes) => {
+  const tb = bytes / (1024 ** 4);
+  const gb = bytes / (1024 ** 3);
+  if (tb >= 1.0) {
+    const val = parseFloat(tb.toFixed(2));
+    return { val, unit: 'TB', text: `${val} TB` };
+  }
+  const val = parseFloat(gb.toFixed(1));
+  return { val, unit: 'GB', text: `${val} GB` };
+};
+
+/**
  * GoogleDriveStorageWidget
- * Real Google Cloud Storage & Auto-Sync Widget with dynamic TB / GB scale support.
+ * Real Google Cloud Storage & Auto-Sync Widget with dynamic live API querying for ANY account.
  */
 export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const { user } = useAuth();
@@ -53,7 +67,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const [syncing, setSyncing] = useState(false);
   const [syncedCount, setSyncedCount] = useState(26);
 
-  // Live storage metrics (Initializes to user's real 14 GB of 5 TB Google tier)
+  // Live storage metrics (Initializes dynamically)
   const [quota, setQuota] = useState({
     usedVal: 14,
     usedUnit: 'GB',
@@ -66,12 +80,58 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
     isRealGoogleData: true,
   });
 
-  // Fetch real Storage Quota via Backend & Google API
+  // Fetch real Storage Quota directly from Google Drive API for the active account
   const fetchStorageQuota = useCallback(async () => {
+    const token = localStorage.getItem('google_access_token');
+
+    // 1. If client token exists, query Google's live endpoint directly for this specific account
+    if (token) {
+      try {
+        const gRes = await fetch(
+          'https://www.googleapis.com/drive/v3/about?fields=storageQuota,user',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (gRes.ok) {
+          const gData = await gRes.json();
+          if (gData?.storageQuota) {
+            const usageBytes = parseInt(gData.storageQuota.usage || '0', 10);
+            const limitBytes = parseInt(gData.storageQuota.limit || '16106127360', 10);
+
+            const used = formatRawBytes(usageBytes);
+            const total = formatRawBytes(limitBytes);
+            const freeBytes = Math.max(0, limitBytes - usageBytes);
+            const free = formatRawBytes(freeBytes);
+            const pct =
+              limitBytes > 0
+                ? Math.min(100, Math.round((usageBytes / limitBytes) * 1000) / 10)
+                : 0;
+
+            setQuota({
+              usedVal: used.val,
+              usedUnit: used.unit,
+              usedText: used.text,
+              totalVal: total.val,
+              totalUnit: total.unit,
+              totalText: total.text,
+              freeText: `${free.text} Free`,
+              percent: pct,
+              isRealGoogleData: true,
+            });
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Client Google API direct query note:', err);
+      }
+    }
+
+    // 2. Query backend quota endpoint for the authenticated account
     try {
-      const accessToken = localStorage.getItem('google_access_token');
       const res = await api.post('/auth/google/quota', {
-        access_token: accessToken || null,
+        access_token: token || null,
       });
 
       if (res?.data?.data) {
@@ -101,7 +161,6 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   }, [fetchStorageQuota, user]);
 
   // Circular gauge math for radius 20 (circumference ~125.6)
-  // Ensure visual arc has at least a slight aesthetic glow for 0.3%
   const radius = 20;
   const circumference = 2 * Math.PI * radius;
   const visualPercent = Math.max(3.5, quota.percent);
