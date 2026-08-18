@@ -21,7 +21,7 @@
   --card-bg: rgba(26, 26, 26, 0.65);
   --card-bg-elevated: rgba(32, 30, 26, 0.92);
   --modal-bg: #181716;
-  --navbar-bg: linear-gradient(180deg, rgba(13, 13, 13, 0.95) 0%, rgba(13, 13, 13, 0.72) 45%, rgba(13, 13, 13, 0) 100%);
+  --navbar-bg: linear-gradient(180deg, rgba(13, 13, 13, 0.82) 0%, rgba(13, 13, 13, 0.45) 45%, rgba(13, 13, 13, 0) 100%);
   --sidebar-bg: rgba(18, 17, 16, 0.98);
 
   --border-subtle: rgba(255, 255, 255, 0.08);
@@ -124,7 +124,7 @@
   --card-bg-elevated: #ffffff;
   --card-hover-border: rgba(158, 117, 21, 0.35);
   --modal-bg: #ffffff;
-  --navbar-bg: linear-gradient(180deg, rgba(251, 250, 247, 0.98) 0%, rgba(251, 250, 247, 0.78) 45%, rgba(251, 250, 247, 0) 100%);
+  --navbar-bg: linear-gradient(180deg, rgba(251, 250, 247, 0.86) 0%, rgba(251, 250, 247, 0.48) 45%, rgba(251, 250, 247, 0) 100%);
   --sidebar-bg: #ffffff;
 
   --border-subtle: rgba(0, 0, 0, 0.08);
@@ -564,8 +564,8 @@ h1 {
   justify-content: space-between;
   padding: 1rem 1.85rem 1.85rem;
   background: var(--navbar-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: none;
   pointer-events: none;
   transition: background var(--transition-normal);
@@ -807,21 +807,25 @@ h1 {
 .dashboard-sidebar {
   width: 280px;
   min-width: 280px;
-  background: var(--sidebar-bg);
-  border-right: 1px solid var(--border-subtle);
+  background: var(--card-bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  margin: 0.75rem 0.5rem 1rem 1.25rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 1.25rem 0.9rem;
   position: sticky;
-  top: 70px;
-  height: calc(100vh - 70px);
+  top: 76px;
+  height: calc(100vh - 92px);
   z-index: 100;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.06);
-  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border-gold) transparent;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .sidebar-menu {

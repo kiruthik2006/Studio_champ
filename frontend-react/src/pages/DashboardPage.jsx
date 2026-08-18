@@ -689,6 +689,9 @@ export const DashboardPage = () => {
               )}
             </div>
           </div>
+
+          {/* Footer alongside the sidebar */}
+          <Footer />
         </main>
       </div>
     </div>
