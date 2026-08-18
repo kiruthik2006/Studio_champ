@@ -28,7 +28,8 @@ import {
   User as UserIcon,
   Eye,
   EyeOff,
-  Users
+  Users,
+  Plus,
 } from 'lucide-react';
 
 export const DashboardPage = () => {
@@ -38,6 +39,7 @@ export const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('face-registration');
   const [faceRefreshKey, setFaceRefreshKey] = useState(0);
   const [isJourneyModalOpen, setIsJourneyModalOpen] = useState(false);
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   const tabRefs = useRef({});
@@ -324,13 +326,41 @@ export const DashboardPage = () => {
               {/* TAB 1: Face & Circle Registration */}
               {activeTab === 'face-registration' && (
                 <div>
-                  <div style={{ marginBottom: '1.75rem' }}>
-                    <h1 style={{ fontSize: '2rem', color: 'var(--text-main)', marginBottom: '0.4rem', fontWeight: 800 }}>
-                      Face & Circle Profiles
-                    </h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                      Set up your face and add friends or family to easily find all your event photos.
-                    </p>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '0.85rem',
+                      flexWrap: 'wrap',
+                      gap: '0.6rem',
+                    }}
+                  >
+                    <div>
+                      <h1 style={{ fontSize: '1.45rem', color: 'var(--text-main)', marginBottom: '0.15rem', fontWeight: 800 }}>
+                        Face & Circle Profiles
+                      </h1>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: 0 }}>
+                        Set up your face and add friends or family to find event photos.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsAddMemberOpen(true)}
+                      className="btn btn-outline btn-sm"
+                      style={{
+                        padding: '0.35rem 0.8rem',
+                        fontSize: '0.78rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        borderRadius: '999px',
+                      }}
+                    >
+                      <Plus size={13} />
+                      <span>Add Person to Circle</span>
+                    </button>
                   </div>
 
                   {/* Family Member Profile Switcher */}
@@ -340,6 +370,8 @@ export const DashboardPage = () => {
                     onSelectMember={(id) => setSelectedMemberId(id)}
                     onCreateMember={handleCreateMember}
                     onDeleteMember={handleDeleteMember}
+                    isOpen={isAddMemberOpen}
+                    onClose={() => setIsAddMemberOpen(false)}
                   />
 
                   {/* Biometric Vector Health & AI Diagnostic Report */}

@@ -19,12 +19,20 @@ export const CircleMemberBar = ({
   onCreateMember,
   onDeleteMember,
   loading = false,
+  isOpen = false,
+  onClose,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [internalModalOpen, setInternalModalOpen] = useState(false);
   const [name, setName] = useState('');
   const [relationship, setRelationship] = useState('Spouse');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const modalOpen = isOpen || internalModalOpen;
+  const setModalOpen = (val) => {
+    setInternalModalOpen(val);
+    if (!val && onClose) onClose();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,146 +65,100 @@ export const CircleMemberBar = ({
   };
 
   return (
-    <div style={{ marginBottom: '1.75rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Users size={18} color="var(--primary)" />
-          <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)', letterSpacing: '0.02em' }}>
-            FAMILY & FRIENDS CIRCLE
-          </span>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            ({members.length} {members.length === 1 ? 'Person' : 'People'})
-          </span>
-        </div>
+    <>
+      {members.length > 0 && (
+        <div style={{ marginBottom: '1rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              overflowX: 'auto',
+              paddingBottom: '0.2rem',
+              scrollbarWidth: 'none',
+            }}
+          >
+            {members.map((member) => {
+              const isSelected = member.id === selectedMemberId;
+              const badge = getRelationBadge(member.relationship, member.is_self);
+              const faceCount = member.face_count || member.faces?.length || 0;
 
-        <button
-          onClick={() => setModalOpen(true)}
-          className="btn btn-outline btn-sm"
-          style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-        >
-          <Plus size={14} /> Add Person to Circle
-        </button>
-      </div>
-
-      {/* Circle Member Badges / Selector */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.65rem',
-          overflowX: 'auto',
-          paddingBottom: '0.4rem',
-          scrollbarWidth: 'none',
-        }}
-      >
-        {members.map((member) => {
-          const isSelected = member.id === selectedMemberId;
-          const badge = getRelationBadge(member.relationship, member.is_self);
-          const faceCount = member.face_count || member.faces?.length || 0;
-
-          return (
-            <div
-              key={member.id}
-              onClick={() => onSelectMember(member.id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.65rem',
-                padding: '0.5rem 0.9rem',
-                borderRadius: 'var(--border-radius-md)',
-                background: isSelected ? 'var(--card-bg-elevated)' : 'var(--card-bg)',
-                border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border-subtle)',
-                boxShadow: isSelected ? 'var(--shadow-glow)' : 'none',
-                cursor: 'pointer',
-                transition: 'all var(--transition-fast)',
-                userSelect: 'none',
-                flexShrink: 0,
-                position: 'relative',
-              }}
-            >
-              <div
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: isSelected ? 'var(--primary)' : 'var(--input-bg)',
-                  color: isSelected ? '#121110' : 'var(--text-main)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                }}
-              >
-                {member.name.charAt(0).toUpperCase()}
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span style={{ fontWeight: 600, fontSize: '0.9rem', color: isSelected ? 'var(--text-main)' : 'var(--text-muted)' }}>
-                    {member.name}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '0.65rem',
-                      padding: '0.1rem 0.4rem',
-                      borderRadius: '999px',
-                      color: badge.color,
-                      background: badge.bg,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {badge.label}
-                  </span>
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
-                  {faceCount} {faceCount === 1 ? 'Face Photo' : 'Face Photos'}
-                </div>
-              </div>
-
-              {!member.is_self && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (window.confirm(`Remove ${member.name} from your circle?`)) {
-                      onDeleteMember(member.id);
-                    }
-                  }}
-                  title="Remove person"
+              return (
+                <div
+                  key={member.id}
+                  onClick={() => onSelectMember(member.id)}
                   style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: 'var(--text-muted)',
-                    cursor: 'pointer',
-                    padding: '0.2rem',
-                    marginLeft: '0.2rem',
-                    borderRadius: '4px',
                     display: 'flex',
                     alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '999px',
+                    background: isSelected ? 'var(--card-bg-elevated)' : 'var(--card-bg)',
+                    border: isSelected ? '1.5px solid var(--primary)' : '1px solid var(--border-subtle)',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    flexShrink: 0,
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    color: isSelected ? 'var(--text-main)' : 'var(--text-muted)',
+                    transition: 'all 0.18s ease',
                   }}
                 >
-                  <Trash2 size={13} />
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                  <span>{member.name}</span>
+                  {faceCount > 0 && (
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        padding: '0.05rem 0.35rem',
+                        borderRadius: '999px',
+                        background: isSelected ? 'var(--primary)' : 'var(--input-bg)',
+                        color: isSelected ? '#000' : 'var(--text-muted)',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {faceCount}
+                    </span>
+                  )}
+                  {!member.is_self && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (window.confirm(`Remove ${member.name} from circle?`)) {
+                          onDeleteMember(member.id);
+                        }
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--text-muted)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0.1rem',
+                      }}
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Add Circle Member Modal */}
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Person to Your Circle">
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add to Family & Friends Circle" size="sm">
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.5 }}>
-            Register your family members, partner, children, or friends. Once added, you can capture their face photos to search event galleries together or individually!
-          </p>
-
-          <div className="form-group">
+          <div>
             <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
-              Full Name or Nickname *
+              Person's Name *
             </label>
             <input
               type="text"
               className="form-control"
-              placeholder="e.g. Sarah, Leo (Son), Grandma Mary"
+              placeholder="e.g. Sarah, Dad, Uncle David"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -204,54 +166,61 @@ export const CircleMemberBar = ({
             />
           </div>
 
-          <div className="form-group">
+          <div>
             <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
-              Relationship / Role
+              Relationship
             </label>
-            <select
-              className="form-control"
-              value={relationship}
-              onChange={(e) => setRelationship(e.target.value)}
-            >
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.5rem' }}>
               {RELATIONSHIP_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.icon} {opt.label}
-                </option>
+                <button
+                  type="button"
+                  key={opt.value}
+                  onClick={() => setRelationship(opt.value)}
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: 'var(--border-radius-sm)',
+                    border: relationship === opt.value ? '2px solid var(--primary)' : '1px solid var(--border-subtle)',
+                    background: relationship === opt.value ? 'rgba(201, 162, 39, 0.12)' : 'var(--input-bg)',
+                    color: relationship === opt.value ? 'var(--primary)' : 'var(--text-main)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
+                  <span>{opt.icon}</span>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label.split(' ')[0]}</span>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
-          <div className="form-group">
+          <div>
             <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
               Notes (Optional)
             </label>
             <input
               type="text"
               className="form-control"
-              placeholder="e.g. Wears glasses sometimes"
+              placeholder="e.g. Daughter, Maid of Honor"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <button
-              type="button"
-              className="btn btn-outline"
-              onClick={() => setModalOpen(false)}
-            >
+            <button type="button" onClick={() => setModalOpen(false)} className="btn btn-outline btn-sm">
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={submitting || !name.trim()}
-              className="btn btn-primary"
-            >
-              {submitting ? 'Adding...' : 'Create Person Profile'}
+            <button type="submit" disabled={submitting || !name.trim()} className="btn btn-primary btn-sm">
+              {submitting ? 'Adding...' : 'Add to Circle'}
             </button>
           </div>
         </form>
       </Modal>
-    </div>
+    </>
   );
 };
