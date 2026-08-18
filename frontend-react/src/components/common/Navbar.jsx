@@ -111,164 +111,130 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
           <BrandLogo size="normal" showBadge={false} />
         </Link>
 
-        {/* Center: Search & Practical Context Actions */}
-        <div className="nav-center-creative" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.85rem',
-        }}>
-          {/* Spotlight Search Trigger */}
-          <button
-            onClick={() => setSpotlightOpen(true)}
-            className="spotlight-trigger-btn"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '1.2rem',
-              padding: '0.45rem 0.95rem',
-              borderRadius: '999px',
-              background: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)',
-              border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'}`,
-              color: 'var(--text-muted)',
-              fontSize: '0.83rem',
-              cursor: 'pointer',
-              transition: 'all var(--transition-fast)',
-              minWidth: '210px',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = isLight ? 'rgba(0, 0, 0, 0.07)' : 'rgba(255, 255, 255, 0.09)';
-              e.currentTarget.style.borderColor = 'var(--primary)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)';
-              e.currentTarget.style.borderColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-            }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Search size={14} color="var(--primary)" />
-              <span>Search events & actions...</span>
-            </span>
-            <kbd style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
-              border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.15)'}`,
-              borderRadius: '5px',
-              padding: '0.1rem 0.35rem',
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              color: 'var(--text-main)',
-            }}>
-              ⌘K
-            </kbd>
-          </button>
-
-          {/* Practical Live Context Badge */}
-          {isAuthenticated ? (
-            isAdmin ? (
-              <button
-                onClick={() => navigate('/admin')}
-                className="practical-nav-pill"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.4rem 0.85rem',
-                  borderRadius: '999px',
-                  background: isLight ? 'rgba(201, 162, 39, 0.09)' : 'rgba(201, 162, 39, 0.14)',
-                  border: '1px solid rgba(201, 162, 39, 0.3)',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  color: isLight ? '#9e7515' : '#dfb94a',
-                  cursor: 'pointer',
-                  transition: 'all var(--transition-fast)',
-                }}
-                title="Open Admin Control Center"
-              >
-                <Shield size={13} />
-                <span>Admin Hub</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="practical-nav-pill"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.4rem 0.85rem',
-                  borderRadius: '999px',
-                  background: facesCount && facesCount > 0
-                    ? (isLight ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.12)')
-                    : (isLight ? 'rgba(245, 158, 11, 0.08)' : 'rgba(245, 158, 11, 0.12)'),
-                  border: facesCount && facesCount > 0
-                    ? '1px solid rgba(16, 185, 129, 0.25)'
-                    : '1px solid rgba(245, 158, 11, 0.3)',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  color: facesCount && facesCount > 0
-                    ? (isLight ? '#047857' : '#34d399')
-                    : (isLight ? '#b45309' : '#fbbf24'),
-                  cursor: 'pointer',
-                  transition: 'all var(--transition-fast)',
-                }}
-                title={facesCount && facesCount > 0 ? 'Face vectors active in matcher' : 'Register your face to discover photos'}
-              >
-                {facesCount && facesCount > 0 ? (
-                  <>
-                    <CheckCircle size={13} />
-                    <span>{facesCount} {facesCount === 1 ? 'Face Registered' : 'Faces Registered'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Camera size={13} />
-                    <span>Register Face</span>
-                  </>
-                )}
-              </button>
-            )
-          ) : (
+        {/* Center: Search & Practical Context Actions (Shown only on Dashboard & internal pages) */}
+        {!isHome && (
+          <div className="nav-center-creative" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.85rem',
+          }}>
+            {/* Spotlight Search Trigger */}
             <button
-              onClick={() => {
-                if (isHome) {
-                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                  navigate('/');
-                }
-              }}
-              className="practical-nav-pill"
+              onClick={() => setSpotlightOpen(true)}
+              className="spotlight-trigger-btn"
               style={{
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '0.45rem',
-                padding: '0.4rem 0.85rem',
+                justifyContent: 'space-between',
+                gap: '1.2rem',
+                padding: '0.45rem 0.95rem',
                 borderRadius: '999px',
                 background: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)',
-                border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'}`,
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                color: 'var(--text-main)',
+                border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'}`,
+                color: 'var(--text-muted)',
+                fontSize: '0.83rem',
                 cursor: 'pointer',
                 transition: 'all var(--transition-fast)',
+                minWidth: '210px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = isLight ? 'rgba(0, 0, 0, 0.07)' : 'rgba(255, 255, 255, 0.09)';
+                e.currentTarget.style.borderColor = 'var(--primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
               }}
             >
-              <Sparkles size={13} color="var(--primary)" />
-              <span>Event Photo AI</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Search size={14} color="var(--primary)" />
+                <span>Search events & actions...</span>
+              </span>
+              <kbd style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
+                border: `1px solid ${isLight ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.15)'}`,
+                borderRadius: '5px',
+                padding: '0.1rem 0.35rem',
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                color: 'var(--text-main)',
+              }}>
+                ⌘K
+              </kbd>
             </button>
-          )}
-        </div>
+
+            {/* Practical Live Context Badge */}
+            {isAuthenticated && (
+              isAdmin ? (
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="practical-nav-pill"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '999px',
+                    background: isLight ? 'rgba(201, 162, 39, 0.09)' : 'rgba(201, 162, 39, 0.14)',
+                    border: '1px solid rgba(201, 162, 39, 0.3)',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    color: isLight ? '#9e7515' : '#dfb94a',
+                    cursor: 'pointer',
+                    transition: 'all var(--transition-fast)',
+                  }}
+                  title="Open Admin Control Center"
+                >
+                  <Shield size={13} />
+                  <span>Admin Hub</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="practical-nav-pill"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '999px',
+                    background: facesCount && facesCount > 0
+                      ? (isLight ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.12)')
+                      : (isLight ? 'rgba(245, 158, 11, 0.08)' : 'rgba(245, 158, 11, 0.12)'),
+                    border: facesCount && facesCount > 0
+                      ? '1px solid rgba(16, 185, 129, 0.25)'
+                      : '1px solid rgba(245, 158, 11, 0.3)',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    color: facesCount && facesCount > 0
+                      ? (isLight ? '#047857' : '#34d399')
+                      : (isLight ? '#b45309' : '#fbbf24'),
+                    cursor: 'pointer',
+                    transition: 'all var(--transition-fast)',
+                  }}
+                  title={facesCount && facesCount > 0 ? 'Face vectors active in matcher' : 'Register your face to discover photos'}
+                >
+                  {facesCount && facesCount > 0 ? (
+                    <>
+                      <CheckCircle size={13} />
+                      <span>{facesCount} {facesCount === 1 ? 'Face Registered' : 'Faces Registered'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Camera size={13} />
+                      <span>Register Face</span>
+                    </>
+                  )}
+                </button>
+              )
+            )}
+          </div>
+        )}
 
         {/* Right: Actions, Theme & Profile */}
         <div className="nav-actions">
-          {/* Landing Nav Links */}
-          {isHome && (
-            <div className="nav-links-desktop" style={{ display: 'flex', gap: '1.2rem', marginRight: '0.4rem' }}>
-              <a href="#how-it-works" className="nav-link" style={{ fontSize: '0.875rem' }}>How it Works</a>
-              <a href="#technology" className="nav-link" style={{ fontSize: '0.875rem' }}>AI Tech</a>
-            </div>
-          )}
-
           {/* Theme Toggle Slider */}
           <ThemeToggle />
 
