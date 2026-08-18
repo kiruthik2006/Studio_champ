@@ -221,8 +221,7 @@ export const DashboardSidebar = ({
               color: 'var(--text-muted)',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981' }} />
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
               <span>ArcFace AI</span>
             </div>
 
