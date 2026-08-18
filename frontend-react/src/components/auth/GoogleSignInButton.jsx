@@ -86,10 +86,30 @@ export const GoogleSignInButton = ({ text = 'Continue with Google', onSuccess, m
           callback: async (tokenResponse) => {
             if (tokenResponse?.access_token) {
               localStorage.setItem('google_access_token', tokenResponse.access_token);
+
+              let googleUser = null;
+              try {
+                const uRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                });
+                if (uRes.ok) {
+                  googleUser = await uRes.json();
+                }
+              } catch (e) {
+                console.warn('Userinfo fetch warning:', e);
+              }
+
               const res = await googleLogin({
                 access_token: tokenResponse.access_token,
+                email: googleUser?.email,
+                first_name: googleUser?.given_name || googleUser?.name || 'User',
+                last_name: googleUser?.family_name || '',
+                full_name: googleUser?.name || googleUser?.given_name || 'User',
+                avatar_url: googleUser?.picture,
+                picture: googleUser?.picture,
               });
-              showToast('Successfully authenticated with Google & Google Photos!', 'success');
+
+              showToast(`Signed in as ${googleUser?.name || googleUser?.email || 'Google User'}!`, 'success');
               if (onSuccess) onSuccess();
               if (res?.data?.user?.role === 'admin') {
                 navigate('/admin');
