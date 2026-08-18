@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ExternalLink, RefreshCw, CheckCircle2, Cloud, ShieldCheck, Lock, ArrowRight } from 'lucide-react';
+import { ExternalLink, RefreshCw, CheckCircle2, Cloud, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../api/client';
@@ -65,16 +65,16 @@ const formatRawBytes = (bytes) => {
 /**
  * GoogleDriveStorageWidget
  * Honest, 100% Real-Time Google Cloud Storage & Auto-Sync Widget.
- * Queries Google's live `/v3/about` API when authorized, with ZERO hardcoded placeholder fallbacks.
+ * Handles 403 Google Cloud API disabled errors with a direct 1-click GCP console link.
  */
 export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [syncing, setSyncing] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [syncedCount, setSyncedCount] = useState(26);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [quota, setQuota] = useState(null);
+  const [apiDisabledError, setApiDisabledError] = useState(null);
 
   const activeClientId =
     import.meta.env.VITE_GOOGLE_CLIENT_ID ||
@@ -96,6 +96,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
 
       const gData = await gRes.json();
       if (gRes.ok && gData?.storageQuota) {
+        setApiDisabledError(null);
         const usageBytes = parseInt(gData.storageQuota.usage || '0', 10);
         const limitBytes = parseInt(gData.storageQuota.limit || '0', 10);
 
@@ -122,8 +123,11 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         setIsAuthorized(true);
         return true;
       } else if (gData?.error) {
-        console.warn('Google API error:', gData.error);
-        if (gData.error.status === 'UNAUTHENTICATED' || gData.error.code === 401) {
+        if (gData.error.code === 403 && gData.error.message?.includes('Google Drive API')) {
+          setApiDisabledError(
+            'https://console.developers.google.com/apis/api/drive.googleapis.com/overview?project=891854780153'
+          );
+        } else if (gData.error.status === 'UNAUTHENTICATED' || gData.error.code === 401) {
           localStorage.removeItem('google_access_token');
           setIsAuthorized(false);
         }
@@ -154,8 +158,6 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
             const success = await queryGoogleDriveDirectly(tokenResponse.access_token);
             if (success) {
               showToast('Live Google Drive storage loaded from Google API!', 'success');
-            } else {
-              showToast('Authenticated with Google Cloud!', 'info');
             }
           }
           setSyncing(false);
@@ -176,14 +178,10 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
 
   // Fetch real Storage Quota on load
   const fetchStorageQuota = useCallback(async () => {
-    setLoading(true);
     const token = localStorage.getItem('google_access_token');
     if (token) {
       const success = await queryGoogleDriveDirectly(token);
-      if (success) {
-        setLoading(false);
-        return;
-      }
+      if (success) return;
     }
 
     // Backend query
@@ -214,8 +212,6 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
     } catch (err) {
       console.warn('Could not query quota from backend:', err);
       setIsAuthorized(false);
-    } finally {
-      setLoading(false);
     }
   }, [queryGoogleDriveDirectly, userEmail]);
 
@@ -306,7 +302,7 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
             flexShrink: 0,
             cursor: 'pointer',
           }}
-          title={isAuthorized ? 'Live Google API Connected (Click to refresh)' : 'Click to authorize live Google data'}
+          title={isAuthorized ? 'Live Google API Connected' : 'Click to authorize live Google data'}
         >
           <span
             style={{
@@ -320,8 +316,44 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         </span>
       </div>
 
-      {/* 2. Storage Telemetry Card */}
-      {isAuthorized && quota ? (
+      {/* 2. Storage Telemetry Card or GCP Enable Alert */}
+      {apiDisabledError ? (
+        <div
+          style={{
+            padding: '0.75rem',
+            background: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.25)',
+            borderRadius: 'var(--border-radius-sm)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.45rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#ef4444', fontSize: '0.75rem', fontWeight: 700 }}>
+            <AlertTriangle size={15} />
+            <span>Enable Drive API in GCP</span>
+          </div>
+          <span style={{ fontSize: '0.64rem', color: 'var(--text-muted)', lineHeight: 1.3 }}>
+            Google requires the <strong>Google Drive API</strong> to be enabled in Google Cloud Console for project <code>891854780153</code> to read storage quotas.
+          </span>
+          <a
+            href={apiDisabledError}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+            style={{
+              fontSize: '0.7rem',
+              padding: '0.35rem 0.6rem',
+              textAlign: 'center',
+              textDecoration: 'none',
+              marginTop: '0.2rem',
+            }}
+          >
+            <span>1-Click: Enable Drive API</span>
+            <ExternalLink size={11} />
+          </a>
+        </div>
+      ) : isAuthorized && quota ? (
         <div
           onClick={onOpenSyncModal}
           style={{
