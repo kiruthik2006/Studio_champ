@@ -57,13 +57,17 @@ export const RegisteredFaces = ({ memberId = null, memberName = 'All Profiles', 
     }
   };
 
+  if (!loading && faces.length === 0) {
+    return null;
+  }
+
   return (
     <div className="glass-card" style={{ padding: '2rem', marginTop: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h3 style={{ fontSize: '1.3rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <UserCheck size={20} color="var(--primary)" />
-            <span>Registered Faces: <span className="gold-text">{memberName}</span></span>
+            <span>Enrolled Faces: <span className="gold-text">{memberName}</span></span>
             <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>({faces.length})</span>
           </h3>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
@@ -80,20 +84,6 @@ export const RegisteredFaces = ({ memberId = null, memberName = 'All Profiles', 
         <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-muted)' }}>
           <div className="spinner" style={{ margin: '0 auto 1rem', width: 28, height: 28, border: '2px solid rgba(201,162,39,0.3)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
           Loading registered faces...
-        </div>
-      ) : faces.length === 0 ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '2.5rem 1rem',
-          background: 'var(--input-bg)',
-          borderRadius: 'var(--border-radius-md)',
-          border: '1px dashed var(--border-gold)'
-        }}>
-          <ShieldCheck size={40} color="var(--text-muted)" style={{ margin: '0 auto 1rem' }} />
-          <h4 style={{ color: 'var(--text-main)', marginBottom: '0.4rem' }}>No Faces Registered for {memberName}</h4>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', maxWidth: '400px', margin: '0 auto' }}>
-            Use the camera above to capture the 4 smart angle slots for this person.
-          </p>
         </div>
       ) : (
         <div style={{

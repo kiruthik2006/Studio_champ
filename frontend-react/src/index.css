@@ -1231,3 +1231,10 @@ h1 {
   }
 }
 
+@media (max-width: 860px) {
+  .hero-grid-responsive {
+    grid-template-columns: 1fr !important;
+    gap: 1.75rem !important;
+  }
+}
+
