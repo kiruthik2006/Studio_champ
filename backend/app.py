@@ -52,6 +52,21 @@ def create_app(config_name="default"):
     db.init_app(app)
     jwt.init_app(app)
 
+    # Ensure database schema is up-to-date with newly added columns
+    with app.app_context():
+        try:
+            db.create_all()
+            from sqlalchemy import text
+            with db.engine.connect() as conn:
+                res = conn.execute(text("PRAGMA table_info(users)"))
+                cols = [r[1] for r in res.fetchall()]
+                if cols and "avatar_url" not in cols:
+                    conn.execute(text("ALTER TABLE users ADD COLUMN avatar_url VARCHAR(512)"))
+                    conn.commit()
+                    print("[INIT] Added missing avatar_url column to users table")
+        except Exception as e:
+            app.logger.warning(f"Database schema auto-migration check: {e}")
+
     # Initialize storage service singleton so get_storage_service() can be used safely.
     # If initialization fails, log the error but continue so the app can start for debugging.
     try:
