@@ -229,42 +229,12 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         width: '100%',
       }}
     >
-      {/* Header: Service + Status Pill */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <GooglePhotosIcon size={16} />
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)' }}>
-            Google Cloud
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={authorizeLiveGoogleToken}
-          style={{
-            background: isAuthorized ? 'rgba(16, 185, 129, 0.12)' : 'rgba(38, 132, 252, 0.12)',
-            color: isAuthorized ? '#10b981' : '#2684fc',
-            border: 'none',
-            borderRadius: '999px',
-            padding: '0.15rem 0.45rem',
-            fontSize: '0.64rem',
-            fontWeight: 700,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.25rem',
-            cursor: 'pointer',
-          }}
-        >
-          <span
-            style={{
-              width: '4px',
-              height: '4px',
-              borderRadius: '50%',
-              background: isAuthorized ? '#10b981' : '#2684fc',
-            }}
-          />
-          <span>{isAuthorized ? 'Live' : 'Connect'}</span>
-        </button>
+      {/* Header: Service Name */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+        <GooglePhotosIcon size={16} />
+        <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)' }}>
+          Google Cloud
+        </span>
       </div>
 
       {/* Storage Progress Bar or Alert */}
