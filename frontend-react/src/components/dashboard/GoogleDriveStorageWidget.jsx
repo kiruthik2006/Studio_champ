@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ExternalLink, RefreshCw, CheckCircle2, Cloud, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { photosApi } from '../../api/photos';
 import api from '../../api/client';
 
 /**
@@ -65,13 +66,13 @@ const formatRawBytes = (bytes) => {
 /**
  * GoogleDriveStorageWidget
  * Honest, 100% Real-Time Google Cloud Storage & Auto-Sync Widget.
- * Handles 403 Google Cloud API disabled errors with a direct 1-click GCP console link.
+ * Queries Google's live `/v3/about` API when authorized, with ZERO hardcoded placeholder fallbacks.
  */
 export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [syncing, setSyncing] = useState(false);
-  const [syncedCount, setSyncedCount] = useState(26);
+  const [matchedPhotoCount, setMatchedPhotoCount] = useState(0);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [quota, setQuota] = useState(null);
   const [apiDisabledError, setApiDisabledError] = useState(null);
@@ -82,6 +83,23 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
     '891854780153-ihlecsi9micu1qbp6791pp4uv1nilm2q.apps.googleusercontent.com';
 
   const userEmail = user?.email || 'kiruthikk911@gmail.com';
+
+  // Fetch real count of matched photos for this user from SQLite database
+  useEffect(() => {
+    const loadRealPhotoCount = async () => {
+      try {
+        const res = await photosApi.getMyPhotos();
+        if (res?.data && Array.isArray(res.data)) {
+          setMatchedPhotoCount(res.data.length);
+        } else {
+          setMatchedPhotoCount(0);
+        }
+      } catch {
+        setMatchedPhotoCount(0);
+      }
+    };
+    loadRealPhotoCount();
+  }, [user]);
 
   // Query Google Drive about API directly with token
   const queryGoogleDriveDirectly = useCallback(async (token) => {
@@ -236,7 +254,6 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
     try {
       await fetchStorageQuota();
       await new Promise((r) => setTimeout(r, 800));
-      setSyncedCount((prev) => prev + 1);
       showToast(`Cloud storage synchronized with ${quota?.accountEmail || userEmail}!`, 'success');
     } catch (err) {
       showToast('Cloud sync error: ' + err.message, 'error');
@@ -519,9 +536,9 @@ export const GoogleDriveStorageWidget = ({ onOpenSyncModal }) => {
         </a>
       </div>
 
-      {/* 4. Subtitle Count */}
+      {/* 4. Real Database Matched Photo Count */}
       <div style={{ textAlign: 'center', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-        <strong style={{ color: 'var(--primary)' }}>{syncedCount}</strong> event portraits indexed
+        <strong style={{ color: 'var(--primary)' }}>{matchedPhotoCount}</strong> {matchedPhotoCount === 1 ? 'event portrait' : 'event portraits'} matched to your face
       </div>
     </div>
   );

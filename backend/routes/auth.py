@@ -318,7 +318,6 @@ def get_google_quota():
                     "free_unit": free_unit,
                     "percent": percent,
                     "is_live_google": is_live,
-                    "synced_photos": 26,
                 },
             }
         ), 200
