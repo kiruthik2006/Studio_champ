@@ -26,7 +26,6 @@ import {
 export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { isLight } = useTheme();
-  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [spotlightOpen, setSpotlightOpen] = useState(false);
@@ -34,34 +33,6 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Scroll listener for glass navbar with hysteresis to prevent bounce stutter
-  useEffect(() => {
-    let ticking = false;
-    let isScrolled = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentY = window.scrollY;
-          // Hysteresis: turn on at > 40px, turn off only when fully at top (<= 5px)
-          // Completely eliminates re-render flutter during macOS rubber-band bounce
-          if (currentY > 40 && !isScrolled) {
-            isScrolled = true;
-            setScrolled(true);
-          } else if (currentY <= 5 && isScrolled) {
-            isScrolled = false;
-            setScrolled(false);
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Fetch live biometric registration count if logged in
   useEffect(() => {
@@ -105,7 +76,7 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+      <nav className="navbar">
         {/* Left: Brand Identity */}
         <Link to="/" className="nav-brand" style={{ textDecoration: 'none' }}>
           <BrandLogo size="normal" showBadge={false} />

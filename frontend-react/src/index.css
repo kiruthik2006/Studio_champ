@@ -562,15 +562,13 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.85rem 1.85rem;
+  padding: 1.05rem 1.85rem 1.5rem;
   background: var(--navbar-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: none;
   pointer-events: none;
   transition: background var(--transition-normal);
-  transform: translateZ(0);
-  will-change: transform;
 }
 
 .navbar > * {
@@ -800,8 +798,8 @@ h1 {
 /* Dashboard Shell Layout */
 .dashboard-layout {
   display: flex;
-  min-height: calc(100vh - 70px);
-  padding-top: 70px;
+  min-height: calc(100vh - 64px);
+  padding-top: 64px;
 }
 
 .dashboard-sidebar {
@@ -810,14 +808,14 @@ h1 {
   background: var(--card-bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: 20px;
-  margin: 0.75rem 0.5rem 1rem 1.25rem;
+  margin: 0.55rem 0.5rem 1rem 1.25rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 1.25rem 0.9rem;
   position: sticky;
-  top: 76px;
-  height: calc(100vh - 92px);
+  top: 68px;
+  height: calc(100vh - 84px);
   z-index: 100;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -888,7 +886,7 @@ h1 {
 
 .dashboard-main {
   flex: 1;
-  padding: 2.5rem;
+  padding: 0.95rem 2.5rem 2rem;
   max-width: 1400px;
   min-width: 0;
   display: flex;
