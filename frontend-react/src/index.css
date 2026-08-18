@@ -20,9 +20,8 @@
 
   --card-bg: rgba(26, 26, 26, 0.65);
   --card-bg-elevated: rgba(32, 30, 26, 0.92);
-  --card-hover-border: rgba(201, 162, 39, 0.35);
   --modal-bg: #181716;
-  --navbar-bg: rgba(13, 13, 13, 0.85);
+  --navbar-bg: linear-gradient(180deg, rgba(13, 13, 13, 0.95) 0%, rgba(13, 13, 13, 0.72) 45%, rgba(13, 13, 13, 0) 100%);
   --sidebar-bg: rgba(18, 17, 16, 0.98);
 
   --border-subtle: rgba(255, 255, 255, 0.08);
@@ -125,7 +124,7 @@
   --card-bg-elevated: #ffffff;
   --card-hover-border: rgba(158, 117, 21, 0.35);
   --modal-bg: #ffffff;
-  --navbar-bg: rgba(251, 250, 247, 0.94);
+  --navbar-bg: linear-gradient(180deg, rgba(251, 250, 247, 0.98) 0%, rgba(251, 250, 247, 0.78) 45%, rgba(251, 250, 247, 0) 100%);
   --sidebar-bg: #ffffff;
 
   --border-subtle: rgba(0, 0, 0, 0.08);
@@ -553,7 +552,7 @@ h1 {
   border-color: var(--primary);
 }
 
-/* Navbar */
+/* Navbar - Seamless Atmospheric Top-to-Bottom Opacity Fade */
 .navbar {
   position: fixed;
   top: 0;
@@ -563,14 +562,19 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.95rem 1.85rem;
+  padding: 1.05rem 1.85rem 2rem;
   background: var(--navbar-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-gold);
-  transition: background-color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: none;
+  pointer-events: none;
+  transition: background var(--transition-normal);
   transform: translateZ(0);
   will-change: transform;
+}
+
+.navbar > * {
+  pointer-events: auto;
 }
 
 .nav-brand {
@@ -1123,15 +1127,17 @@ h1 {
 
   /* Bypass expensive WebRender framebuffer readbacks on fixed/sticky elements */
   .navbar {
-    background: rgba(18, 17, 16, 0.97) !important;
+    background: linear-gradient(180deg, rgba(13, 13, 13, 0.95) 0%, rgba(13, 13, 13, 0.72) 45%, rgba(13, 13, 13, 0) 100%) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    border-bottom: none !important;
   }
 
   [data-theme="light"] .navbar {
-    background: rgba(251, 250, 247, 0.98) !important;
+    background: linear-gradient(180deg, rgba(251, 250, 247, 0.98) 0%, rgba(251, 250, 247, 0.78) 45%, rgba(251, 250, 247, 0) 100%) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    border-bottom: none !important;
   }
 
   .dashboard-sidebar {
