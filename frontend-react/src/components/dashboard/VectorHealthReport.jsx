@@ -240,26 +240,17 @@ export const VectorHealthReport = ({
             className="hero-lens-card"
             title="Click to start 30-second camera scan"
           >
-            {/* 3D Biometric Lens Artwork */}
+            {/* Crystal Glass Camera Artwork */}
             <img
-              src="/biometric_lens_hero.jpg"
-              alt="AI Biometric Face Lens"
+              src="/crystal_camera_hero.jpg"
+              alt="Crystal Glass Camera"
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
+                objectFit: 'contain',
                 display: 'block',
+                background: '#000000',
                 transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-              }}
-            />
-
-            {/* Subtle Gradient Shadow Vignette */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'radial-gradient(circle, transparent 45%, rgba(10, 10, 12, 0.7) 100%)',
-                pointerEvents: 'none',
               }}
             />
 
