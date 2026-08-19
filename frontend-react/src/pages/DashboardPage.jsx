@@ -527,9 +527,239 @@ export const DashboardPage = () => {
                     emptyMessage={
                       selectedEventForMatch
                         ? 'No photos in this album match the selected family members under this constraint. Try switching to "Any of Us (OR)" or lowering the threshold.'
-                        : 'Select an event from the Browse Events tab to run the AI face search.'
+                        : 'Select an event from the list below or the Browse Events tab to run the AI face search.'
                     }
                   />
+
+                  {/* If no photos currently displayed, fill the space with Interactive Event Launcher and Discovery Cards */}
+                  {matchedPhotos.length === 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', marginTop: '2rem' }}>
+                      {/* 1. Quick Event Scan Launcher */}
+                      {events.length > 0 && (
+                        <div>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              marginBottom: '1.15rem',
+                              flexWrap: 'wrap',
+                              gap: '0.5rem',
+                            }}
+                          >
+                            <div>
+                              <h3
+                                style={{
+                                  fontSize: '1.2rem',
+                                  color: 'var(--text-main)',
+                                  fontWeight: 700,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  marginBottom: '0.15rem',
+                                }}
+                              >
+                                <Calendar size={18} color="var(--primary)" />
+                                Quick Scan Available Events
+                              </h3>
+                              <p style={{ color: 'var(--text-muted)', fontSize: '0.84rem', margin: 0 }}>
+                                Choose an event album to instantly scan and retrieve all photos you appear in.
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setActiveTab('events')}
+                              className="btn btn-outline btn-sm"
+                              style={{ fontSize: '0.78rem', padding: '0.35rem 0.8rem' }}
+                            >
+                              Browse All Events ({events.length})
+                            </button>
+                          </div>
+
+                          <div
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                              gap: '1.25rem',
+                            }}
+                          >
+                            {events.slice(0, 3).map((event) => (
+                              <div
+                                key={event.id}
+                                className="glass-card"
+                                style={{
+                                  padding: '1.25rem',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  justifyContent: 'space-between',
+                                  gap: '1.1rem',
+                                  transition: 'transform 0.2s ease, border-color 0.2s ease',
+                                }}
+                              >
+                                <div>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'space-between',
+                                      marginBottom: '0.5rem',
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: '0.72rem',
+                                        color: 'var(--primary)',
+                                        fontWeight: 700,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.04em',
+                                      }}
+                                    >
+                                      {event.event_type || 'Event Album'}
+                                    </span>
+                                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                                      {event.photo_count || 0} Photos
+                                    </span>
+                                  </div>
+
+                                  <h4
+                                    style={{
+                                      fontSize: '1.05rem',
+                                      color: 'var(--text-main)',
+                                      fontWeight: 700,
+                                      marginBottom: '0.35rem',
+                                    }}
+                                  >
+                                    {event.name}
+                                  </h4>
+
+                                  <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: 1.5, margin: 0 }}>
+                                    {event.description || 'Public event photograph collection.'}
+                                  </p>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleFindPhotosInEvent(event)}
+                                  className="btn btn-primary btn-sm"
+                                  style={{
+                                    width: '100%',
+                                    justifyContent: 'center',
+                                    fontSize: '0.82rem',
+                                    padding: '0.55rem 1rem',
+                                  }}
+                                  disabled={matchingInProgress && selectedEventForMatch?.id === event.id}
+                                >
+                                  {matchingInProgress && selectedEventForMatch?.id === event.id ? (
+                                    'Scanning Album...'
+                                  ) : (
+                                    <>
+                                      <Sparkles size={14} /> Scan Event Photos
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 2. AI Discovery Precision & Capabilities Cards */}
+                      <div>
+                        <h3
+                          style={{
+                            fontSize: '1.15rem',
+                            color: 'var(--text-main)',
+                            fontWeight: 700,
+                            marginBottom: '1rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                          }}
+                        >
+                          <Sparkles size={18} color="var(--primary)" />
+                          AI Discovery Capabilities & Tips
+                        </h3>
+
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                            gap: '1.25rem',
+                          }}
+                        >
+                          <div className="glass-card" style={{ padding: '1.25rem' }}>
+                            <div
+                              style={{
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                background: 'var(--badge-gold-bg)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '0.85rem',
+                              }}
+                            >
+                              <Camera size={18} color="var(--primary)" />
+                            </div>
+                            <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', fontWeight: 700, marginBottom: '0.35rem' }}>
+                              Multi-Angle Enrollment
+                            </h4>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: 1.6, margin: 0 }}>
+                              Register 2-3 angles (front and 45° profile) in Face & Circle to ensure 99.8% cosine precision across candid shots.
+                            </p>
+                          </div>
+
+                          <div className="glass-card" style={{ padding: '1.25rem' }}>
+                            <div
+                              style={{
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                background: 'var(--badge-gold-bg)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '0.85rem',
+                              }}
+                            >
+                              <Users size={18} color="var(--primary)" />
+                            </div>
+                            <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', fontWeight: 700, marginBottom: '0.35rem' }}>
+                              Family & Loved Ones
+                            </h4>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: 1.6, margin: 0 }}>
+                              Add family members to discover group moments where all of you appear together or filter by specific individuals.
+                            </p>
+                          </div>
+
+                          <div className="glass-card" style={{ padding: '1.25rem' }}>
+                            <div
+                              style={{
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                background: 'var(--badge-gold-bg)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '0.85rem',
+                              }}
+                            >
+                              <Layers size={18} color="var(--primary)" />
+                            </div>
+                            <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', fontWeight: 700, marginBottom: '0.35rem' }}>
+                              Direct Cloud & Drive Sync
+                            </h4>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: 1.6, margin: 0 }}>
+                              Export matched high-resolution event photographs straight to your connected Google Photos or Google Drive seamlessly.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
