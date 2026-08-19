@@ -28,8 +28,9 @@ export const ThemeProvider = ({ children }) => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
 
     if (typeof document !== 'undefined' && document.startViewTransition) {
-      const x = e?.clientX ?? window.innerWidth - 60;
-      const y = e?.clientY ?? 35;
+      const rect = e?.currentTarget?.getBoundingClientRect?.() || e?.target?.getBoundingClientRect?.();
+      const x = rect ? rect.left + rect.width / 2 : (e?.clientX ?? window.innerWidth - 60);
+      const y = rect ? rect.top + rect.height / 2 : (e?.clientY ?? 35);
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
         Math.max(y, window.innerHeight - y)
@@ -51,8 +52,8 @@ export const ThemeProvider = ({ children }) => {
             ],
           },
           {
-            duration: 480,
-            easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+            duration: 420,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
             pseudoElement: '::view-transition-new(root)',
           }
         );
