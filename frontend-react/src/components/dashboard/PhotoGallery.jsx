@@ -131,6 +131,7 @@ export const PhotoGallery = ({ photos = [], title = "Matched Photos", emptyMessa
                     alt={photo.file_name || photo.filename || 'Matched photo'}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
                     loading="lazy"
+                    decoding="async"
                   />
 
                   {/* Confidence Badge */}
