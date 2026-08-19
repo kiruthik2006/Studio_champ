@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -30,9 +30,23 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [spotlightOpen, setSpotlightOpen] = useState(false);
   const [facesCount, setFacesCount] = useState(null);
+  const userDropdownRef = useRef(null);
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Close user dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(e.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    if (userDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [userDropdownOpen]);
 
   // Fetch live biometric registration count if logged in
   useEffect(() => {
@@ -210,7 +224,7 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
           <ThemeToggle />
 
           {isAuthenticated ? (
-            <div style={{ position: 'relative' }}>
+            <div ref={userDropdownRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                 className="btn btn-outline btn-sm"
