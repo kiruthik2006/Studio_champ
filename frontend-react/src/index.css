@@ -104,12 +104,12 @@
 
 /* ===== Refined Luxury Light Theme ===== */
 [data-theme="light"] {
-  --primary: #9e7515;
-  --primary-light: #b88a1b;
-  --primary-dark: #7a5a0d;
+  --primary: #dfb94a;
+  --primary-light: #f3df9b;
+  --primary-dark: #c9a227;
   --secondary: #524d42;
   --secondary-dark: #332f26;
-  --accent: #786348;
+  --accent: #c9a227;
 
   --bg-body: #fbfaf7;
   --bg-surface: #f3f0e8;

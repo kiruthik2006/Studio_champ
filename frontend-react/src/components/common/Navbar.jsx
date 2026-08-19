@@ -152,7 +152,7 @@ export const Navbar = ({ onOpenLogin, onOpenRegister }) => {
                     border: '1px solid rgba(201, 162, 39, 0.3)',
                     fontSize: '0.78rem',
                     fontWeight: 600,
-                    color: isLight ? '#9e7515' : '#dfb94a',
+                    color: isLight ? '#c9a227' : '#dfb94a',
                     cursor: 'pointer',
                     transition: 'all var(--transition-fast)',
                   }}

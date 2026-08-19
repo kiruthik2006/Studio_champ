@@ -138,11 +138,12 @@ export const MultiPersonFilterBar = ({
                 padding: '0.35rem 0.75rem',
                 border: 'none',
                 borderRadius: '4px',
-                background: matchMode === 'ANY' ? 'var(--primary)' : 'transparent',
-                color: matchMode === 'ANY' ? '#121110' : 'var(--text-muted)',
+                background: matchMode === 'ANY' ? 'var(--btn-primary-bg)' : 'transparent',
+                color: matchMode === 'ANY' ? 'var(--btn-primary-text)' : 'var(--text-muted)',
                 fontWeight: matchMode === 'ANY' ? 700 : 500,
                 fontSize: '0.78rem',
                 cursor: 'pointer',
+                boxShadow: matchMode === 'ANY' ? 'var(--btn-primary-shadow)' : 'none',
                 transition: 'all var(--transition-fast)',
               }}
               title="Return photos with ANY of the selected people"
@@ -156,11 +157,12 @@ export const MultiPersonFilterBar = ({
                 padding: '0.35rem 0.75rem',
                 border: 'none',
                 borderRadius: '4px',
-                background: matchMode === 'ALL' ? 'var(--primary)' : 'transparent',
-                color: matchMode === 'ALL' ? '#121110' : 'var(--text-muted)',
+                background: matchMode === 'ALL' ? 'var(--btn-primary-bg)' : 'transparent',
+                color: matchMode === 'ALL' ? 'var(--btn-primary-text)' : 'var(--text-muted)',
                 fontWeight: matchMode === 'ALL' ? 700 : 500,
                 fontSize: '0.78rem',
                 cursor: 'pointer',
+                boxShadow: matchMode === 'ALL' ? 'var(--btn-primary-shadow)' : 'none',
                 transition: 'all var(--transition-fast)',
               }}
               title="Only return photos where ALL selected people appear together"
@@ -174,11 +176,12 @@ export const MultiPersonFilterBar = ({
                 padding: '0.35rem 0.75rem',
                 border: 'none',
                 borderRadius: '4px',
-                background: matchMode === 'SOLO' ? 'var(--primary)' : 'transparent',
-                color: matchMode === 'SOLO' ? '#121110' : 'var(--text-muted)',
+                background: matchMode === 'SOLO' ? 'var(--btn-primary-bg)' : 'transparent',
+                color: matchMode === 'SOLO' ? 'var(--btn-primary-text)' : 'var(--text-muted)',
                 fontWeight: matchMode === 'SOLO' ? 700 : 500,
                 fontSize: '0.78rem',
                 cursor: 'pointer',
+                boxShadow: matchMode === 'SOLO' ? 'var(--btn-primary-shadow)' : 'none',
                 transition: 'all var(--transition-fast)',
               }}
               title="Focus on individual solo shots"
