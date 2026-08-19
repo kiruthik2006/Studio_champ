@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
+import { MeshGlowBackdrop } from '../components/common/MeshGlowBackdrop';
 import { StatsOverview } from '../components/admin/StatsOverview';
 import { EventManager } from '../components/admin/EventManager';
 import { BatchPhotoUploader } from '../components/admin/BatchPhotoUploader';
@@ -100,7 +101,8 @@ export const AdminDashboardPage = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--dark)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <MeshGlowBackdrop />
       <Navbar />
 
       <div className="dashboard-layout">

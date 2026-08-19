@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
+import { MeshGlowBackdrop } from '../components/common/MeshGlowBackdrop';
 import { CameraCapture } from '../components/dashboard/CameraCapture';
 import { RegisteredFaces } from '../components/dashboard/RegisteredFaces';
 import { EventCard } from '../components/dashboard/EventCard';
@@ -301,7 +302,8 @@ export const DashboardPage = () => {
   const currentSelectedMember = circleMembers.find((m) => m.id === selectedMemberId) || circleMembers[0];
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-body)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <MeshGlowBackdrop />
       <Navbar />
 
       <div className="dashboard-layout">
