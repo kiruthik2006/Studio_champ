@@ -566,6 +566,8 @@ h1 {
   background: var(--navbar-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.95) 55%, rgba(0, 0, 0, 0.45) 80%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.95) 55%, rgba(0, 0, 0, 0.45) 80%, rgba(0, 0, 0, 0) 100%);
   border-bottom: none;
   pointer-events: none;
   transition: background var(--transition-normal);
