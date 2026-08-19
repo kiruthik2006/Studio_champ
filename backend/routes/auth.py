@@ -88,22 +88,31 @@ def register():
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    """User login"""
+    """User login supporting email, username, or admin alias"""
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
+        identifier = (data.get("email") or data.get("username") or "").strip().lower()
+        password = data.get("password", "")
 
         # Validate input
-        if not data.get("email") or not data.get("password"):
+        if not identifier or not password:
             return jsonify(
-                {"success": False, "message": "Email and password are required"}
+                {"success": False, "message": "Username/email and password are required"}
             ), 400
 
-        # Find user
-        user = User.query.filter_by(email=data["email"].lower()).first()
+        # Shorthand resolution for admin alias
+        target_email = identifier
+        if identifier in ["admin", "administrator", "root"]:
+            target_email = "admin@facerec.com"
+
+        # Find user by exact email or admin alias
+        user = User.query.filter_by(email=target_email).first()
+        if not user and identifier != target_email:
+            user = User.query.filter_by(email=identifier).first()
 
         if not user:
             return jsonify(
-                {"success": False, "message": "Invalid email or password"}
+                {"success": False, "message": "Invalid username/email or password"}
             ), 401
 
         # Check if user is active
@@ -112,10 +121,10 @@ def login():
 
         # Verify password
         if not bcrypt.checkpw(
-            data["password"].encode("utf-8"), user.password_hash.encode("utf-8")
+            password.encode("utf-8"), user.password_hash.encode("utf-8")
         ):
             return jsonify(
-                {"success": False, "message": "Invalid email or password"}
+                {"success": False, "message": "Invalid username/email or password"}
             ), 401
 
         # Update last login

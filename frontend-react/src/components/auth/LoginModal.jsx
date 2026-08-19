@@ -48,17 +48,17 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Email Address</label>
+          <label>Email or Username</label>
           <div style={{ position: 'relative' }}>
             <Mail
               size={18}
               style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
             />
             <input
-              type="email"
+              type="text"
               className="form-control"
               style={{ paddingLeft: '2.5rem' }}
-              placeholder="you@example.com"
+              placeholder="you@example.com or admin"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
