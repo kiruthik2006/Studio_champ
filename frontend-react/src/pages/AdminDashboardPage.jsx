@@ -103,7 +103,6 @@ export const AdminDashboardPage = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-      <MeshGlowBackdrop />
       <Navbar />
 
       <div className="dashboard-layout">

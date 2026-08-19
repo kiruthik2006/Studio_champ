@@ -7,12 +7,12 @@ import { ProfilePage } from './pages/ProfilePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { CloudPhotosIngestionPage } from './pages/CloudPhotosIngestionPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { SubtleBackground } from './components/common/SubtleBackground';
+import { MeshGlowBackdrop } from './components/common/MeshGlowBackdrop';
 
 export function App() {
   return (
     <>
-      <SubtleBackground />
+      <MeshGlowBackdrop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
       <Route
