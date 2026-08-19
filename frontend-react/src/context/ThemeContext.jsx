@@ -15,6 +15,7 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.style.colorScheme = theme;
     localStorage.setItem('app_theme', theme);
   }, [theme]);
 
@@ -24,70 +25,8 @@ export const ThemeProvider = ({ children }) => {
       e.preventDefault();
     }
 
-    // Cooldown Guard
-    if (isLockedRef.current) return;
-    isLockedRef.current = true;
-    setIsTransitioning(true);
-
-    const isCurrentlyDark = theme === 'dark';
-    const nextTheme = isCurrentlyDark ? 'light' : 'dark';
-
-    // 1. Snappy fade out of aurora (100ms)
-    setAuroraVisible(false);
-
-    // 2. Execute circular ripple view transition
-    setTimeout(() => {
-      if (document.startViewTransition) {
-        const x = e?.clientX ?? window.innerWidth - 60;
-        const y = e?.clientY ?? 35;
-        const endRadius = Math.hypot(
-          Math.max(x, window.innerWidth - x),
-          Math.max(y, window.innerHeight - y)
-        ) + 30;
-
-        const transitionType = isCurrentlyDark ? 'dark-to-light' : 'light-to-dark';
-        document.documentElement.style.setProperty('--clip-x', `${x}px`);
-        document.documentElement.style.setProperty('--clip-y', `${y}px`);
-        document.documentElement.style.setProperty('--clip-radius', `${endRadius}px`);
-        document.documentElement.setAttribute('data-theme-transition', transitionType);
-
-        const transition = document.startViewTransition(() => {
-          document.documentElement.setAttribute('data-theme', nextTheme);
-          localStorage.setItem('app_theme', nextTheme);
-          setTheme(nextTheme);
-        });
-
-        transition.finished.finally(() => {
-          requestAnimationFrame(() => {
-            document.documentElement.removeAttribute('data-theme-transition');
-
-            // 3. Bring the aurora back in on the new theme
-            setTimeout(() => {
-              setAuroraVisible(true);
-
-              // 4. Release cooldown promptly (160ms)
-              setTimeout(() => {
-                isLockedRef.current = false;
-                setIsTransitioning(false);
-              }, 160);
-            }, 15);
-          });
-        });
-      } else {
-        document.documentElement.setAttribute('data-theme', nextTheme);
-        localStorage.setItem('app_theme', nextTheme);
-        setTheme(nextTheme);
-
-        setTimeout(() => {
-          setAuroraVisible(true);
-          setTimeout(() => {
-            isLockedRef.current = false;
-            setIsTransitioning(false);
-          }, 160);
-        }, 15);
-      }
-    }, 100);
-  }, [theme]);
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
 
   const isLight = theme === 'light';
 

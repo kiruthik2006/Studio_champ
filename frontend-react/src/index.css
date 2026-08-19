@@ -267,59 +267,21 @@ body {
   }
   to {
     clip-path: circle(var(--clip-radius, 150vmax) at var(--clip-x, 90vw) var(--clip-y, 35px));
-  }
-}
-
-@keyframes smoothCircularCollapse {
-  from {
-    clip-path: circle(var(--clip-radius, 150vmax) at var(--clip-x, 90vw) var(--clip-y, 35px));
-  }
-  to {
-    clip-path: circle(0px at var(--clip-x, 90vw) var(--clip-y, 35px));
-  }
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-  height: 100%;
-  overflow: clip;
-  will-change: clip-path;
-}
-
-/* Light -> Dark (Expanding dark circle outward) */
-[data-theme-transition="light-to-dark"]::view-transition-old(root) {
-  z-index: 1;
-  animation: none;
-}
-
-[data-theme-transition="light-to-dark"]::view-transition-new(root) {
-  z-index: 999999;
-  animation: 0.55s cubic-bezier(0.25, 1, 0.5, 1) both smoothCircularExpand;
-}
-
-/* Dark -> Light (Collapsing dark circle inward) */
-[data-theme-transition="dark-to-light"]::view-transition-old(root) {
-  z-index: 999999;
-  animation: 0.55s cubic-bezier(0.25, 1, 0.5, 1) both smoothCircularCollapse;
-}
-
-[data-theme-transition="dark-to-light"]::view-transition-new(root) {
-  z-index: 1;
-  animation: none;
-}
-
-/* Smooth Global Theme Transitions */
+/* Smooth Global Theme Transitions Across All Browsers */
 html, body {
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1), color 0.28s ease;
 }
 
 .glass-card,
 .glass-card-elevated,
 .navbar,
-.dashboard-sidebar {
-  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+.dashboard-sidebar,
+.sidebar-menu,
+.sidebar-item {
+  transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.28s ease, 
+              color 0.28s ease, 
+              box-shadow 0.28s ease;
 }
 
 a {
