@@ -2,12 +2,13 @@ import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 
 /**
- * MeshGlowBackdrop (Hardware Accelerated 120 FPS)
- * Accurately implements the reference 3-layer light addition technique:
- * - Layer 1 (Crimson/Coral Rim): #FF3636 (100px blur radius)
- * - Layer 2 (Sunny Gold Body): #FFE436 (80px blur radius)
- * - Layer 3 (Incandescent Core): #FFFFFF (50px blur radius with physical light addition)
- * - Single-pass GPU compilation with contain: strict and 0% CPU cost.
+ * MeshGlowBackdrop - Iteration Variant 2: Prismatic Amber & Canary Aurora Wave
+ * Creates an organic S-curve illuminated lightwave sweeping from bottom-left through the viewport:
+ * - Layer 1: Crimson-Coral Deep Halo (#FF3636 / #E11D48)
+ * - Layer 2: Warm Amber Wave (#FB923C / #F59E0B)
+ * - Layer 3: Radiant Canary Gold Luminescence (#FFE436 / #EAB308)
+ * - Layer 4: Incandescent White Flare Core (#FFFFFF)
+ * - Layer 5: Ambient Upper-Right Prismatic Glow
  */
 export const MeshGlowBackdrop = () => {
   const { isLight } = useTheme();
@@ -24,57 +25,68 @@ export const MeshGlowBackdrop = () => {
         contain: 'strict',
       }}
     >
-      {/* 1. Deep Obsidian Atmosphere Base */}
+      {/* 1. Base Atmosphere */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           background: isLight
-            ? 'radial-gradient(130% 130% at 50% 10%, #fcfbfa 0%, #f6f2e9 55%, #ece4d2 100%)'
-            : 'radial-gradient(130% 130% at 50% 10%, #161514 0%, #0d0c0b 60%, #060606 100%)',
+            ? 'radial-gradient(130% 130% at 50% 20%, #faf8f5 0%, #f4eee1 50%, #e9dfcc 100%)'
+            : 'radial-gradient(130% 130% at 50% 20%, #151412 0%, #0d0c0b 55%, #050505 100%)',
           transition: 'background 0.3s ease',
         }}
       />
 
-      {/* 2. Authentic 3-Layer Organic Glow Horizon (Exact #FF3636, #FFE436, #FFFFFF Palette) */}
+      {/* 2. Main S-Curve Aurora Lightwave (Rising Bottom-Left) */}
       <div
         style={{
           position: 'absolute',
-          bottom: '-12%',
-          left: '-5%',
-          right: '-5%',
-          height: '70%',
-          opacity: isLight ? 0.72 : 0.85,
+          bottom: '-18%',
+          left: '-10%',
+          width: '90vw',
+          height: '80vh',
+          opacity: isLight ? 0.75 : 0.88,
           background: isLight
             ? `
-              radial-gradient(ellipse 45% 35% at 35% 82%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 248, 220, 0.7) 35%, transparent 68%),
-              radial-gradient(ellipse 65% 50% at 38% 75%, rgba(255, 228, 54, 0.65) 0%, rgba(245, 158, 11, 0.4) 45%, transparent 75%),
-              radial-gradient(ellipse 85% 65% at 42% 65%, rgba(255, 54, 54, 0.38) 0%, rgba(220, 38, 38, 0.2) 50%, transparent 80%)
+              radial-gradient(circle 260px at 40% 75%, rgba(255, 255, 255, 0.98) 0%, rgba(254, 243, 199, 0.75) 32%, transparent 68%),
+              radial-gradient(ellipse 55% 45% at 42% 70%, rgba(255, 228, 54, 0.7) 0%, rgba(245, 158, 11, 0.42) 42%, transparent 74%),
+              radial-gradient(ellipse 70% 55% at 38% 62%, rgba(251, 146, 60, 0.55) 0%, rgba(234, 88, 12, 0.32) 45%, transparent 78%),
+              radial-gradient(ellipse 85% 70% at 35% 55%, rgba(255, 54, 54, 0.4) 0%, rgba(225, 29, 72, 0.2) 50%, transparent 82%)
             `
             : `
-              radial-gradient(ellipse 45% 35% at 35% 82%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 240, 130, 0.8) 35%, transparent 68%),
-              radial-gradient(ellipse 65% 50% at 38% 75%, rgba(255, 228, 54, 0.78) 0%, rgba(245, 158, 11, 0.5) 45%, transparent 75%),
-              radial-gradient(ellipse 85% 65% at 42% 65%, rgba(255, 54, 54, 0.55) 0%, rgba(220, 38, 38, 0.28) 50%, transparent 80%)
+              radial-gradient(circle 260px at 40% 75%, rgba(255, 255, 255, 0.98) 0%, rgba(254, 240, 138, 0.82) 32%, transparent 68%),
+              radial-gradient(ellipse 55% 45% at 42% 70%, rgba(255, 228, 54, 0.82) 0%, rgba(245, 158, 11, 0.55) 42%, transparent 74%),
+              radial-gradient(ellipse 70% 55% at 38% 62%, rgba(251, 146, 60, 0.68) 0%, rgba(234, 88, 12, 0.42) 45%, transparent 78%),
+              radial-gradient(ellipse 85% 70% at 35% 55%, rgba(255, 54, 54, 0.58) 0%, rgba(225, 29, 72, 0.3) 50%, transparent 82%)
             `,
-          filter: 'blur(42px)',
+          filter: 'blur(48px)',
           transform: 'translate3d(0, 0, 0)',
           willChange: 'transform',
-          animation: 'meshDriftSlow 24s ease-in-out infinite alternate',
+          animation: 'meshDriftSlow 22s ease-in-out infinite alternate',
         }}
       />
 
-      {/* 3. Upper-Right Subtle Ambient Amber Haze */}
+      {/* 3. Secondary Diagonal Ambient Counter-Glow (Top-Right) */}
       <div
         style={{
           position: 'absolute',
-          top: '-15%',
-          right: '5%',
-          width: '550px',
-          height: '450px',
+          top: '-20%',
+          right: '-10%',
+          width: '650px',
+          height: '550px',
+          opacity: isLight ? 0.65 : 0.75,
           background: isLight
-            ? 'radial-gradient(circle, rgba(255, 228, 54, 0.22) 0%, rgba(255, 54, 54, 0.12) 50%, transparent 75%)'
-            : 'radial-gradient(circle, rgba(255, 228, 54, 0.24) 0%, rgba(255, 54, 54, 0.14) 50%, transparent 75%)',
-          filter: 'blur(55px)',
+            ? `
+              radial-gradient(circle 200px at 55% 45%, rgba(255, 255, 255, 0.9) 0%, rgba(254, 240, 138, 0.5) 35%, transparent 70%),
+              radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 228, 54, 0.45) 0%, rgba(251, 146, 60, 0.25) 45%, transparent 75%),
+              radial-gradient(ellipse 80% 65% at 45% 55%, rgba(255, 54, 54, 0.28) 0%, transparent 80%)
+            `
+            : `
+              radial-gradient(circle 200px at 55% 45%, rgba(255, 255, 255, 0.92) 0%, rgba(254, 240, 138, 0.6) 35%, transparent 70%),
+              radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 228, 54, 0.55) 0%, rgba(251, 146, 60, 0.35) 45%, transparent 75%),
+              radial-gradient(ellipse 80% 65% at 45% 55%, rgba(255, 54, 54, 0.38) 0%, transparent 80%)
+            `,
+          filter: 'blur(52px)',
           transform: 'translate3d(0, 0, 0)',
           pointerEvents: 'none',
         }}
