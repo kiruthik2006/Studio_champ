@@ -21,7 +21,7 @@
   --card-bg: rgba(26, 26, 26, 0.65);
   --card-bg-elevated: rgba(32, 30, 26, 0.92);
   --modal-bg: #181716;
-  --navbar-bg: linear-gradient(180deg, rgba(13, 13, 13, 0.82) 0%, rgba(13, 13, 13, 0.45) 45%, rgba(13, 13, 13, 0) 100%);
+  --navbar-bg: linear-gradient(180deg, rgba(13, 13, 13, 1) 0%, rgba(13, 13, 13, 0.92) 18%, rgba(13, 13, 13, 0.72) 38%, rgba(13, 13, 13, 0.44) 60%, rgba(13, 13, 13, 0.18) 82%, rgba(13, 13, 13, 0) 100%);
   --sidebar-bg: rgba(18, 17, 16, 0.98);
 
   --border-subtle: rgba(255, 255, 255, 0.08);
