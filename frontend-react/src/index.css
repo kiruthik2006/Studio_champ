@@ -260,6 +260,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Circular Bloom View Transition Root Rules */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 999999;
+}
+
 /* Smooth Global Theme Transitions Across All Browsers */
 html, body {
   transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1), color 0.28s ease;

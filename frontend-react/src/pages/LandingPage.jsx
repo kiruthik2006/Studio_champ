@@ -59,6 +59,9 @@ export const LandingPage = () => {
           pointerEvents: 'none',
           zIndex: 0,
           filter: isLight ? 'saturate(1.35) contrast(1.12) brightness(1.04)' : 'brightness(0.85) contrast(1.05)',
+          transform: 'translate3d(0, 0, 0)',
+          backfaceVisibility: 'hidden',
+          contain: 'strict',
         }}
       />
       {/* Soft Atmospheric Gradient Overlay for Perfect Contrast */}
@@ -74,6 +77,8 @@ export const LandingPage = () => {
             : 'linear-gradient(180deg, rgba(13, 13, 13, 0.3) 0%, rgba(13, 13, 13, 0.6) 40%, rgba(13, 13, 13, 0.85) 100%)',
           pointerEvents: 'none',
           zIndex: 0,
+          transform: 'translate3d(0, 0, 0)',
+          contain: 'strict',
         }}
       />
 

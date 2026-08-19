@@ -25,8 +25,45 @@ export const ThemeProvider = ({ children }) => {
       e.preventDefault();
     }
 
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  }, []);
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+
+    if (typeof document !== 'undefined' && document.startViewTransition) {
+      const x = e?.clientX ?? window.innerWidth - 60;
+      const y = e?.clientY ?? 35;
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      ) + 20;
+
+      const transition = document.startViewTransition(() => {
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        document.documentElement.style.colorScheme = nextTheme;
+        localStorage.setItem('app_theme', nextTheme);
+        setTheme(nextTheme);
+      });
+
+      transition.ready.then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${endRadius}px at ${x}px ${y}px)`,
+            ],
+          },
+          {
+            duration: 480,
+            easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+            pseudoElement: '::view-transition-new(root)',
+          }
+        );
+      });
+    } else {
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      document.documentElement.style.colorScheme = nextTheme;
+      localStorage.setItem('app_theme', nextTheme);
+      setTheme(nextTheme);
+    }
+  }, [theme]);
 
   const isLight = theme === 'light';
 

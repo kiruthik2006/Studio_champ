@@ -130,26 +130,19 @@ export const NeuralCanvas = () => {
   }, [isLight]);
 
   return (
-    <>
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: -2,
-          pointerEvents: 'none',
-          transform: 'translateZ(0)',
-          willChange: 'transform',
-        }}
-      />
-      <div className="ambient-bg">
-        <div className="ambient-glow ambient-glow-1" />
-        <div className="ambient-glow ambient-glow-2" />
-        <div className="ambient-glow ambient-glow-3" />
-      </div>
-    </>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 0,
+        pointerEvents: 'none',
+        transform: 'translate3d(0, 0, 0)',
+        backfaceVisibility: 'hidden',
+      }}
+    />
   );
 };

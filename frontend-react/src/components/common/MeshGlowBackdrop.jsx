@@ -1,14 +1,13 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 
-/**
- * MeshGlowBackdrop
- * - Light Mode: Preserved exact original S-curve radiant aurora wave.
- * - Dark Mode: Refined luxury Champagne & Cognac Amber palette positioned at lower-right/mid-zone,
- *   completely clearing the top title bar zone to prevent collision with the navbar dark fade.
- */
 export const MeshGlowBackdrop = () => {
   const { isLight } = useTheme();
+  const location = useLocation();
+
+  // Landing page uses its own cinematic wallpaper + neural canvas backdrop
+  if (location.pathname === '/') return null;
 
   return (
     <div
