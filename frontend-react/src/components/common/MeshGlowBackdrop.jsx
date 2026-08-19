@@ -45,13 +45,13 @@ export const MeshGlowBackdrop = () => {
           left: '-10%',
           width: '90vw',
           height: '80vh',
-          opacity: isLight ? 0.75 : 0.52,
+          opacity: isLight ? 0.72 : 0.52,
           background: isLight
             ? `
-              radial-gradient(circle 260px at 40% 75%, rgba(255, 255, 255, 0.98) 0%, rgba(254, 243, 199, 0.75) 32%, transparent 68%),
-              radial-gradient(ellipse 55% 45% at 42% 70%, rgba(255, 228, 54, 0.7) 0%, rgba(245, 158, 11, 0.42) 42%, transparent 74%),
-              radial-gradient(ellipse 70% 55% at 38% 62%, rgba(251, 146, 60, 0.55) 0%, rgba(234, 88, 12, 0.32) 45%, transparent 78%),
-              radial-gradient(ellipse 85% 70% at 35% 55%, rgba(255, 54, 54, 0.4) 0%, rgba(225, 29, 72, 0.2) 50%, transparent 82%)
+              radial-gradient(circle 260px at 40% 75%, rgba(255, 255, 255, 0.98) 0%, rgba(254, 249, 215, 0.8) 32%, transparent 68%),
+              radial-gradient(ellipse 55% 45% at 42% 70%, rgba(255, 228, 54, 0.58) 0%, rgba(245, 190, 35, 0.38) 42%, transparent 74%),
+              radial-gradient(ellipse 70% 55% at 38% 62%, rgba(223, 185, 74, 0.42) 0%, rgba(201, 162, 39, 0.25) 45%, transparent 78%),
+              radial-gradient(ellipse 85% 70% at 35% 55%, rgba(180, 130, 20, 0.18) 0%, rgba(146, 100, 12, 0.08) 50%, transparent 82%)
             `
             : `
               radial-gradient(circle 250px at 40% 75%, rgba(255, 248, 220, 0.6) 0%, rgba(251, 191, 36, 0.38) 30%, transparent 68%),
@@ -74,12 +74,12 @@ export const MeshGlowBackdrop = () => {
           right: '-10%',
           width: '650px',
           height: '550px',
-          opacity: isLight ? 0.65 : 0.42,
+          opacity: isLight ? 0.6 : 0.42,
           background: isLight
             ? `
-              radial-gradient(circle 200px at 55% 45%, rgba(255, 255, 255, 0.9) 0%, rgba(254, 240, 138, 0.5) 35%, transparent 70%),
-              radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 228, 54, 0.45) 0%, rgba(251, 146, 60, 0.25) 45%, transparent 75%),
-              radial-gradient(ellipse 80% 65% at 45% 55%, rgba(255, 54, 54, 0.28) 0%, transparent 80%)
+              radial-gradient(circle 200px at 55% 45%, rgba(255, 255, 255, 0.9) 0%, rgba(254, 249, 215, 0.5) 35%, transparent 70%),
+              radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 228, 54, 0.38) 0%, rgba(223, 185, 74, 0.22) 45%, transparent 75%),
+              radial-gradient(ellipse 80% 65% at 45% 55%, rgba(201, 162, 39, 0.14) 0%, transparent 80%)
             `
             : `
               radial-gradient(circle 200px at 55% 45%, rgba(255, 248, 220, 0.4) 0%, rgba(223, 185, 74, 0.25) 35%, transparent 70%),
