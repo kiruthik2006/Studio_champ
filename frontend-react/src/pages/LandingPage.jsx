@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
 import { NeuralCanvas } from '../components/common/NeuralCanvas';
@@ -17,6 +18,7 @@ export const LandingPage = () => {
   const [authModalMode, setAuthModalMode] = useState('login');
 
   const { isAuthenticated } = useAuth();
+  const { isLight } = useTheme();
   const navigate = useNavigate();
 
   const handleOpenLogin = () => {
@@ -40,6 +42,41 @@ export const LandingPage = () => {
   return (
     <div style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar onOpenLogin={handleOpenLogin} onOpenRegister={handleOpenRegister} />
+
+      {/* Atmospheric Wallpaper Background */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: 'url(/landing_bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+          opacity: isLight ? 0.38 : 0.62,
+          pointerEvents: 'none',
+          zIndex: 0,
+          filter: isLight ? 'saturate(1.2) brightness(1.02)' : 'brightness(0.85) contrast(1.05)',
+        }}
+      />
+      {/* Soft Atmospheric Gradient Overlay for Perfect Contrast */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: isLight
+            ? 'linear-gradient(180deg, rgba(251, 250, 247, 0.4) 0%, rgba(251, 250, 247, 0.68) 40%, rgba(251, 250, 247, 0.9) 100%)'
+            : 'linear-gradient(180deg, rgba(13, 13, 13, 0.3) 0%, rgba(13, 13, 13, 0.6) 40%, rgba(13, 13, 13, 0.85) 100%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
       <NeuralCanvas />
 
       {/* 1. Cinematic Editorial Centered Hero with Dynamic Floating Memory Mosaic */}
