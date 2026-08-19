@@ -895,6 +895,7 @@ h1 {
 
 .dashboard-content {
   flex: 1;
+  min-height: calc(100vh - 110px);
 }
 
 /* Tables (Hardware Accelerated) */
