@@ -92,6 +92,46 @@ export const MeshGlowBackdrop = () => {
           pointerEvents: 'none',
         }}
       />
+
+      {/* 4. Top-Left Peripheral Corner Glow (Subtle accent flanking brand logo) */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '-12%',
+          left: '-8%',
+          width: '450px',
+          height: '380px',
+          opacity: isLight ? 0.6 : 0.5,
+          background: isLight
+            ? 'radial-gradient(ellipse 60% 50% at 30% 30%, rgba(251, 191, 36, 0.28) 0%, rgba(245, 158, 11, 0.12) 45%, transparent 75%)'
+            : 'radial-gradient(ellipse 60% 50% at 30% 30%, rgba(223, 185, 74, 0.25) 0%, rgba(180, 83, 9, 0.1) 45%, transparent 75%)',
+          filter: 'blur(52px)',
+          transform: 'translate3d(0, 0, 0)',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* 5. Top-Right Peripheral Corner Glow (Subtle accent flanking profile controls) */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '-12%',
+          right: '-8%',
+          width: '460px',
+          height: '390px',
+          opacity: isLight ? 0.65 : 0.52,
+          background: isLight
+            ? 'radial-gradient(ellipse 60% 50% at 70% 30%, rgba(255, 228, 54, 0.32) 0%, rgba(251, 146, 60, 0.14) 45%, transparent 75%)'
+            : 'radial-gradient(ellipse 60% 50% at 70% 30%, rgba(201, 162, 39, 0.28) 0%, rgba(194, 65, 12, 0.12) 45%, transparent 75%)',
+          filter: 'blur(54px)',
+          transform: 'translate3d(0, 0, 0)',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          pointerEvents: 'none',
+        }}
+      />
     </div>
   );
 };
