@@ -55,10 +55,10 @@ export const LandingPage = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center top',
           backgroundRepeat: 'no-repeat',
-          opacity: isLight ? 0.38 : 0.62,
+          opacity: isLight ? 0.82 : 0.62,
           pointerEvents: 'none',
           zIndex: 0,
-          filter: isLight ? 'saturate(1.2) brightness(1.02)' : 'brightness(0.85) contrast(1.05)',
+          filter: isLight ? 'saturate(1.35) contrast(1.12) brightness(1.04)' : 'brightness(0.85) contrast(1.05)',
         }}
       />
       {/* Soft Atmospheric Gradient Overlay for Perfect Contrast */}
@@ -70,7 +70,7 @@ export const LandingPage = () => {
           right: 0,
           bottom: 0,
           background: isLight
-            ? 'linear-gradient(180deg, rgba(251, 250, 247, 0.4) 0%, rgba(251, 250, 247, 0.68) 40%, rgba(251, 250, 247, 0.9) 100%)'
+            ? 'linear-gradient(180deg, rgba(251, 250, 247, 0.12) 0%, rgba(251, 250, 247, 0.32) 40%, rgba(251, 250, 247, 0.6) 100%)'
             : 'linear-gradient(180deg, rgba(13, 13, 13, 0.3) 0%, rgba(13, 13, 13, 0.6) 40%, rgba(13, 13, 13, 0.85) 100%)',
           pointerEvents: 'none',
           zIndex: 0,
