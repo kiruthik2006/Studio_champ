@@ -128,8 +128,19 @@ export const GuidedCaptureJourneyModal = ({ isOpen, onClose, member, onComplete 
     }
 
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    
+    // Resize for faster backend processing (DeepFace/RetinaFace is slow on large images)
+    const MAX_WIDTH = 640;
+    let width = video.videoWidth;
+    let height = video.videoHeight;
+    
+    if (width > MAX_WIDTH) {
+      height = Math.round((height * MAX_WIDTH) / width);
+      width = MAX_WIDTH;
+    }
+    
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -161,7 +172,7 @@ export const GuidedCaptureJourneyModal = ({ isOpen, onClose, member, onComplete 
         }
       },
       'image/jpeg',
-      0.95
+      0.85
     );
   };
 

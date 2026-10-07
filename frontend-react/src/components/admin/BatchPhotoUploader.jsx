@@ -59,8 +59,9 @@ export const BatchPhotoUploader = ({ events = [], selectedEvent, onUploadComplet
     setProgress(10);
     setStatusMessage('Uploading and extracting facial vectors...');
 
-    // Upload in batches of 15 files to ensure stability
-    const BATCH_SIZE = 15;
+    // Upload in smaller batches (e.g., 2) to provide more granular progress updates
+    // since DeepFace processing can take a long time per photo
+    const BATCH_SIZE = 2;
     const totalFiles = selectedFiles.length;
     let uploadedCount = 0;
     let totalFacesDetected = 0;

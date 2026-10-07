@@ -2,6 +2,7 @@
 
 /* ===== Dark Theme (Default) ===== */
 :root, [data-theme="dark"] {
+  color-scheme: dark;
   --primary: #c9a227;
   --primary-light: #dfb94a;
   --primary-dark: #a68520;
@@ -104,6 +105,7 @@
 
 /* ===== Refined Luxury Light Theme ===== */
 [data-theme="light"] {
+  color-scheme: light;
   --primary: #dfb94a;
   --primary-light: #f3df9b;
   --primary-dark: #c9a227;
@@ -734,6 +736,11 @@ h1 {
   background: var(--input-bg);
   box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18), var(--shadow-sm);
   transform: translate3d(0, -1px, 0);
+}
+
+select.form-control option {
+  background-color: var(--bg-surface-elevated);
+  color: var(--text-main);
 }
 
 .form-row {

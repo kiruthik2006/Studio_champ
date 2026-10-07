@@ -159,28 +159,9 @@ export const AuthProvider = ({ children }) => {
         return { data: { user: finalUser, access_token: res.data.access_token } };
       }
     } catch (err) {
-      console.warn('Backend Google auth endpoint warning:', err);
+      console.error('Backend Google auth endpoint error:', err);
+      throw err;
     }
-
-    // Fallback seamless user session creation using actual Google payload
-    const mockUser = {
-      id: Date.now(),
-      email: googleData?.email || 'user@gmail.com',
-      first_name: googleData?.first_name || 'User',
-      last_name: googleData?.last_name || '',
-      full_name: googleData?.full_name || googleData?.first_name || 'User',
-      avatar_url: googleData?.avatar_url || googleData?.picture || null,
-      picture: googleData?.picture || googleData?.avatar_url || null,
-      role: 'user',
-      is_active: true,
-      google_connected: true,
-    };
-    const fallbackToken = 'google_session_' + Date.now();
-    api.setTokens(fallbackToken, fallbackToken);
-    setToken(fallbackToken);
-    setUser(mockUser);
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    return { data: { user: mockUser, access_token: fallbackToken } };
   };
 
   const isAuthenticated = !!token || !!user;

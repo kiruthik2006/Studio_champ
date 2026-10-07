@@ -342,9 +342,14 @@ class FaceRecognitionService:
             is_match = False
             if match_mode == "ALL":
                 if len(matched_members) == len(members_data) and len(members_data) > 0:
-                    is_match = True
+                    # If 'All Together' is selected for 1 person, require at least one other person in the photo
+                    if len(members_data) == 1 and len(photo_embeddings) == 1:
+                        is_match = False
+                    else:
+                        is_match = True
             elif match_mode == "SOLO":
-                if len(matched_members) == 1 and len(members_data) == 1:
+                # Solo means exactly one person is in the photo and it's the selected member
+                if len(matched_members) == 1 and len(members_data) == 1 and len(photo_embeddings) == 1:
                     is_match = True
             else:  # 'ANY'
                 if len(matched_members) > 0:
