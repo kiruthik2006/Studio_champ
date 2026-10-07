@@ -4,9 +4,13 @@ services:
     env: python
     rootDir: backend
     plan: free # Change this to 'starter' if you run out of memory (Error 137)
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && pip uninstall -y opencv-python && pip install opencv-python-headless
     startCommand: gunicorn "app:create_app('production')"
     envVars:
+      # Disable TensorFlow OneDNN which causes invalid pointer crashes on some cloud CPUs
+      - key: TF_ENABLE_ONEDNN_OPTS
+        value: "0"
+        
       # Force Render to use Python 3.11 to match your local environment and support TensorFlow
       - key: PYTHON_VERSION
         value: 3.11.8
