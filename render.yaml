@@ -4,7 +4,7 @@ services:
     env: python
     rootDir: backend
     plan: free # Change this to 'starter' if you run out of memory (Error 137)
-    buildCommand: pip install -r requirements.txt && pip uninstall -y opencv-python && pip install opencv-python-headless
+    buildCommand: pip install -r requirements.txt && pip uninstall -y opencv-python && pip install --force-reinstall opencv-python-headless
     startCommand: gunicorn "app:create_app('production')"
     envVars:
       # Disable TensorFlow OneDNN which causes invalid pointer crashes on some cloud CPUs
