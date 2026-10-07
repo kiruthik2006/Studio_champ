@@ -12,7 +12,7 @@ export const PhotoLightboxModal = ({ photo, isOpen, onClose }) => {
   const imageUrl = formatImageUrl(
     showBoundingBoxes && photo.annotated_image_path
       ? photo.annotated_image_path
-      : photo.image_path
+      : photo.file_path || photo.image_path
   );
 
   const downloadUrl = photo.id
@@ -24,6 +24,34 @@ export const PhotoLightboxModal = ({ photo, isOpen, onClose }) => {
     : photo.confidence
     ? Math.round(photo.confidence * 100)
     : null;
+
+  const handleDownload = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(downloadUrl, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = photo.file_name || photo.filename || 'photo.jpg';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback to opening the image directly
+      window.open(imageUrl, '_blank');
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="880px">
@@ -40,7 +68,7 @@ export const PhotoLightboxModal = ({ photo, isOpen, onClose }) => {
         }}>
           <img
             src={imageUrl}
-            alt={photo.filename || 'Matched photo'}
+            alt={photo.file_name || photo.filename || 'Matched photo'}
             style={{
               maxWidth: '100%',
               maxHeight: '68vh',
@@ -121,10 +149,8 @@ export const PhotoLightboxModal = ({ photo, isOpen, onClose }) => {
             </button>
 
             <a
-              href={downloadUrl}
-              download
-              target="_blank"
-              rel="noreferrer"
+              href="#"
+              onClick={handleDownload}
               className="btn btn-primary btn-sm"
             >
               <Download size={16} /> Download
