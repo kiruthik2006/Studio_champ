@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: studio-champ-backend
+    env: python
+    rootDir: backend
+    plan: free # Change this to 'starter' if you run out of memory (Error 137)
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn "app:create_app('production')"
+    envVars:
+      # Force Render to use Python 3.11 to match your local environment and support TensorFlow
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      
+      # Database connection (You will need to manually paste your Neon URL in the Render dashboard)
+      - key: DATABASE_URL
+        sync: false
+        
+      # Auto-generate secure secret keys
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
